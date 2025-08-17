@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoices - ClientHandle</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Dark Mode System -->
+    <link rel="stylesheet" href="./clienthandle_dark_mode_system.css">
+    
+    <script>
+        // Initialize theme before content loads
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    
+    <!-- Custom Styles -->
+    <style>
+        /* Filter and Search Animations */
+        .filter-enter {
+            opacity: 0;
+            transform: translateY(-10px);
+            animation: filterEnter 0.3s ease-out forwards;
+        }
+        
+        @keyframes filterEnter {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Table Row Animations */
+        .table-row-enter {
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: tableRowEnter 0.4s ease-out forwards;
+        }
+        
+        @keyframes tableRowEnter {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Status Badge Styles */
+        .status-paid {
+            background: var(--success);
+            color: var(--success-foreground);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background: var(--warning);
+            color: var(--warning-foreground);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-overdue {
+            background: var(--destructive);
+            color: var(--destructive-foreground);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-draft {
+            background: var(--muted);
+            color: var(--text-secondary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        /* Action Button Styles */
+        .action-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .action-btn:hover {
+            background: var(--hover);
+            color: var(--text-primary);
+        }
+        
+        .action-btn-primary {
+            background: var(--primary);
+            color: var(--primary-foreground);
+        }
+        
+        .action-btn-primary:hover {
+            background: oklch(from var(--primary) calc(l - 0.05) c h);
+        }
+        
+        /* Search and Filter Styles */
+        .search-input {
+            background: var(--input) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text-primary) !important;
+            border-radius: var(--radius) !important;
+            padding: 0.75rem 3rem 0.75rem 1rem;
+            transition: var(--transition) !important;
+            width: 100%;
+        }
+        
+        .search-input:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.1) !important;
+            outline: none !important;
+        }
+        
+        .search-input::placeholder {
+            color: var(--text-muted) !important;
+        }
+        
+        .filter-select {
+            background: var(--input) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text-primary) !important;
+            border-radius: var(--radius) !important;
+            padding: 0.75rem 2.5rem 0.75rem 1rem;
+            transition: var(--transition) !important;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+        }
+        
+        .filter-select:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.1) !important;
+            outline: none !important;
+        }
+        
+        /* Checkbox Styles */
+        .checkbox {
+            appearance: none;
+            background: var(--input);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            width: 1.25rem;
+            height: 1.25rem;
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .checkbox:checked {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .checkbox:checked::before {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--primary-foreground);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        /* Table Styles */
+        .invoice-table {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        
+        .invoice-table th {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.875rem;
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .invoice-table td {
+            color: var(--text-primary);
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .invoice-table tbody tr {
+            transition: var(--transition);
+        }
+        
+        .invoice-table tbody tr:hover {
+            background: var(--hover);
+        }
+        
+        .invoice-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Pagination Styles */
+        .pagination-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--hover);
+            color: var(--text-primary);
+            border-color: var(--primary);
+        }
+        
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination-btn.active {
+            background: var(--primary);
+            color: var(--primary-foreground);
+            border-color: var(--primary);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .invoice-table {
+                font-size: 0.875rem;
+            }
+            
+            .invoice-table th,
+            .invoice-table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .invoice-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="sidebar w-64 fixed left-0 top-0 h-full overflow-y-auto">
+            <div class="p-6">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-500 rounded-lg flex items-center justify-center">
+                        <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold text-gradient">ClientHandle</span>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="space-y-2">
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                        <span>Clients</span>
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="folder" class="w-5 h-5"></i>
+                        <span>Projects</span>
+                    </a>
+                    <a href="#" class="sidebar-item active flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                        <span>Invoices</span>
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="plus" class="w-5 h-5"></i>
+                        <span>Create Invoice</span>
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 ml-64 min-h-screen bg-primary">
+            <!-- Header -->
+            <header class="nav border-b border-color px-6 py-4 sticky top-0 z-40">
+                <div class="flex items-center justify-between">
+                    <!-- Page Title -->
+                    <div>
+                        <h1 class="text-2xl font-bold text-primary">Invoices</h1>
+                        <p class="text-secondary mt-1">Manage and track all your invoices</p>
+                    </div>
+                    
+                    <!-- Header Actions -->
+                    <div class="flex items-center gap-3">
+                        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+                            <i data-lucide="sun" class="theme-toggle-icon sun-icon"></i>
+                            <i data-lucide="moon" class="theme-toggle-icon moon-icon"></i>
+                        </button>
+                        <button class="btn-primary flex items-center gap-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>New Invoice</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Content -->
+            <div class="p-6">
+                <!-- Filters & Search -->
+                <div class="card p-6 mb-6 filter-enter">
+                    <div class="flex flex-col lg:flex-row gap-4">
+                        <!-- Search -->
+                        <div class="flex-1 relative">
+                            <input type="text" placeholder="Search invoices..." class="search-input">
+                            <i data-lucide="search" class="w-5 h-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-muted pointer-events-none"></i>
+                        </div>
+                        
+                        <!-- Filters -->
+                        <div class="flex gap-3">
+                            <select class="filter-select">
+                                <option value="">All Statuses</option>
+                                <option value="paid">Paid</option>
+                                <option value="pending">Pending</option>
+                                <option value="overdue">Overdue</option>
+                                <option value="draft">Draft</option>
+                            </select>
+                            
+                            <select class="filter-select">
+                                <option value="">All Clients</option>
+                                <option value="acme">Acme Corp</option>
+                                <option value="techstart">TechStart Inc</option>
+                                <option value="bluecorp">BlueCorp Ltd</option>
+                                <option value="greentech">GreenTech Solutions</option>
+                            </select>
+                            
+                            <button class="action-btn action-btn-primary">
+                                <i data-lucide="filter" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bulk Actions -->
+                <div id="bulk-actions" class="card p-4 mb-6 hidden">
+                    <div class="flex items-center justify-between">
+                        <span class="text-secondary">
+                            <span id="selected-count">0</span> invoice(s) selected
+                        </span>
+                        <div class="flex items-center gap-3">
+                            <button class="action-btn flex items-center gap-2">
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                                <span>Send Reminders</span>
+                            </button>
+                            <button class="action-btn flex items-center gap-2">
+                                <i data-lucide="download" class="w-4 h-4"></i>
+                                <span>Export</span>
+                            </button>
+                            <button class="action-btn text-destructive flex items-center gap-2">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                <span>Delete</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Invoices Table -->
+                <div class="card overflow-hidden">
+                    <table class="invoice-table w-full">
+                        <thead>
+                            <tr>
+                                <th class="w-12">
+                                    <input type="checkbox" class="checkbox" id="select-all" onchange="toggleSelectAll()">
+                                </th>
+                                <th>Invoice #</th>
+                                <th>Client</th>
+                                <th>Date</th>
+                                <th>Due Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th class="w-24">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoices-tbody">
+                            <!-- Invoice rows will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex items-center justify-between mt-6">
+                    <p class="text-secondary text-sm">
+                        Showing 1 to 10 of 24 invoices
+                    </p>
+                    
+                    <div class="flex items-center gap-2">
+                        <button class="pagination-btn" disabled>
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        </button>
+                        <button class="pagination-btn active">1</button>
+                        <button class="pagination-btn">2</button>
+                        <button class="pagination-btn">3</button>
+                        <button class="pagination-btn">
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Sample invoice data
+        const invoices = [
+            { id: 'INV-2024-024', client: 'Acme Corp', clientEmail: 'john@acmecorp.com', date: '2024-01-15', dueDate: '2024-02-15', amount: 2500.00, status: 'paid' },
+            { id: 'INV-2024-023', client: 'TechStart Inc', clientEmail: 'sarah@techstart.io', date: '2024-01-12', dueDate: '2024-02-12', amount: 1800.00, status: 'pending' },
+            { id: 'INV-2024-022', client: 'BlueCorp Ltd', clientEmail: 'mike@bluecorp.com', date: '2024-01-10', dueDate: '2024-01-25', amount: 3200.00, status: 'overdue' },
+            { id: 'INV-2024-021', client: 'GreenTech Solutions', clientEmail: 'emma@greentech.co', date: '2024-01-08', dueDate: '2024-02-08', amount: 1500.00, status: 'paid' },
+            { id: 'INV-2024-020', client: 'RedTech Ventures', clientEmail: 'alex@redtech.com', date: '2024-01-05', dueDate: '2024-02-05', amount: 2100.00, status: 'pending' },
+            { id: 'INV-2024-019', client: 'Acme Corp', clientEmail: 'john@acmecorp.com', date: '2024-01-03', dueDate: '2024-02-03', amount: 2800.00, status: 'paid' },
+            { id: 'INV-2024-018', client: 'TechStart Inc', clientEmail: 'sarah@techstart.io', date: '2024-01-01', dueDate: '2024-01-15', amount: 1900.00, status: 'overdue' },
+            { id: 'INV-2024-017', client: 'BlueCorp Ltd', clientEmail: 'mike@bluecorp.com', date: '2023-12-28', dueDate: '2024-01-28', amount: 2600.00, status: 'paid' },
+            { id: 'INV-2024-016', client: 'GreenTech Solutions', clientEmail: 'emma@greentech.co', date: '2023-12-25', dueDate: '2024-01-25', amount: 1700.00, status: 'draft' },
+            { id: 'INV-2024-015', client: 'RedTech Ventures', clientEmail: 'alex@redtech.com', date: '2023-12-22', dueDate: '2024-01-22', amount: 2300.00, status: 'pending' }
+        ];
+        
+        // Render invoices table
+        function renderInvoices() {
+            const tbody = document.getElementById('invoices-tbody');
+            tbody.innerHTML = '';
+            
+            invoices.forEach((invoice, index) => {
+                const row = document.createElement('tr');
+                row.className = 'table-row-enter';
+                row.style.animationDelay = `${index * 0.05}s`;
+                
+                const formattedDate = new Date(invoice.date).toLocaleDateString();
+                const formattedDueDate = new Date(invoice.dueDate).toLocaleDateString();
+                const formattedAmount = `$${invoice.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+                
+                row.innerHTML = `
+                    <td>
+                        <input type="checkbox" class="checkbox row-checkbox" data-invoice-id="${invoice.id}" onchange="updateBulkActions()">
+                    </td>
+                    <td>
+                        <div class="font-mono font-medium text-primary">${invoice.id}</div>
+                    </td>
+                    <td>
+                        <div>
+                            <div class="font-medium text-primary">${invoice.client}</div>
+                            <div class="text-sm text-secondary">${invoice.clientEmail}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="text-primary">${formattedDate}</span>
+                    </td>
+                    <td>
+                        <span class="text-primary">${formattedDueDate}</span>
+                    </td>
+                    <td>
+                        <span class="font-medium text-primary">${formattedAmount}</span>
+                    </td>
+                    <td>
+                        <span class="status-${invoice.status}">${invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}</span>
+                    </td>
+                    <td>
+                        <div class="flex items-center gap-1">
+                            <button class="action-btn" title="View">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                            </button>
+                            <button class="action-btn" title="Edit">
+                                <i data-lucide="edit" class="w-4 h-4"></i>
+                            </button>
+                            <button class="action-btn" title="Download">
+                                <i data-lucide="download" class="w-4 h-4"></i>
+                            </button>
+                            <div class="relative">
+                                <button class="action-btn" title="More" onclick="toggleDropdown(this)">
+                                    <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                                </button>
+                                <div class="dropdown-menu hidden absolute right-0 top-8 card border border-color rounded-lg shadow-lg py-2 min-w-40 z-10">
+                                    <button class="w-full text-left px-4 py-2 text-primary hover:bg-hover flex items-center gap-2">
+                                        <i data-lucide="send" class="w-4 h-4"></i>
+                                        <span>Send</span>
+                                    </button>
+                                    <button class="w-full text-left px-4 py-2 text-primary hover:bg-hover flex items-center gap-2">
+                                        <i data-lucide="copy" class="w-4 h-4"></i>
+                                        <span>Duplicate</span>
+                                    </button>
+                                    <hr class="my-2 border-color">
+                                    <button class="w-full text-left px-4 py-2 text-destructive hover:bg-hover flex items-center gap-2">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                        <span>Delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            // Re-initialize icons
+            lucide.createIcons();
+        }
+        
+        // Toggle dropdown menu
+        function toggleDropdown(button) {
+            const dropdown = button.nextElementSibling;
+            const allDropdowns = document.querySelectorAll('.dropdown-menu');
+            
+            // Close all other dropdowns
+            allDropdowns.forEach(d => {
+                if (d !== dropdown) d.classList.add('hidden');
+            });
+            
+            // Toggle current dropdown
+            dropdown.classList.toggle('hidden');
+        }
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.relative')) {
+                document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.add('hidden'));
+            }
+        });
+        
+        // Toggle select all checkboxes
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('select-all');
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            
+            updateBulkActions();
+        }
+        
+        // Update bulk actions visibility
+        function updateBulkActions() {
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
+            const bulkActions = document.getElementById('bulk-actions');
+            const selectedCount = document.getElementById('selected-count');
+            const selectAll = document.getElementById('select-all');
+            
+            const selectedLength = checkedBoxes.length;
+            selectedCount.textContent = selectedLength;
+            
+            if (selectedLength > 0) {
+                bulkActions.classList.remove('hidden');
+            } else {
+                bulkActions.classList.add('hidden');
+            }
+            
+            // Update select all state
+            selectAll.indeterminate = selectedLength > 0 && selectedLength < checkboxes.length;
+            selectAll.checked = selectedLength === checkboxes.length;
+        }
+        
+        // Theme switching functionality
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Re-initialize icons to ensure they display correctly
+            setTimeout(() => {
+                lucide.createIcons();
+            }, 100);
+        }
+        
+        // Initialize theme on page load
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+        
+        // Initialize theme
+        initTheme();
+        
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            }
+        });
+        
+        // Initialize page
+        renderInvoices();
+    </script>
+</body>
+</html>

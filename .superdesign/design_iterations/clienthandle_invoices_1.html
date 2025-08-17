@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoices - ClientHandle</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Custom Theme -->
+    <link rel="stylesheet" href="./invoices_theme_1.css">
+    
+    <!-- Custom Styles -->
+    <style>
+        /* Additional Animation Keyframes */
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(10px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 0 0 oklch(var(--invoice-overdue) / 0.4); }
+            50% { box-shadow: 0 0 0 4px oklch(var(--invoice-overdue) / 0.1); }
+        }
+        
+        @keyframes checkmark {
+            0% { transform: scale(0) rotate(0deg); }
+            50% { transform: scale(1.2) rotate(180deg); }
+            100% { transform: scale(1) rotate(360deg); }
+        }
+        
+        @keyframes skeletonPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+        
+        /* Enhanced Animation Classes */
+        .animate-count-up {
+            animation: countUp 0.8s var(--ease-out) forwards;
+        }
+        
+        .animate-pulse-glow {
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+        
+        .animate-checkmark {
+            animation: checkmark 0.6s var(--ease-bounce) forwards;
+        }
+        
+        .animate-skeleton {
+            animation: skeletonPulse 1.5s ease-in-out infinite;
+            background: linear-gradient(90deg, oklch(var(--muted)) 25%, oklch(var(--background)) 50%, oklch(var(--muted)) 75%);
+            background-size: 200% 100%;
+            background-position: 200% 0;
+        }
+        
+        .animate-stagger-1 { animation-delay: 0.1s; }
+        .animate-stagger-2 { animation-delay: 0.2s; }
+        .animate-stagger-3 { animation-delay: 0.3s; }
+        .animate-stagger-4 { animation-delay: 0.4s; }
+        
+        /* Table Row Animation */
+        .table-row-enter {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeIn 0.3s var(--ease-out) forwards;
+        }
+        
+        /* Bulk Actions Bar */
+        .bulk-actions-bar {
+            transform: translateY(-100%);
+            opacity: 0;
+            transition: all 0.3s var(--ease-out);
+        }
+        
+        .bulk-actions-bar.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Quick Action Buttons */
+        .quick-actions {
+            opacity: 0;
+            transform: translateX(10px);
+            transition: all 0.2s var(--ease-out);
+        }
+        
+        .invoice-row:hover .quick-actions {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        /* Status Badge Glow */
+        .status-badge-glow:hover {
+            box-shadow: 0 0 0 3px currentColor;
+            box-shadow: 0 0 0 3px color-mix(in oklch, currentColor 20%, transparent);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Main Layout Container -->
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 min-h-screen bg-white border-r border-gray-200 animate-fade-in">
+            <div class="p-6">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-500 rounded-lg flex items-center justify-center">
+                        <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold" style="background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">ClientHandle</span>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="space-y-2">
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                        <span>Clients</span>
+                        <span class="ml-auto bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">42</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                        <i data-lucide="folder" class="w-5 h-5"></i>
+                        <span>Projects</span>
+                        <span class="ml-auto bg-amber-100 text-amber-600 text-xs px-2 py-1 rounded-full">12</span>
+                    </a>
+                    <a href="#" class="sidebar-active flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                        <span>Invoices</span>
+                        <span class="ml-auto bg-white/20 text-white text-xs px-2 py-1 rounded-full">24</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                        <i data-lucide="calendar" class="w-5 h-5"></i>
+                        <span>Schedule</span>
+                    </a>
+                </nav>
+                
+                <!-- Settings Section -->
+                <div class="mt-12 pt-8 border-t border-gray-200">
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                        <i data-lucide="help-circle" class="w-5 h-5"></i>
+                        <span>Help</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 min-h-screen">
+            <!-- Header -->
+            <header class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-40 animate-slide-up">
+                <div class="flex items-center justify-between">
+                    <!-- Page Title -->
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">All Invoices</h1>
+                        <p class="text-gray-600 mt-1">View and manage your invoices</p>
+                    </div>
+                    
+                    <!-- Header Actions -->
+                    <div class="flex items-center gap-3">
+                        <button class="btn-secondary flex items-center gap-2">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>Export</span>
+                        </button>
+                        <a href="./clienthandle_create_invoice_1.html" class="btn-primary flex items-center gap-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Create Invoice</span>
+                        </a>
+                        
+                        <!-- User Profile -->
+                        <div class="flex items-center gap-3 ml-6">
+                            <button class="p-2 hover:bg-gray-100 rounded-lg relative">
+                                <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
+                                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">2</span>
+                            </button>
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-green-500"></div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Bulk Actions Bar (Hidden by default) -->
+            <div id="bulk-actions" class="bulk-actions-bar bg-blue-50 border-b border-blue-200 px-6 py-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <span class="text-blue-700 font-medium">3 invoices selected</span>
+                        <button class="text-blue-600 hover:text-blue-800 font-medium">Select All</button>
+                        <button class="text-gray-500 hover:text-gray-700">Clear Selection</button>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="btn-secondary text-sm">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            Send
+                        </button>
+                        <button class="btn-secondary text-sm">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            Download
+                        </button>
+                        <button class="text-red-600 hover:text-red-800 px-3 py-2 text-sm font-medium">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6">
+                
+                <!-- Filters and Search -->
+                <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6 animate-slide-up">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                        <!-- Search -->
+                        <div class="relative flex-1 max-w-md">
+                            <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4"></i>
+                            <input 
+                                type="text" 
+                                placeholder="Search invoices..." 
+                                class="form-input w-full pl-10 pr-4"
+                                id="search-input"
+                            >
+                        </div>
+                        
+                        <!-- Filter Pills -->
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button class="filter-pill active" data-status="all">
+                                All Invoices
+                                <span class="bg-white/20 text-xs px-2 py-0.5 rounded-full ml-1">24</span>
+                            </button>
+                            <button class="filter-pill" data-status="paid">
+                                <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                                Paid
+                                <span class="bg-gray-100 text-xs px-2 py-0.5 rounded-full ml-1">14</span>
+                            </button>
+                            <button class="filter-pill" data-status="sent">
+                                <span class="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                                Sent
+                                <span class="bg-gray-100 text-xs px-2 py-0.5 rounded-full ml-1">6</span>
+                            </button>
+                            <button class="filter-pill" data-status="overdue">
+                                <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                                Overdue
+                                <span class="bg-gray-100 text-xs px-2 py-0.5 rounded-full ml-1">2</span>
+                            </button>
+                            <button class="filter-pill" data-status="draft">
+                                <span class="w-2 h-2 bg-gray-500 rounded-full"></span>
+                                Draft
+                                <span class="bg-gray-100 text-xs px-2 py-0.5 rounded-full ml-1">2</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Date Filter -->
+                        <div class="flex items-center gap-2">
+                            <button class="btn-secondary flex items-center gap-2">
+                                <i data-lucide="calendar" class="w-4 h-4"></i>
+                                <span>This Month</span>
+                                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Invoice Table -->
+                <div class="invoice-table animate-scale-in">
+                    <!-- Table Header -->
+                    <div class="bg-gray-50 border-b border-gray-200 px-6 py-4">
+                        <div class="grid grid-cols-12 gap-4 items-center font-medium text-gray-700 text-sm">
+                            <div class="col-span-1">
+                                <input type="checkbox" id="select-all" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            </div>
+                            <div class="col-span-2 cursor-pointer hover:text-gray-900 flex items-center gap-1">
+                                Invoice #
+                                <i data-lucide="arrow-up-down" class="w-3 h-3"></i>
+                            </div>
+                            <div class="col-span-2 cursor-pointer hover:text-gray-900 flex items-center gap-1">
+                                Client
+                                <i data-lucide="arrow-up-down" class="w-3 h-3"></i>
+                            </div>
+                            <div class="col-span-2 cursor-pointer hover:text-gray-900 flex items-center gap-1">
+                                Amount
+                                <i data-lucide="arrow-up-down" class="w-3 h-3"></i>
+                            </div>
+                            <div class="col-span-2 cursor-pointer hover:text-gray-900 flex items-center gap-1">
+                                Status
+                                <i data-lucide="arrow-up-down" class="w-3 h-3"></i>
+                            </div>
+                            <div class="col-span-2 cursor-pointer hover:text-gray-900 flex items-center gap-1">
+                                Date
+                                <i data-lucide="arrow-up-down" class="w-3 h-3"></i>
+                            </div>
+                            <div class="col-span-1 text-center">
+                                Actions
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Table Body -->
+                    <div class="divide-y divide-gray-200">
+                        <!-- Invoice Row 1 -->
+                        <div class="invoice-row table-row-enter px-6 py-4">
+                            <div class="grid grid-cols-12 gap-4 items-center">
+                                <div class="col-span-1">
+                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="font-mono text-sm font-medium">INV-2024-001</span>
+                                </div>
+                                <div class="col-span-2">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                            A
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Acme Corp</p>
+                                            <p class="text-xs text-gray-500">john@acmecorp.com</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="font-semibold text-gray-900">$2,500.00</span>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="status-badge status-paid status-badge-glow">
+                                        <span class="w-2 h-2 bg-current rounded-full"></span>
+                                        Paid
+                                    </span>
+                                </div>
+                                <div class="col-span-2">
+                                    <div>
+                                        <p class="text-sm text-gray-900">Jan 15, 2024</p>
+                                        <p class="text-xs text-gray-500">Due: Jan 30</p>
+                                    </div>
+                                </div>
+                                <div class="col-span-1">
+                                    <div class="flex items-center justify-center">
+                                        <div class="quick-actions flex items-center gap-1">
+                                            <button class="p-1.5 hover:bg-gray-100 rounded transition-colors" title="View">
+                                                <i data-lucide="eye" class="w-4 h-4 text-gray-500"></i>
+                                            </button>
+                                            <button class="p-1.5 hover:bg-gray-100 rounded transition-colors" title="Edit">
+                                                <i data-lucide="edit" class="w-4 h-4 text-gray-500"></i>
+                                            </button>
+                                            <button class="p-1.5 hover:bg-gray-100 rounded transition-colors" title="Download">
+                                                <i data-lucide="download" class="w-4 h-4 text-gray-500"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Invoice Row 2 -->
+                        <div class="invoice-row table-row-enter px-6 py-4" style="animation-delay: 0.1s">
+                            <div class="grid grid-cols-12 gap-4 items-center">
+                                <div class="col-span-1">
+                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="font-mono text-sm font-medium">INV-2024-002</span>
+                                </div>
+                                <div class="col-span-2">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                            T
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">TechStart Inc</p>
+                                            <p class="text-xs text-gray-500">sarah@techstart.io</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="font-semibold text-gray-900">$1,800.00</span>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="status-badge status-sent status-badge-glow">
+                                        <span class="w-2 h-2 bg-current rounded-full"></span>
+                                        Sent
+                                    </span>
+                                </div>
+                                <div class="col-span-2">
+                                    <div>
+                                        <p class="text-sm text-gray-900">Jan 18, 2024</p>
+                                        <p class="text-xs text-gray-500">Due: Feb 2</p>
+                                    </div>
+                                </div>
+                                <div class="col-span-1">
+                                    <div class="flex items-center justify-center">
+                                        <div class="quick-actions flex items-center gap-1">
+                                            <button class="p-1.5 hover:bg-gray-100 rounded transition-colors" title="View">
+                                                <i data-lucide="eye" class="w-4 h-4 text-gray-500"></i>
+                                            </button>
+                                            <button class="p-1.5 hover:bg-gray-100 rounded transition-colors" title="Edit">
+                                                <i data-lucide="edit" class="w-4 h-4 text-gray-500"></i>
+                                            </button>
+                                            <button class="p-1.5 hover:bg-blue-100 rounded transition-colors" title="Send Reminder">
+                                                <i data-lucide="send" class="w-4 h-4 text-blue-500"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Invoice Row 3 - Overdue -->
+                        <div class="invoice-row table-row-enter px-6 py-4" style="animation-delay: 0.2s">
+                            <div class="grid grid-cols-12 gap-4 items-center">
+                                <div class="col-span-1">
+                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="font-mono text-sm font-medium">INV-2024-003</span>
+                                </div>
+                                <div class="col-span-2">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                            B
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">BlueCorp Ltd</p>
+                                            <p class="text-xs text-gray-500">mike@bluecorp.com</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="font-semibold text-gray-900">$3,200.00</span>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="status-badge status-overdue status-badge-glow">
+                                        <span class="w-2 h-2 bg-current rounded-full animate-pulse"></span>
+                                        Overdue
+                                    </span>
+                                </div>
+                                <div class="col-span-2">
+                                    <div>
+                                        <p class="text-sm text-gray-900">Jan 10, 2024</p>
+                                        <p class="text-xs text-red-600 font-medium">Due: Jan 25</p>
+                                    </div>
+                                </div>
+                                <div class="col-span-1">
+                                    <div class="flex items-center justify-center">
+                                        <div class="quick-actions flex items-center gap-1">
+                                            <button class="p-1.5 hover:bg-gray-100 rounded transition-colors" title="View">
+                                                <i data-lucide="eye" class="w-4 h-4 text-gray-500"></i>
+                                            </button>
+                                            <button class="p-1.5 hover:bg-red-100 rounded transition-colors" title="Send Final Notice">
+                                                <i data-lucide="alert-circle" class="w-4 h-4 text-red-500"></i>
+                                            </button>
+                                            <button class="p-1.5 hover:bg-gray-100 rounded transition-colors" title="Call Client">
+                                                <i data-lucide="phone" class="w-4 h-4 text-gray-500"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Invoice Row 4 - Draft -->
+                        <div class="invoice-row table-row-enter px-6 py-4" style="animation-delay: 0.3s">
+                            <div class="grid grid-cols-12 gap-4 items-center">
+                                <div class="col-span-1">
+                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="font-mono text-sm font-medium text-gray-500">INV-2024-004</span>
+                                </div>
+                                <div class="col-span-2">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                            G
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">GreenTech Solutions</p>
+                                            <p class="text-xs text-gray-500">emma@greentech.co</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="font-semibold text-gray-500">$1,500.00</span>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="status-badge status-draft status-badge-glow">
+                                        <span class="w-2 h-2 bg-current rounded-full"></span>
+                                        Draft
+                                    </span>
+                                </div>
+                                <div class="col-span-2">
+                                    <div>
+                                        <p class="text-sm text-gray-500">Jan 20, 2024</p>
+                                        <p class="text-xs text-gray-400">Not sent</p>
+                                    </div>
+                                </div>
+                                <div class="col-span-1">
+                                    <div class="flex items-center justify-center">
+                                        <div class="quick-actions flex items-center gap-1">
+                                            <button class="p-1.5 hover:bg-gray-100 rounded transition-colors" title="Edit">
+                                                <i data-lucide="edit" class="w-4 h-4 text-gray-500"></i>
+                                            </button>
+                                            <button class="p-1.5 hover:bg-blue-100 rounded transition-colors" title="Send">
+                                                <i data-lucide="send" class="w-4 h-4 text-blue-500"></i>
+                                            </button>
+                                            <button class="p-1.5 hover:bg-red-100 rounded transition-colors" title="Delete">
+                                                <i data-lucide="trash-2" class="w-4 h-4 text-red-500"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Invoice Row 5 - Paid -->
+                        <div class="invoice-row table-row-enter px-6 py-4" style="animation-delay: 0.4s">
+                            <div class="grid grid-cols-12 gap-4 items-center">
+                                <div class="col-span-1">
+                                    <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="font-mono text-sm font-medium">INV-2024-005</span>
+                                </div>
+                                <div class="col-span-2">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                            R
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">RedTech Ventures</p>
+                                            <p class="text-xs text-gray-500">alex@redtech.com</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="font-semibold text-gray-900">$2,100.00</span>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="status-badge status-paid status-badge-glow">
+                                        <i data-lucide="check" class="w-3 h-3 animate-checkmark"></i>
+                                        Paid
+                                    </span>
+                                </div>
+                                <div class="col-span-2">
+                                    <div>
+                                        <p class="text-sm text-gray-900">Jan 22, 2024</p>
+                                        <p class="text-xs text-green-600">Paid: Jan 28</p>
+                                    </div>
+                                </div>
+                                <div class="col-span-1">
+                                    <div class="flex items-center justify-center">
+                                        <div class="quick-actions flex items-center gap-1">
+                                            <button class="p-1.5 hover:bg-gray-100 rounded transition-colors" title="View">
+                                                <i data-lucide="eye" class="w-4 h-4 text-gray-500"></i>
+                                            </button>
+                                            <button class="p-1.5 hover:bg-gray-100 rounded transition-colors" title="Download Receipt">
+                                                <i data-lucide="download" class="w-4 h-4 text-gray-500"></i>
+                                            </button>
+                                            <button class="p-1.5 hover:bg-blue-100 rounded transition-colors" title="Create Similar">
+                                                <i data-lucide="copy" class="w-4 h-4 text-blue-500"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="flex items-center justify-between mt-8 animate-fade-in">
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <span>Showing</span>
+                        <select class="form-input text-sm py-1 px-2 min-w-0">
+                            <option>10</option>
+                            <option>25</option>
+                            <option>50</option>
+                            <option>100</option>
+                        </select>
+                        <span>of 24 invoices</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        <button class="btn-secondary px-3 py-2 text-sm">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                            Previous
+                        </button>
+                        <button class="px-3 py-2 bg-blue-600 text-white rounded font-medium text-sm">1</button>
+                        <button class="btn-secondary px-3 py-2 text-sm">2</button>
+                        <button class="btn-secondary px-3 py-2 text-sm">3</button>
+                        <span class="px-2 text-gray-500">...</span>
+                        <button class="btn-secondary px-3 py-2 text-sm">3</button>
+                        <button class="btn-secondary px-3 py-2 text-sm">
+                            Next
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Filter functionality
+        const filterButtons = document.querySelectorAll('.filter-pill');
+        const searchInput = document.getElementById('search-input');
+        const invoiceRows = document.querySelectorAll('.invoice-row');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Update active state
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Filter logic would go here
+                console.log('Filter by:', button.dataset.status);
+            });
+        });
+        
+        // Search functionality
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            console.log('Search for:', searchTerm);
+            // Search logic would go here
+        });
+        
+        // Bulk selection functionality
+        const selectAllCheckbox = document.getElementById('select-all');
+        const rowCheckboxes = document.querySelectorAll('.invoice-row input[type="checkbox"]');
+        const bulkActionsBar = document.getElementById('bulk-actions');
+        
+        selectAllCheckbox.addEventListener('change', (e) => {
+            const isChecked = e.target.checked;
+            rowCheckboxes.forEach(checkbox => {
+                checkbox.checked = isChecked;
+            });
+            updateBulkActionsBar();
+        });
+        
+        rowCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateBulkActionsBar);
+        });
+        
+        function updateBulkActionsBar() {
+            const checkedBoxes = document.querySelectorAll('.invoice-row input[type="checkbox"]:checked');
+            const count = checkedBoxes.length;
+            
+            if (count > 0) {
+                bulkActionsBar.classList.add('show');
+                bulkActionsBar.querySelector('span').textContent = `${count} invoice${count > 1 ? 's' : ''} selected`;
+            } else {
+                bulkActionsBar.classList.remove('show');
+            }
+        }
+        
+        // Quick actions functionality
+        document.querySelectorAll('.quick-actions button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const action = button.getAttribute('title');
+                console.log('Quick action:', action);
+                
+                // Add visual feedback
+                button.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    button.style.transform = '';
+                }, 100);
+            });
+        });
+        
+        // Page load functionality
+        window.addEventListener('load', () => {
+            console.log('Invoices page loaded');
+        });
+        
+        // Smooth scroll for better UX
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

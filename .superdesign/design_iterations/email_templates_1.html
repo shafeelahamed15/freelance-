@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Templates - Freelancer Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./email_templates_theme.css">
+    <style>
+        /* Custom animations for email templates page */
+        .page-enter {
+            animation: pageEnter 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        .card-enter {
+            animation: cardEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+        .stagger-5 { animation-delay: 0.5s; }
+        .stagger-6 { animation-delay: 0.6s; }
+        
+        @keyframes pageEnter {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes cardEnter {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .search-focus {
+            transition: all 0.2s ease-out;
+        }
+        
+        .search-focus:focus {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 3px oklch(var(--primary) / 0.2);
+        }
+        
+        .filter-btn {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .filter-btn.active {
+            background: oklch(var(--primary));
+            color: oklch(var(--primary-foreground));
+            transform: scale(1.05);
+        }
+        
+        .template-preview-overlay {
+            background: linear-gradient(135deg, 
+                oklch(var(--background) / 0.95) 0%, 
+                oklch(var(--card) / 0.98) 100%);
+            backdrop-filter: blur(8px);
+        }
+        
+        .action-ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-ripple::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: oklch(var(--primary) / 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease-out, height 0.4s ease-out, opacity 0.4s ease-out;
+            opacity: 0;
+        }
+        
+        .action-ripple:active::after {
+            width: 200px;
+            height: 200px;
+            opacity: 1;
+        }
+        
+        .gradient-border {
+            position: relative;
+            background: oklch(var(--card));
+            border-radius: var(--radius-lg);
+        }
+        
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 2px;
+            background: linear-gradient(135deg, 
+                oklch(var(--template-welcome)) 0%,
+                oklch(var(--template-followup)) 33%,
+                oklch(var(--template-invoice)) 66%,
+                oklch(var(--template-proposal)) 100%);
+            border-radius: var(--radius-lg);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: xor;
+            -webkit-mask-composite: xor;
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border page-enter">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Title & Breadcrumb -->
+                <div class="flex items-center space-x-4">
+                    <button class="action-btn" onclick="history.back()">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    </button>
+                    <div>
+                        <h1 class="text-2xl font-bold gradient-text">Email Templates</h1>
+                        <p class="text-sm text-muted-foreground mt-1">Manage your client communication templates</p>
+                    </div>
+                </div>
+                
+                <!-- Actions -->
+                <div class="flex items-center space-x-4">
+                    <!-- Search -->
+                    <div class="relative">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"></i>
+                        <input type="text" 
+                               placeholder="Search templates..." 
+                               class="input search-focus pl-10 w-80"
+                               id="searchInput">
+                    </div>
+                    
+                    <!-- View Toggle -->
+                    <div class="flex items-center border border-border rounded-lg p-1">
+                        <button class="filter-btn active px-3 py-1.5 rounded-md text-sm" data-view="grid">
+                            <i data-lucide="grid-3x3" class="w-4 h-4"></i>
+                        </button>
+                        <button class="filter-btn px-3 py-1.5 rounded-md text-sm" data-view="list">
+                            <i data-lucide="list" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Create Template -->
+                    <button class="btn-primary action-ripple" onclick="openCreateModal()">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        Create Template
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Filters & Stats -->
+        <div class="mb-8 page-enter stagger-1">
+            <div class="flex items-center justify-between mb-6">
+                <!-- Category Filters -->
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm font-medium text-muted-foreground mr-3">Categories:</span>
+                    <button class="filter-btn active px-4 py-2 rounded-lg text-sm font-medium" data-category="all">
+                        All Templates
+                    </button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium" data-category="welcome">
+                        Welcome
+                    </button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium" data-category="followup">
+                        Follow-up
+                    </button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium" data-category="invoice">
+                        Invoice
+                    </button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium" data-category="proposal">
+                        Proposal
+                    </button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium" data-category="completion">
+                        Completion
+                    </button>
+                    <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium" data-category="thankyou">
+                        Thank You
+                    </button>
+                </div>
+                
+                <!-- Sort -->
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm text-muted-foreground">Sort by:</span>
+                    <select class="input text-sm py-2 px-3">
+                        <option>Recent</option>
+                        <option>Name A-Z</option>
+                        <option>Category</option>
+                        <option>Most Used</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-4 gap-4 mb-8">
+                <div class="metric-card p-4 animate-hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Total Templates</p>
+                            <p class="text-2xl font-bold">18</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-template-welcome/10">
+                            <i data-lucide="mail" class="w-6 h-6 template-welcome"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metric-card p-4 animate-hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Used This Month</p>
+                            <p class="text-2xl font-bold">142</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-template-followup/10">
+                            <i data-lucide="send" class="w-6 h-6 template-followup"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metric-card p-4 animate-hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Most Popular</p>
+                            <p class="text-lg font-semibold">Welcome Email</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-template-invoice/10">
+                            <i data-lucide="trending-up" class="w-6 h-6 template-invoice"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metric-card p-4 animate-hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Success Rate</p>
+                            <p class="text-2xl font-bold">94%</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-template-completion/10">
+                            <i data-lucide="check-circle" class="w-6 h-6 template-completion"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Templates Grid -->
+        <div class="template-grid" id="templatesGrid">
+            <!-- Welcome Email Template -->
+            <div class="template-card card-enter stagger-1" data-category="welcome">
+                <div class="p-6">
+                    <!-- Template Preview -->
+                    <div class="mb-4 rounded-lg overflow-hidden bg-gradient-to-br from-template-welcome/5 to-template-welcome/10 p-4">
+                        <div class="bg-white rounded-md p-3 text-xs">
+                            <div class="flex items-center mb-2">
+                                <div class="w-6 h-6 rounded-full bg-template-welcome/20 mr-2"></div>
+                                <div class="flex-1 h-2 bg-gray-200 rounded"></div>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="h-2 bg-gray-100 rounded w-3/4"></div>
+                                <div class="h-2 bg-gray-100 rounded w-1/2"></div>
+                                <div class="h-2 bg-gray-100 rounded w-5/6"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Template Info -->
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <h3 class="font-semibold text-lg mb-1">Welcome New Client</h3>
+                            <p class="text-sm text-muted-foreground">Professional welcome message for new clients</p>
+                        </div>
+                        <span class="px-2 py-1 rounded-md text-xs font-medium bg-template-welcome/10 template-welcome">
+                            Welcome
+                        </span>
+                    </div>
+                    
+                    <!-- Template Stats -->
+                    <div class="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                        <div class="flex items-center space-x-4">
+                            <span class="flex items-center">
+                                <i data-lucide="eye" class="w-4 h-4 mr-1"></i>
+                                24 uses
+                            </span>
+                            <span class="flex items-center">
+                                <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
+                                2 days ago
+                            </span>
+                        </div>
+                        <div class="status-dot status-active"></div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <button class="action-btn action-ripple" onclick="editTemplate('welcome-1')">
+                                <i data-lucide="edit-2" class="w-4 h-4"></i>
+                            </button>
+                            <button class="action-btn action-ripple" onclick="duplicateTemplate('welcome-1')">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                            </button>
+                            <button class="action-btn action-ripple" onclick="previewTemplate('welcome-1')">
+                                <i data-lucide="external-link" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <button class="btn-secondary text-sm py-2 px-4" onclick="useTemplate('welcome-1')">
+                            Use Template
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Follow-up Email Template -->
+            <div class="template-card card-enter stagger-2" data-category="followup">
+                <div class="p-6">
+                    <div class="mb-4 rounded-lg overflow-hidden bg-gradient-to-br from-template-followup/5 to-template-followup/10 p-4">
+                        <div class="bg-white rounded-md p-3 text-xs">
+                            <div class="flex items-center mb-2">
+                                <div class="w-6 h-6 rounded-full bg-template-followup/20 mr-2"></div>
+                                <div class="flex-1 h-2 bg-gray-200 rounded"></div>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="h-2 bg-gray-100 rounded w-4/5"></div>
+                                <div class="h-2 bg-gray-100 rounded w-2/3"></div>
+                                <div class="h-2 bg-gray-100 rounded w-3/4"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <h3 class="font-semibold text-lg mb-1">Project Follow-up</h3>
+                            <p class="text-sm text-muted-foreground">Check in with clients on project progress</p>
+                        </div>
+                        <span class="px-2 py-1 rounded-md text-xs font-medium bg-template-followup/10 template-followup">
+                            Follow-up
+                        </span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                        <div class="flex items-center space-x-4">
+                            <span class="flex items-center">
+                                <i data-lucide="eye" class="w-4 h-4 mr-1"></i>
+                                18 uses
+                            </span>
+                            <span class="flex items-center">
+                                <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
+                                1 week ago
+                            </span>
+                        </div>
+                        <div class="status-dot status-active"></div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <button class="action-btn action-ripple" onclick="editTemplate('followup-1')">
+                                <i data-lucide="edit-2" class="w-4 h-4"></i>
+                            </button>
+                            <button class="action-btn action-ripple" onclick="duplicateTemplate('followup-1')">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                            </button>
+                            <button class="action-btn action-ripple" onclick="previewTemplate('followup-1')">
+                                <i data-lucide="external-link" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <button class="btn-secondary text-sm py-2 px-4" onclick="useTemplate('followup-1')">
+                            Use Template
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invoice Email Template -->
+            <div class="template-card card-enter stagger-3" data-category="invoice">
+                <div class="p-6">
+                    <div class="mb-4 rounded-lg overflow-hidden bg-gradient-to-br from-template-invoice/5 to-template-invoice/10 p-4">
+                        <div class="bg-white rounded-md p-3 text-xs">
+                            <div class="flex items-center mb-2">
+                                <div class="w-6 h-6 rounded-full bg-template-invoice/20 mr-2"></div>
+                                <div class="flex-1 h-2 bg-gray-200 rounded"></div>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="h-2 bg-gray-100 rounded w-full"></div>
+                                <div class="h-2 bg-gray-100 rounded w-3/5"></div>
+                                <div class="h-2 bg-gray-100 rounded w-4/5"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <h3 class="font-semibold text-lg mb-1">Invoice Delivery</h3>
+                            <p class="text-sm text-muted-foreground">Professional invoice delivery with payment terms</p>
+                        </div>
+                        <span class="px-2 py-1 rounded-md text-xs font-medium bg-template-invoice/10 template-invoice">
+                            Invoice
+                        </span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                        <div class="flex items-center space-x-4">
+                            <span class="flex items-center">
+                                <i data-lucide="eye" class="w-4 h-4 mr-1"></i>
+                                31 uses
+                            </span>
+                            <span class="flex items-center">
+                                <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
+                                3 days ago
+                            </span>
+                        </div>
+                        <div class="status-dot status-active"></div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <button class="action-btn action-ripple" onclick="editTemplate('invoice-1')">
+                                <i data-lucide="edit-2" class="w-4 h-4"></i>
+                            </button>
+                            <button class="action-btn action-ripple" onclick="duplicateTemplate('invoice-1')">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                            </button>
+                            <button class="action-btn action-ripple" onclick="previewTemplate('invoice-1')">
+                                <i data-lucide="external-link" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <button class="btn-secondary text-sm py-2 px-4" onclick="useTemplate('invoice-1')">
+                            Use Template
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Proposal Email Template -->
+            <div class="template-card card-enter stagger-4" data-category="proposal">
+                <div class="p-6">
+                    <div class="mb-4 rounded-lg overflow-hidden bg-gradient-to-br from-template-proposal/5 to-template-proposal/10 p-4">
+                        <div class="bg-white rounded-md p-3 text-xs">
+                            <div class="flex items-center mb-2">
+                                <div class="w-6 h-6 rounded-full bg-template-proposal/20 mr-2"></div>
+                                <div class="flex-1 h-2 bg-gray-200 rounded"></div>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="h-2 bg-gray-100 rounded w-5/6"></div>
+                                <div class="h-2 bg-gray-100 rounded w-2/3"></div>
+                                <div class="h-2 bg-gray-100 rounded w-4/5"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <h3 class="font-semibold text-lg mb-1">Project Proposal</h3>
+                            <p class="text-sm text-muted-foreground">Detailed project proposal with timeline</p>
+                        </div>
+                        <span class="px-2 py-1 rounded-md text-xs font-medium bg-template-proposal/10 template-proposal">
+                            Proposal
+                        </span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                        <div class="flex items-center space-x-4">
+                            <span class="flex items-center">
+                                <i data-lucide="eye" class="w-4 h-4 mr-1"></i>
+                                12 uses
+                            </span>
+                            <span class="flex items-center">
+                                <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
+                                1 day ago
+                            </span>
+                        </div>
+                        <div class="status-dot status-active"></div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <button class="action-btn action-ripple" onclick="editTemplate('proposal-1')">
+                                <i data-lucide="edit-2" class="w-4 h-4"></i>
+                            </button>
+                            <button class="action-btn action-ripple" onclick="duplicateTemplate('proposal-1')">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                            </button>
+                            <button class="action-btn action-ripple" onclick="previewTemplate('proposal-1')">
+                                <i data-lucide="external-link" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <button class="btn-secondary text-sm py-2 px-4" onclick="useTemplate('proposal-1')">
+                            Use Template
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Completion Template -->
+            <div class="template-card card-enter stagger-5" data-category="completion">
+                <div class="p-6">
+                    <div class="mb-4 rounded-lg overflow-hidden bg-gradient-to-br from-template-completion/5 to-template-completion/10 p-4">
+                        <div class="bg-white rounded-md p-3 text-xs">
+                            <div class="flex items-center mb-2">
+                                <div class="w-6 h-6 rounded-full bg-template-completion/20 mr-2"></div>
+                                <div class="flex-1 h-2 bg-gray-200 rounded"></div>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="h-2 bg-gray-100 rounded w-3/4"></div>
+                                <div class="h-2 bg-gray-100 rounded w-4/6"></div>
+                                <div class="h-2 bg-gray-100 rounded w-5/6"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <h3 class="font-semibold text-lg mb-1">Project Completion</h3>
+                            <p class="text-sm text-muted-foreground">Notify clients of project completion</p>
+                        </div>
+                        <span class="px-2 py-1 rounded-md text-xs font-medium bg-template-completion/10 template-completion">
+                            Completion
+                        </span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                        <div class="flex items-center space-x-4">
+                            <span class="flex items-center">
+                                <i data-lucide="eye" class="w-4 h-4 mr-1"></i>
+                                9 uses
+                            </span>
+                            <span class="flex items-center">
+                                <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
+                                5 days ago
+                            </span>
+                        </div>
+                        <div class="status-dot status-active"></div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <button class="action-btn action-ripple" onclick="editTemplate('completion-1')">
+                                <i data-lucide="edit-2" class="w-4 h-4"></i>
+                            </button>
+                            <button class="action-btn action-ripple" onclick="duplicateTemplate('completion-1')">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                            </button>
+                            <button class="action-btn action-ripple" onclick="previewTemplate('completion-1')">
+                                <i data-lucide="external-link" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <button class="btn-secondary text-sm py-2 px-4" onclick="useTemplate('completion-1')">
+                            Use Template
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thank You Template -->
+            <div class="template-card card-enter stagger-6" data-category="thankyou">
+                <div class="p-6">
+                    <div class="mb-4 rounded-lg overflow-hidden bg-gradient-to-br from-template-thankyou/5 to-template-thankyou/10 p-4">
+                        <div class="bg-white rounded-md p-3 text-xs">
+                            <div class="flex items-center mb-2">
+                                <div class="w-6 h-6 rounded-full bg-template-thankyou/20 mr-2"></div>
+                                <div class="flex-1 h-2 bg-gray-200 rounded"></div>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="h-2 bg-gray-100 rounded w-4/5"></div>
+                                <div class="h-2 bg-gray-100 rounded w-3/5"></div>
+                                <div class="h-2 bg-gray-100 rounded w-2/3"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <h3 class="font-semibold text-lg mb-1">Thank You Note</h3>
+                            <p class="text-sm text-muted-foreground">Express gratitude and encourage future work</p>
+                        </div>
+                        <span class="px-2 py-1 rounded-md text-xs font-medium bg-template-thankyou/10 template-thankyou">
+                            Thank You
+                        </span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                        <div class="flex items-center space-x-4">
+                            <span class="flex items-center">
+                                <i data-lucide="eye" class="w-4 h-4 mr-1"></i>
+                                15 uses
+                            </span>
+                            <span class="flex items-center">
+                                <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
+                                1 week ago
+                            </span>
+                        </div>
+                        <div class="status-dot status-active"></div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <button class="action-btn action-ripple" onclick="editTemplate('thankyou-1')">
+                                <i data-lucide="edit-2" class="w-4 h-4"></i>
+                            </button>
+                            <button class="action-btn action-ripple" onclick="duplicateTemplate('thankyou-1')">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                            </button>
+                            <button class="action-btn action-ripple" onclick="previewTemplate('thankyou-1')">
+                                <i data-lucide="external-link" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <button class="btn-secondary text-sm py-2 px-4" onclick="useTemplate('thankyou-1')">
+                            Use Template
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Load More Button -->
+        <div class="text-center mt-12">
+            <button class="btn-secondary action-ripple" onclick="loadMoreTemplates()">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                Load More Templates
+            </button>
+        </div>
+    </main>
+
+    <!-- Template Preview Modal -->
+    <div id="previewModal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-overlay absolute inset-0" onclick="closePreviewModal()"></div>
+        <div class="template-preview-overlay absolute inset-0 flex items-center justify-center p-8">
+            <div class="modal-content max-w-4xl w-full max-h-[90vh] overflow-auto">
+                <div class="flex items-center justify-between p-6 border-b border-border">
+                    <h2 class="text-xl font-semibold">Template Preview</h2>
+                    <button class="action-btn" onclick="closePreviewModal()">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div class="p-6" id="previewContent">
+                    <!-- Preview content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Template Modal -->
+    <div id="createModal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-overlay absolute inset-0" onclick="closeCreateModal()"></div>
+        <div class="template-preview-overlay absolute inset-0 flex items-center justify-center p-8">
+            <div class="modal-content max-w-2xl w-full">
+                <div class="flex items-center justify-between p-6 border-b border-border">
+                    <h2 class="text-xl font-semibold">Create New Template</h2>
+                    <button class="action-btn" onclick="closeCreateModal()">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <form class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Template Name</label>
+                            <input type="text" class="input w-full" placeholder="Enter template name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Category</label>
+                            <select class="input w-full">
+                                <option>Welcome</option>
+                                <option>Follow-up</option>
+                                <option>Invoice</option>
+                                <option>Proposal</option>
+                                <option>Completion</option>
+                                <option>Thank You</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Subject Line</label>
+                            <input type="text" class="input w-full" placeholder="Email subject">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Email Content</label>
+                            <textarea class="input w-full h-40" placeholder="Write your email template content here..."></textarea>
+                        </div>
+                        <div class="flex items-center justify-end space-x-4">
+                            <button type="button" class="btn-secondary" onclick="closeCreateModal()">Cancel</button>
+                            <button type="submit" class="btn-primary action-ripple">Create Template</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Filter functionality
+        document.querySelectorAll('[data-category]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all category buttons
+                document.querySelectorAll('[data-category]').forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                const category = this.dataset.category;
+                filterTemplates(category);
+            });
+        });
+
+        // View toggle functionality
+        document.querySelectorAll('[data-view]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('[data-view]').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const view = this.dataset.view;
+                toggleView(view);
+            });
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            searchTemplates(query);
+        });
+
+        function filterTemplates(category) {
+            const templates = document.querySelectorAll('.template-card');
+            templates.forEach(template => {
+                if (category === 'all' || template.dataset.category === category) {
+                    template.style.display = 'block';
+                    template.classList.add('animate-fadeIn');
+                } else {
+                    template.style.display = 'none';
+                }
+            });
+        }
+
+        function searchTemplates(query) {
+            const templates = document.querySelectorAll('.template-card');
+            templates.forEach(template => {
+                const title = template.querySelector('h3').textContent.toLowerCase();
+                const description = template.querySelector('p').textContent.toLowerCase();
+                
+                if (title.includes(query) || description.includes(query)) {
+                    template.style.display = 'block';
+                    template.classList.add('animate-fadeIn');
+                } else {
+                    template.style.display = 'none';
+                }
+            });
+        }
+
+        function toggleView(view) {
+            const grid = document.getElementById('templatesGrid');
+            if (view === 'list') {
+                grid.classList.remove('template-grid');
+                grid.classList.add('space-y-4');
+            } else {
+                grid.classList.add('template-grid');
+                grid.classList.remove('space-y-4');
+            }
+        }
+
+        function editTemplate(id) {
+            console.log('Editing template:', id);
+            // Add edit functionality here
+        }
+
+        function duplicateTemplate(id) {
+            console.log('Duplicating template:', id);
+            // Add duplicate functionality here
+        }
+
+        function useTemplate(id) {
+            console.log('Using template:', id);
+            // Add use template functionality here
+        }
+
+        function previewTemplate(id) {
+            const modal = document.getElementById('previewModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('animate-fadeIn');
+            
+            // Load preview content
+            const content = document.getElementById('previewContent');
+            content.innerHTML = `
+                <div class="space-y-4">
+                    <div class="border border-border rounded-lg p-6 bg-white">
+                        <h3 class="font-semibold text-lg mb-4">Template Preview - ${id}</h3>
+                        <div class="prose max-w-none">
+                            <h4>Subject: Welcome to Our Partnership!</h4>
+                            <p>Dear [Client Name],</p>
+                            <p>Thank you for choosing us for your project. We're excited to work with you and deliver exceptional results.</p>
+                            <p>Here's what you can expect next:</p>
+                            <ul>
+                                <li>Project kickoff call within 24 hours</li>
+                                <li>Detailed project timeline</li>
+                                <li>Regular progress updates</li>
+                            </ul>
+                            <p>Best regards,<br>[Your Name]</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function closePreviewModal() {
+            const modal = document.getElementById('previewModal');
+            modal.classList.add('hidden');
+        }
+
+        function openCreateModal() {
+            const modal = document.getElementById('createModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('animate-fadeIn');
+        }
+
+        function closeCreateModal() {
+            const modal = document.getElementById('createModal');
+            modal.classList.add('hidden');
+        }
+
+        function loadMoreTemplates() {
+            console.log('Loading more templates...');
+            // Add load more functionality here
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal-overlay')) {
+                closePreviewModal();
+                closeCreateModal();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePreviewModal();
+                closeCreateModal();
+            }
+        });
+    </script>
+</body>
+</html>

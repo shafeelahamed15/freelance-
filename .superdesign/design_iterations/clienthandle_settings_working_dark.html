@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - ClientHandle</title>
+    
+    <!-- Tailwind CSS with dark mode support -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configure Tailwind for dark mode
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Dark Mode Styles -->
+    <link rel="stylesheet" href="dark_mode_styles.css">
+    
+    <!-- Dark Mode System -->
+    <script src="dark_mode_system.js"></script>
+    
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+        }
+        
+        /* Tab Animations */
+        .tab-content {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            display: none;
+        }
+        
+        .tab-content.active {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+        
+        .tab-button {
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .tab-button.active {
+            @apply bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400;
+        }
+        
+        /* Form Animations */
+        .form-section {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideInUp 0.4s ease forwards;
+        }
+        
+        .form-section:nth-child(2) { animation-delay: 0.1s; }
+        .form-section:nth-child(3) { animation-delay: 0.2s; }
+        .form-section:nth-child(4) { animation-delay: 0.3s; }
+        
+        @keyframes slideInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Save Button Animation */
+        .save-success {
+            animation: saveSuccess 0.6s ease;
+        }
+        
+        @keyframes saveSuccess {
+            0% { @apply bg-blue-500; }
+            50% { @apply bg-green-500; transform: scale(1.02); }
+            100% { @apply bg-blue-500; }
+        }
+        
+        /* Avatar Upload */
+        .avatar-upload {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .avatar-upload:hover {
+            transform: scale(1.02);
+        }
+        
+        .avatar-upload input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+        
+        /* API Key Display */
+        .api-key-display {
+            font-family: 'JetBrains Mono', monospace;
+            @apply bg-gray-100 dark:bg-gray-800;
+            @apply text-gray-900 dark:text-gray-100;
+            @apply border border-gray-200 dark:border-gray-700;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* QR Code Container */
+        .qr-code-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            display: inline-block;
+            @apply shadow-md border border-gray-200 dark:border-gray-700;
+            @apply dark:bg-gray-800;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <!-- Main Layout Container -->
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="sidebar-dark w-64 min-h-screen fixed left-0 top-0 overflow-y-auto scrollbar-dark">
+            <div class="p-6">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-500 rounded-lg flex items-center justify-center">
+                        <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold gradient-text">ClientHandle</span>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="space-y-2">
+                    <a href="#" class="sidebar-item-dark">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="sidebar-item-dark">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                        <span>Clients</span>
+                    </a>
+                    <a href="#" class="sidebar-item-dark">
+                        <i data-lucide="folder" class="w-5 h-5"></i>
+                        <span>Projects</span>
+                    </a>
+                    <a href="#" class="sidebar-item-dark">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                        <span>Invoices</span>
+                    </a>
+                    <a href="#" class="sidebar-item-dark active">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 ml-64 min-h-screen">
+            <!-- Header -->
+            <header class="nav-dark px-6 py-4 sticky top-0 z-40">
+                <div class="flex items-center justify-between">
+                    <!-- Page Title -->
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Settings</h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-1">Manage your account and application preferences</p>
+                    </div>
+                    
+                    <!-- Header Actions -->
+                    <div class="flex items-center gap-3">
+                        <button class="theme-toggle" aria-label="Toggle dark mode">
+                            <i data-lucide="sun" class="theme-toggle-icon sun-icon"></i>
+                            <i data-lucide="moon" class="theme-toggle-icon moon-icon"></i>
+                        </button>
+                        <button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg relative transition-colors">
+                            <i data-lucide="bell" class="w-5 h-5 text-gray-600 dark:text-gray-400"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">2</span>
+                        </button>
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-green-500"></div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Content -->
+            <div class="flex">
+                <!-- Settings Navigation Tabs -->
+                <div class="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 min-h-screen p-6">
+                    <nav class="space-y-1">
+                        <button class="tab-button active w-full flex items-center gap-3 px-3 py-2 text-left rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" data-tab="profile">
+                            <i data-lucide="user" class="w-5 h-5"></i>
+                            <span>Profile</span>
+                        </button>
+                        <button class="tab-button w-full flex items-center gap-3 px-3 py-2 text-left rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" data-tab="company">
+                            <i data-lucide="building" class="w-5 h-5"></i>
+                            <span>Company</span>
+                        </button>
+                        <button class="tab-button w-full flex items-center gap-3 px-3 py-2 text-left rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" data-tab="invoicing">
+                            <i data-lucide="receipt" class="w-5 h-5"></i>
+                            <span>Invoicing</span>
+                        </button>
+                        <button class="tab-button w-full flex items-center gap-3 px-3 py-2 text-left rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" data-tab="notifications">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                            <span>Notifications</span>
+                        </button>
+                        <button class="tab-button w-full flex items-center gap-3 px-3 py-2 text-left rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" data-tab="security">
+                            <i data-lucide="shield" class="w-5 h-5"></i>
+                            <span>Security</span>
+                        </button>
+                        <button class="tab-button w-full flex items-center gap-3 px-3 py-2 text-left rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" data-tab="billing">
+                            <i data-lucide="credit-card" class="w-5 h-5"></i>
+                            <span>Billing</span>
+                        </button>
+                    </nav>
+                </div>
+                
+                <!-- Settings Content -->
+                <div class="flex-1 p-6">
+                    <!-- Profile Tab -->
+                    <div id="profile-tab" class="tab-content active">
+                        <div class="max-w-4xl space-y-8">
+                            <!-- Profile Picture -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Profile Picture</h3>
+                                <div class="flex items-center gap-6">
+                                    <label class="avatar-upload">
+                                        <div class="w-20 h-20 rounded-full bg-gradient-to-r from-blue-600 to-green-500 flex items-center justify-center text-white text-2xl font-semibold cursor-pointer">
+                                            JD
+                                        </div>
+                                        <input type="file" accept="image/*" id="avatar-upload">
+                                    </label>
+                                    <div>
+                                        <button class="btn-primary-dark text-sm px-4 py-2 mr-2">
+                                            <i data-lucide="upload" class="w-4 h-4"></i>
+                                            Upload New Photo
+                                        </button>
+                                        <button class="btn-secondary-dark text-sm px-4 py-2">
+                                            Remove
+                                        </button>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">JPG, PNG or GIF. Max size 2MB.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Personal Information -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Personal Information</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="form-label-dark">First Name</label>
+                                        <input type="text" value="John" class="input-dark w-full">
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Last Name</label>
+                                        <input type="text" value="Doe" class="input-dark w-full">
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Email Address</label>
+                                        <input type="email" value="john.doe@clienthandle.com" class="input-dark w-full">
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Phone Number</label>
+                                        <input type="tel" value="+1 (555) 123-4567" class="input-dark w-full">
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label class="form-label-dark">Bio</label>
+                                        <textarea rows="3" class="form-textarea-dark w-full" placeholder="Tell us a little about yourself...">Experienced business consultant helping companies streamline their operations and improve client relationships.</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Change Password -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Change Password</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="form-label-dark">Current Password</label>
+                                        <input type="password" class="input-dark w-full">
+                                    </div>
+                                    <div></div>
+                                    <div>
+                                        <label class="form-label-dark">New Password</label>
+                                        <input type="password" class="input-dark w-full">
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Confirm Password</label>
+                                        <input type="password" class="input-dark w-full">
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                                        <p class="mb-1">Password requirements:</p>
+                                        <ul class="text-xs space-y-1 text-gray-500 dark:text-gray-500">
+                                            <li>• At least 8 characters long</li>
+                                            <li>• Contains uppercase and lowercase letters</li>
+                                            <li>• Contains at least one number</li>
+                                            <li>• Contains at least one special character</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Save Button -->
+                            <div class="flex justify-end">
+                                <button class="btn-primary-dark px-6 py-3" id="save-profile">
+                                    <i data-lucide="save" class="w-4 h-4"></i>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Company Tab -->
+                    <div id="company-tab" class="tab-content">
+                        <div class="max-w-4xl space-y-8">
+                            <!-- Company Logo -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Company Logo</h3>
+                                <div class="flex items-center gap-6">
+                                    <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600">
+                                        <i data-lucide="building" class="w-8 h-8 text-gray-400"></i>
+                                    </div>
+                                    <div>
+                                        <button class="btn-primary-dark text-sm px-4 py-2">
+                                            <i data-lucide="upload" class="w-4 h-4"></i>
+                                            Upload Logo
+                                        </button>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">PNG or SVG. Recommended 200x200px.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Company Information -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Company Information</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="md:col-span-2">
+                                        <label class="form-label-dark">Company Name</label>
+                                        <input type="text" value="ClientHandle Solutions" class="input-dark w-full">
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Industry</label>
+                                        <select class="form-select-dark w-full">
+                                            <option>Consulting</option>
+                                            <option>Technology</option>
+                                            <option>Marketing</option>
+                                            <option>Finance</option>
+                                            <option>Healthcare</option>
+                                            <option>Other</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Company Size</label>
+                                        <select class="form-select-dark w-full">
+                                            <option>1-10 employees</option>
+                                            <option>11-50 employees</option>
+                                            <option>51-200 employees</option>
+                                            <option>201+ employees</option>
+                                        </select>
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label class="form-label-dark">Address</label>
+                                        <input type="text" value="123 Business Street" class="input-dark w-full mb-4">
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <input type="text" placeholder="City" value="Business City" class="input-dark">
+                                            <input type="text" placeholder="State/Province" value="BC" class="input-dark">
+                                            <input type="text" placeholder="ZIP/Postal Code" value="12345" class="input-dark">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Phone</label>
+                                        <input type="tel" value="+1 (555) 987-6543" class="input-dark w-full">
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Website</label>
+                                        <input type="url" value="https://clienthandle.com" class="input-dark w-full">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Tax Information -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Tax Information</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="form-label-dark">Tax ID / EIN</label>
+                                        <input type="text" value="12-3456789" class="input-dark w-full">
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Default Tax Rate (%)</label>
+                                        <input type="number" step="0.01" value="8.5" class="input-dark w-full">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Save Button -->
+                            <div class="flex justify-end">
+                                <button class="btn-primary-dark px-6 py-3">
+                                    <i data-lucide="save" class="w-4 h-4"></i>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Invoicing Tab -->
+                    <div id="invoicing-tab" class="tab-content">
+                        <div class="max-w-4xl space-y-8">
+                            <!-- Invoice Settings -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Invoice Defaults</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="form-label-dark">Default Payment Terms</label>
+                                        <select class="form-select-dark w-full">
+                                            <option>Net 15 days</option>
+                                            <option selected>Net 30 days</option>
+                                            <option>Net 60 days</option>
+                                            <option>Due on receipt</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Invoice Number Format</label>
+                                        <select class="form-select-dark w-full">
+                                            <option>INV-YYYY-NNN</option>
+                                            <option selected>INV-YYYY-NNNN</option>
+                                            <option>YYYY-INV-NNN</option>
+                                            <option>Custom</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Next Invoice Number</label>
+                                        <input type="number" value="1007" class="input-dark w-full">
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Late Fee (%)</label>
+                                        <input type="number" step="0.01" value="2.5" class="input-dark w-full">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Invoice Notes -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Default Notes & Terms</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="form-label-dark">Invoice Footer</label>
+                                        <textarea rows="3" class="form-textarea-dark w-full" placeholder="Add default notes that appear on all invoices...">Thank you for your business! Payment is due within the agreed terms.</textarea>
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Terms & Conditions</label>
+                                        <textarea rows="4" class="form-textarea-dark w-full" placeholder="Add default terms and conditions...">1. Payment is due according to the terms specified above.
+2. Late payments may incur additional fees.
+3. All work is performed according to the agreed scope.
+4. Changes to scope may result in additional charges.</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Save Button -->
+                            <div class="flex justify-end">
+                                <button class="btn-primary-dark px-6 py-3">
+                                    <i data-lucide="save" class="w-4 h-4"></i>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Notifications Tab -->
+                    <div id="notifications-tab" class="tab-content">
+                        <div class="max-w-4xl space-y-8">
+                            <!-- Email Notifications -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Email Notifications</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="font-medium text-gray-900 dark:text-gray-100">New Client Inquiries</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Get notified when new clients submit contact forms</p>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" checked class="sr-only">
+                                            <div class="toggle-slider bg-blue-500"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="font-medium text-gray-900 dark:text-gray-100">Invoice Payments</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Get notified when invoices are paid</p>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" checked class="sr-only">
+                                            <div class="toggle-slider bg-blue-500"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="font-medium text-gray-900 dark:text-gray-100">Overdue Invoices</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Get reminded about overdue invoices</p>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" checked class="sr-only">
+                                            <div class="toggle-slider bg-blue-500"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="font-medium text-gray-900 dark:text-gray-100">Project Updates</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Get notified about project milestone updates</p>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" class="sr-only">
+                                            <div class="toggle-slider"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Reminder Settings -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Payment Reminders</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div>
+                                        <label class="form-label-dark">First Reminder (days before due)</label>
+                                        <input type="number" value="7" class="input-dark w-full">
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Second Reminder (days after due)</label>
+                                        <input type="number" value="3" class="input-dark w-full">
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Final Notice (days after due)</label>
+                                        <input type="number" value="14" class="input-dark w-full">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Save Button -->
+                            <div class="flex justify-end">
+                                <button class="btn-primary-dark px-6 py-3">
+                                    <i data-lucide="save" class="w-4 h-4"></i>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Security Tab -->
+                    <div id="security-tab" class="tab-content">
+                        <div class="max-w-4xl space-y-8">
+                            <!-- Two-Factor Authentication -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Two-Factor Authentication</h3>
+                                <div class="flex items-start gap-6">
+                                    <div class="qr-code-container">
+                                        <div class="w-32 h-32 bg-gray-100 dark:bg-gray-700 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded flex items-center justify-center">
+                                            <i data-lucide="qr-code" class="w-12 h-12 text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                            Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.) to enable two-factor authentication.
+                                        </p>
+                                        <div class="mb-4">
+                                            <label class="form-label-dark">Manual Entry Key</label>
+                                            <div class="api-key-display">
+                                                MFRGG2LTMVZWS5DFNN2HE2LTMVZWS5DFNN2A
+                                            </div>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="form-label-dark">Enter verification code</label>
+                                            <input type="text" placeholder="000000" class="input-dark w-32 text-center font-mono">
+                                        </div>
+                                        <button class="btn-primary-dark">
+                                            Enable 2FA
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Session Management -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Active Sessions</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                        <div class="flex items-center gap-3">
+                                            <i data-lucide="monitor" class="w-5 h-5 text-gray-400"></i>
+                                            <div>
+                                                <p class="font-medium text-gray-900 dark:text-gray-100">Windows Desktop</p>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">Chrome • 192.168.1.100 • Current session</p>
+                                            </div>
+                                        </div>
+                                        <span class="text-sm text-green-600 dark:text-green-400 font-medium">Active</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                        <div class="flex items-center gap-3">
+                                            <i data-lucide="smartphone" class="w-5 h-5 text-gray-400"></i>
+                                            <div>
+                                                <p class="font-medium text-gray-900 dark:text-gray-100">iPhone</p>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">Safari • 192.168.1.105 • 2 hours ago</p>
+                                            </div>
+                                        </div>
+                                        <button class="text-sm text-red-600 dark:text-red-400 font-medium hover:text-red-700 dark:hover:text-red-300">Revoke</button>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button class="btn-secondary-dark">
+                                        Sign Out All Devices
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- API Keys -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">API Keys</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                        <div>
+                                            <p class="font-medium text-gray-900 dark:text-gray-100">Production API Key</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Created on Dec 15, 2024 • Last used 2 days ago</p>
+                                            <div class="api-key-display mt-2">
+                                                pk_live_51ABC...DEF123 (Hidden)
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button class="btn-secondary-dark text-sm">View</button>
+                                            <button class="text-sm text-red-600 dark:text-red-400 font-medium hover:text-red-700 dark:hover:text-red-300">Revoke</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button class="btn-primary-dark">
+                                        <i data-lucide="plus" class="w-4 h-4"></i>
+                                        Generate New API Key
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Save Button -->
+                            <div class="flex justify-end">
+                                <button class="btn-primary-dark px-6 py-3">
+                                    <i data-lucide="save" class="w-4 h-4"></i>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Billing Tab -->
+                    <div id="billing-tab" class="tab-content">
+                        <div class="max-w-4xl space-y-8">
+                            <!-- Current Plan -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Current Plan</h3>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="text-xl font-bold text-gray-900 dark:text-gray-100">Professional Plan</h4>
+                                        <p class="text-gray-600 dark:text-gray-400">$29/month • Billed monthly</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-500 mt-1">Next billing date: January 15, 2025</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <button class="btn-secondary-dark mb-2">Change Plan</button>
+                                        <br>
+                                        <button class="btn-secondary-dark text-red-600 dark:text-red-400">Cancel Subscription</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Payment Method -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Payment Method</h3>
+                                <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                    <div class="flex items-center gap-3">
+                                        <i data-lucide="credit-card" class="w-6 h-6 text-gray-400"></i>
+                                        <div>
+                                            <p class="font-medium text-gray-900 dark:text-gray-100">•••• •••• •••• 4242</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Expires 12/25</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button class="btn-secondary-dark text-sm">Update</button>
+                                        <button class="btn-secondary-dark text-sm text-red-600 dark:text-red-400">Remove</button>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button class="btn-primary-dark">
+                                        <i data-lucide="plus" class="w-4 h-4"></i>
+                                        Add Payment Method
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Billing History -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Billing History</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                        <div>
+                                            <p class="font-medium text-gray-900 dark:text-gray-100">December 15, 2024</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Professional Plan • Monthly</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-medium text-gray-900 dark:text-gray-100">$29.00</p>
+                                            <button class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">Download</button>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                        <div>
+                                            <p class="font-medium text-gray-900 dark:text-gray-100">November 15, 2024</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Professional Plan • Monthly</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-medium text-gray-900 dark:text-gray-100">$29.00</p>
+                                            <button class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">Download</button>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                        <div>
+                                            <p class="font-medium text-gray-900 dark:text-gray-100">October 15, 2024</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Professional Plan • Monthly</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-medium text-gray-900 dark:text-gray-100">$29.00</p>
+                                            <button class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">Download</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Tab switching functionality
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabName = button.getAttribute('data-tab');
+                
+                // Update active button
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Update active content
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                const activeTab = document.getElementById(`${tabName}-tab`);
+                if (activeTab) {
+                    activeTab.classList.add('active');
+                }
+                
+                // Reinitialize icons for the new content
+                setTimeout(() => {
+                    lucide.createIcons();
+                }, 100);
+            });
+        });
+        
+        // Toggle switch functionality
+        const toggleSwitches = document.querySelectorAll('.toggle-switch');
+        toggleSwitches.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const input = toggle.querySelector('input[type="checkbox"]');
+                const slider = toggle.querySelector('.toggle-slider');
+                
+                input.checked = !input.checked;
+                
+                if (input.checked) {
+                    slider.classList.add('bg-blue-500', 'transform', 'translate-x-6');
+                    slider.classList.remove('bg-gray-300', 'dark:bg-gray-600');
+                } else {
+                    slider.classList.remove('bg-blue-500', 'transform', 'translate-x-6');
+                    slider.classList.add('bg-gray-300', 'dark:bg-gray-600');
+                }
+            });
+        });
+        
+        // Avatar upload functionality
+        const avatarUpload = document.getElementById('avatar-upload');
+        if (avatarUpload) {
+            avatarUpload.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const avatarImg = document.querySelector('.avatar-upload div');
+                        avatarImg.style.backgroundImage = `url(${e.target.result})`;
+                        avatarImg.style.backgroundSize = 'cover';
+                        avatarImg.style.backgroundPosition = 'center';
+                        avatarImg.textContent = '';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        // Save profile functionality
+        const saveProfileBtn = document.getElementById('save-profile');
+        if (saveProfileBtn) {
+            saveProfileBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Add save animation
+                saveProfileBtn.classList.add('save-success');
+                saveProfileBtn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Saved!';
+                
+                setTimeout(() => {
+                    saveProfileBtn.classList.remove('save-success');
+                    saveProfileBtn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Save Changes';
+                    lucide.createIcons();
+                }, 2000);
+            });
+        }
+        
+        // Form validation (basic example)
+        const forms = document.querySelectorAll('input, textarea, select');
+        forms.forEach(field => {
+            field.addEventListener('blur', () => {
+                if (field.hasAttribute('required') && !field.value.trim()) {
+                    field.style.borderColor = 'rgb(239 68 68)'; // red-500
+                } else {
+                    field.style.borderColor = ''; // reset
+                }
+            });
+        });
+        
+        // Password strength indicator (basic example)
+        const passwordInputs = document.querySelectorAll('input[type="password"]');
+        passwordInputs.forEach(input => {
+            input.addEventListener('input', (e) => {
+                const password = e.target.value;
+                const strength = calculatePasswordStrength(password);
+                // You could add a visual strength indicator here
+            });
+        });
+        
+        function calculatePasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            return strength;
+        }
+        
+        // Auto-save functionality (simulated)
+        let autoSaveTimeout;
+        forms.forEach(field => {
+            field.addEventListener('input', () => {
+                clearTimeout(autoSaveTimeout);
+                autoSaveTimeout = setTimeout(() => {
+                    // Simulate auto-save
+                    console.log('Auto-saving...');
+                }, 2000);
+            });
+        });
+
+        // Initialize toggle switches on page load
+        document.querySelectorAll('.toggle-switch').forEach(toggle => {
+            const input = toggle.querySelector('input[type="checkbox"]');
+            const slider = toggle.querySelector('.toggle-slider');
+            
+            if (input.checked) {
+                slider.classList.add('bg-blue-500', 'transform', 'translate-x-6');
+                slider.classList.remove('bg-gray-300', 'dark:bg-gray-600');
+            } else {
+                slider.classList.add('bg-gray-300', 'dark:bg-gray-600');
+                slider.classList.remove('bg-blue-500', 'transform', 'translate-x-6');
+            }
+        });
+    </script>
+</body>
+</html>

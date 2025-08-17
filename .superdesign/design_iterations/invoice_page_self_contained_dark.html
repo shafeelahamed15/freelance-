@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoices - ClientHandle</title>
+    
+    <!-- Tailwind CSS with dark mode support -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configure Tailwind for dark mode
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Initialize theme BEFORE page loads to prevent flash -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const shouldUseDark = savedTheme === 'dark' || (savedTheme === null && systemPrefersDark);
+
+            if (shouldUseDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
+    
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+        }
+        
+        /* EMBEDDED DARK MODE STYLES */
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            background-color: rgb(255 255 255);
+            border: 1px solid rgb(229 231 235);
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        }
+        
+        .dark .theme-toggle {
+            background-color: rgb(31 41 55);
+            border-color: rgb(75 85 99);
+        }
+        
+        .theme-toggle:hover {
+            background-color: rgb(249 250 251);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .dark .theme-toggle:hover {
+            background-color: rgb(55 65 81);
+        }
+        
+        .theme-toggle-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            transition: all 0.2s;
+            color: rgb(75 85 99);
+        }
+        
+        .dark .theme-toggle-icon {
+            color: rgb(156 163 175);
+        }
+        
+        .theme-toggle:hover .theme-toggle-icon {
+            color: rgb(17 24 39);
+            transform: rotate(15deg);
+        }
+        
+        .dark .theme-toggle:hover .theme-toggle-icon {
+            color: rgb(243 244 246);
+        }
+        
+        /* Icon visibility based on theme */
+        html:not(.dark) .sun-icon { display: none; }
+        html:not(.dark) .moon-icon { display: block; }
+        html.dark .sun-icon { display: block; }
+        html.dark .moon-icon { display: none; }
+        
+        /* Custom gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #3b82f6, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Card components */
+        .card-dark {
+            background-color: rgb(255 255 255);
+            border: 1px solid rgb(229 231 235);
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            transition: all 0.2s;
+            border-radius: 0.5rem;
+        }
+        
+        .dark .card-dark {
+            background-color: rgb(31 41 55);
+            border-color: rgb(75 85 99);
+        }
+        
+        .card-dark:hover {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        /* Input components */
+        .input-dark {
+            background-color: rgb(255 255 255);
+            border: 1px solid rgb(229 231 235);
+            color: rgb(17 24 39);
+            transition: colors 0.2s;
+        }
+        
+        .dark .input-dark {
+            background-color: rgb(31 41 55);
+            border-color: rgb(75 85 99);
+            color: rgb(243 244 246);
+        }
+        
+        .input-dark::placeholder {
+            color: rgb(107 114 128);
+        }
+        
+        .dark .input-dark::placeholder {
+            color: rgb(156 163 175);
+        }
+        
+        .input-dark:focus {
+            ring: 2px solid rgb(59 130 246);
+            border-color: rgb(59 130 246);
+        }
+        
+        /* Button components */
+        .btn-primary-dark {
+            background-color: rgb(59 130 246);
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary-dark:hover {
+            background-color: rgb(37 99 235);
+        }
+        
+        .dark .btn-primary-dark {
+            background-color: rgb(37 99 235);
+        }
+        
+        .dark .btn-primary-dark:hover {
+            background-color: rgb(29 78 216);
+        }
+        
+        .btn-secondary-dark {
+            background-color: rgb(255 255 255);
+            border: 1px solid rgb(229 231 235);
+            color: rgb(17 24 39);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .btn-secondary-dark:hover {
+            background-color: rgb(249 250 251);
+        }
+        
+        .dark .btn-secondary-dark {
+            background-color: rgb(31 41 55);
+            border-color: rgb(75 85 99);
+            color: rgb(243 244 246);
+        }
+        
+        .dark .btn-secondary-dark:hover {
+            background-color: rgb(55 65 81);
+        }
+        
+        /* Navigation components */
+        .nav-dark {
+            background-color: rgb(255 255 255 / 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgb(229 231 235);
+        }
+        
+        .dark .nav-dark {
+            background-color: rgb(17 24 39 / 0.8);
+            border-bottom-color: rgb(31 41 55);
+        }
+        
+        /* Sidebar components */
+        .sidebar-dark {
+            background-color: rgb(255 255 255);
+            border-right: 1px solid rgb(229 231 235);
+        }
+        
+        .dark .sidebar-dark {
+            background-color: rgb(17 24 39);
+            border-right-color: rgb(31 41 55);
+        }
+        
+        .sidebar-item-dark {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            color: rgb(55 65 81);
+            transition: all 0.2s;
+        }
+        
+        .sidebar-item-dark:hover {
+            background-color: rgb(249 250 251);
+            color: rgb(17 24 39);
+        }
+        
+        .dark .sidebar-item-dark {
+            color: rgb(209 213 219);
+        }
+        
+        .dark .sidebar-item-dark:hover {
+            background-color: rgb(31 41 55);
+            color: rgb(243 244 246);
+        }
+        
+        .sidebar-item-dark.active {
+            background-color: rgb(239 246 255);
+            color: rgb(37 99 235);
+        }
+        
+        .dark .sidebar-item-dark.active {
+            background-color: rgb(30 58 138 / 0.2);
+            color: rgb(96 165 250);
+        }
+        
+        /* Table components */
+        .table-dark {
+            background-color: rgb(255 255 255);
+            border: 1px solid rgb(229 231 235);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .dark .table-dark {
+            background-color: rgb(31 41 55);
+            border-color: rgb(75 85 99);
+        }
+        
+        .table-dark th {
+            background-color: rgb(249 250 251);
+            color: rgb(17 24 39);
+            font-weight: 600;
+            border-bottom: 1px solid rgb(229 231 235);
+        }
+        
+        .dark .table-dark th {
+            background-color: rgb(17 24 39);
+            color: rgb(243 244 246);
+            border-bottom-color: rgb(75 85 99);
+        }
+        
+        .table-dark td {
+            color: rgb(17 24 39);
+            border-bottom: 1px solid rgb(229 231 235);
+        }
+        
+        .dark .table-dark td {
+            color: rgb(243 244 246);
+            border-bottom-color: rgb(75 85 99);
+        }
+        
+        .table-dark tbody tr:hover {
+            background-color: rgb(249 250 251);
+        }
+        
+        .dark .table-dark tbody tr:hover {
+            background-color: rgb(55 65 81 / 0.5);
+        }
+        
+        /* Status badges */
+        .status-paid {
+            background-color: rgb(220 252 231);
+            color: rgb(22 101 52);
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .dark .status-paid {
+            background-color: rgb(20 83 45 / 0.3);
+            color: rgb(74 222 128);
+        }
+        
+        .status-pending {
+            background-color: rgb(254 249 195);
+            color: rgb(133 77 14);
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .dark .status-pending {
+            background-color: rgb(133 77 14 / 0.3);
+            color: rgb(250 204 21);
+        }
+        
+        .status-overdue {
+            background-color: rgb(254 226 226);
+            color: rgb(153 27 27);
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .dark .status-overdue {
+            background-color: rgb(153 27 27 / 0.3);
+            color: rgb(248 113 113);
+        }
+        
+        .status-draft {
+            background-color: rgb(243 244 246);
+            color: rgb(55 65 81);
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .dark .status-draft {
+            background-color: rgb(55 65 81);
+            color: rgb(209 213 219);
+        }
+        
+        /* Select dropdown */
+        .form-select-dark {
+            background-color: rgb(255 255 255);
+            border: 1px solid rgb(229 231 235);
+            color: rgb(17 24 39);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+        }
+        
+        .dark .form-select-dark {
+            background-color: rgb(31 41 55);
+            border-color: rgb(75 85 99);
+            color: rgb(243 244 246);
+        }
+        
+        .form-select-dark:focus {
+            ring: 2px solid rgb(59 130 246);
+            border-color: rgb(59 130 246);
+        }
+        
+        /* Custom scrollbar */
+        .scrollbar-dark {
+            scrollbar-width: thin;
+            scrollbar-color: rgb(75 85 99) rgb(31 41 55);
+        }
+        
+        .scrollbar-dark::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .scrollbar-dark::-webkit-scrollbar-track {
+            background-color: rgb(31 41 55);
+        }
+        
+        .scrollbar-dark::-webkit-scrollbar-thumb {
+            background-color: rgb(75 85 99);
+            border-radius: 9999px;
+        }
+        
+        .scrollbar-dark::-webkit-scrollbar-thumb:hover {
+            background-color: rgb(107 114 128);
+        }
+        
+        .dark .scrollbar-dark::-webkit-scrollbar-track {
+            background-color: rgb(31 41 55);
+        }
+        
+        /* Custom animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .table-row-enter {
+            animation: slideIn 0.4s ease-out forwards;
+        }
+        
+        /* Checkbox styles */
+        .custom-checkbox {
+            appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid rgb(209 213 219);
+            border-radius: 0.25rem;
+            background-color: rgb(255 255 255);
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .dark .custom-checkbox {
+            border-color: rgb(75 85 99);
+            background-color: rgb(31 41 55);
+        }
+        
+        .custom-checkbox:checked {
+            background-color: rgb(59 130 246);
+            border-color: rgb(59 130 246);
+        }
+        
+        .custom-checkbox:focus {
+            ring: 2px solid rgb(59 130 246);
+            ring-offset: 2px;
+        }
+        
+        .dark .custom-checkbox:focus {
+            ring-offset-color: rgb(17 24 39);
+        }
+        
+        .custom-checkbox:checked::before {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        /* Dropdown menu styles */
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: 2rem;
+            background-color: rgb(255 255 255);
+            border: 1px solid rgb(229 231 235);
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            padding: 0.5rem 0;
+            min-width: 10rem;
+            z-index: 50;
+        }
+        
+        .dark .dropdown-menu {
+            background-color: rgb(31 41 55);
+            border-color: rgb(75 85 99);
+        }
+        
+        .dropdown-item {
+            width: 100%;
+            text-align: left;
+            padding: 0.5rem 1rem;
+            color: rgb(55 65 81);
+            transition: colors 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgb(249 250 251);
+        }
+        
+        .dark .dropdown-item {
+            color: rgb(209 213 219);
+        }
+        
+        .dark .dropdown-item:hover {
+            background-color: rgb(55 65 81);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="sidebar-dark w-64 fixed left-0 top-0 h-full overflow-y-auto scrollbar-dark">
+            <div class="p-6">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-500 rounded-lg flex items-center justify-center">
+                        <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold gradient-text">ClientHandle</span>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="space-y-2">
+                    <a href="#" class="sidebar-item-dark">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="sidebar-item-dark">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                        <span>Clients</span>
+                    </a>
+                    <a href="#" class="sidebar-item-dark">
+                        <i data-lucide="folder" class="w-5 h-5"></i>
+                        <span>Projects</span>
+                    </a>
+                    <a href="#" class="sidebar-item-dark active">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                        <span>Invoices</span>
+                    </a>
+                    <a href="#" class="sidebar-item-dark">
+                        <i data-lucide="plus" class="w-5 h-5"></i>
+                        <span>Create Invoice</span>
+                    </a>
+                    <a href="#" class="sidebar-item-dark">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 ml-64">
+            <!-- Header -->
+            <header class="nav-dark px-6 py-4 sticky top-0 z-40">
+                <div class="flex items-center justify-between">
+                    <!-- Page Title -->
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Invoices</h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-1">Manage and track all your invoices</p>
+                    </div>
+                    
+                    <!-- Header Actions -->
+                    <div class="flex items-center gap-3">
+                        <button class="theme-toggle" aria-label="Toggle dark mode">
+                            <i data-lucide="sun" class="theme-toggle-icon sun-icon"></i>
+                            <i data-lucide="moon" class="theme-toggle-icon moon-icon"></i>
+                        </button>
+                        <button class="btn-primary-dark flex items-center gap-2 px-4 py-2 rounded-lg">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>New Invoice</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Content -->
+            <div class="p-6">
+                <!-- Filters & Search -->
+                <div class="card-dark p-6 mb-6">
+                    <div class="flex flex-col lg:flex-row gap-4">
+                        <!-- Search -->
+                        <div class="flex-1 relative">
+                            <input type="text" placeholder="Search invoices..." 
+                                   class="input-dark w-full pl-10 pr-4 py-3 rounded-lg">
+                            <i data-lucide="search" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400"></i>
+                        </div>
+                        
+                        <!-- Filters -->
+                        <div class="flex gap-3">
+                            <select class="form-select-dark px-4 py-3 rounded-lg min-w-40">
+                                <option value="">All Statuses</option>
+                                <option value="paid">Paid</option>
+                                <option value="pending">Pending</option>
+                                <option value="overdue">Overdue</option>
+                                <option value="draft">Draft</option>
+                            </select>
+                            
+                            <select class="form-select-dark px-4 py-3 rounded-lg min-w-40">
+                                <option value="">All Clients</option>
+                                <option value="acme">Acme Corp</option>
+                                <option value="techstart">TechStart Inc</option>
+                                <option value="bluecorp">BlueCorp Ltd</option>
+                                <option value="greentech">GreenTech Solutions</option>
+                            </select>
+                            
+                            <button class="btn-secondary-dark p-3 rounded-lg">
+                                <i data-lucide="filter" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bulk Actions -->
+                <div id="bulk-actions" class="card-dark p-4 mb-6 hidden">
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-600 dark:text-gray-400">
+                            <span id="selected-count">0</span> invoice(s) selected
+                        </span>
+                        <div class="flex items-center gap-3">
+                            <button class="btn-secondary-dark px-4 py-2 flex items-center gap-2 rounded-lg">
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                                <span>Send Reminders</span>
+                            </button>
+                            <button class="btn-secondary-dark px-4 py-2 flex items-center gap-2 rounded-lg">
+                                <i data-lucide="download" class="w-4 h-4"></i>
+                                <span>Export</span>
+                            </button>
+                            <button class="btn-secondary-dark px-4 py-2 flex items-center gap-2 rounded-lg text-red-600 dark:text-red-400">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                <span>Delete</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Invoices Table -->
+                <div class="table-dark overflow-hidden">
+                    <table class="w-full">
+                        <thead>
+                            <tr>
+                                <th class="p-4 w-12">
+                                    <input type="checkbox" class="custom-checkbox" id="select-all" onchange="toggleSelectAll()">
+                                </th>
+                                <th class="p-4 text-left">Invoice #</th>
+                                <th class="p-4 text-left">Client</th>
+                                <th class="p-4 text-left">Date</th>
+                                <th class="p-4 text-left">Due Date</th>
+                                <th class="p-4 text-left">Amount</th>
+                                <th class="p-4 text-left">Status</th>
+                                <th class="p-4 w-24">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoices-tbody">
+                            <!-- Invoice rows will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex items-center justify-between mt-6">
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">
+                        Showing 1 to 10 of 24 invoices
+                    </p>
+                    
+                    <div class="flex items-center gap-2">
+                        <button class="btn-secondary-dark px-3 py-2 rounded-lg" disabled>
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        </button>
+                        <button class="btn-primary-dark px-4 py-2 rounded-lg">1</button>
+                        <button class="btn-secondary-dark px-4 py-2 rounded-lg">2</button>
+                        <button class="btn-secondary-dark px-4 py-2 rounded-lg">3</button>
+                        <button class="btn-secondary-dark px-3 py-2 rounded-lg">
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- EMBEDDED DARK MODE JAVASCRIPT -->
+    <script>
+        // ClientHandle Dark Mode System - Embedded Version
+        class DarkModeManager {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                this.setInitialTheme();
+                this.listenForSystemChanges();
+                
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', () => {
+                        this.setupEventListeners();
+                        this.updateUI();
+                    });
+                } else {
+                    this.setupEventListeners();
+                    this.updateUI();
+                }
+            }
+
+            setInitialTheme() {
+                const savedTheme = localStorage.getItem('theme');
+                const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const shouldUseDark = savedTheme === 'dark' || (savedTheme === null && systemPrefersDark);
+
+                if (shouldUseDark) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+
+            getCurrentTheme() {
+                return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            }
+
+            toggleTheme() {
+                const currentTheme = this.getCurrentTheme();
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                this.setTheme(newTheme);
+            }
+
+            setTheme(theme) {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+                
+                localStorage.setItem('theme', theme);
+                this.updateUI();
+                this.dispatchThemeChangeEvent(theme);
+            }
+
+            updateUI() {
+                const isDark = this.getCurrentTheme() === 'dark';
+                
+                document.querySelectorAll('.theme-toggle').forEach(toggle => {
+                    const sunIcon = toggle.querySelector('.sun-icon');
+                    const moonIcon = toggle.querySelector('.moon-icon');
+                    
+                    if (sunIcon && moonIcon) {
+                        if (isDark) {
+                            sunIcon.style.display = 'block';
+                            moonIcon.style.display = 'none';
+                        } else {
+                            sunIcon.style.display = 'none';
+                            moonIcon.style.display = 'block';
+                        }
+                    }
+                });
+
+                if (window.lucide) {
+                    setTimeout(() => {
+                        window.lucide.createIcons();
+                    }, 100);
+                }
+            }
+
+            listenForSystemChanges() {
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                    if (!localStorage.getItem('theme')) {
+                        this.setTheme(e.matches ? 'dark' : 'light');
+                    }
+                });
+            }
+
+            setupEventListeners() {
+                document.querySelectorAll('.theme-toggle').forEach(button => {
+                    button.addEventListener('click', () => {
+                        this.toggleTheme();
+                    });
+                });
+
+                document.querySelectorAll('.theme-toggle').forEach(button => {
+                    button.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            this.toggleTheme();
+                        }
+                    });
+                });
+            }
+
+            dispatchThemeChangeEvent(theme) {
+                const event = new CustomEvent('themechange', {
+                    detail: { theme }
+                });
+                document.dispatchEvent(event);
+            }
+        }
+
+        // Initialize dark mode manager
+        const darkModeManager = new DarkModeManager();
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Sample invoice data
+        const invoices = [
+            { id: 'INV-2024-024', client: 'Acme Corp', clientEmail: 'john@acmecorp.com', date: '2024-01-15', dueDate: '2024-02-15', amount: 2500.00, status: 'paid' },
+            { id: 'INV-2024-023', client: 'TechStart Inc', clientEmail: 'sarah@techstart.io', date: '2024-01-12', dueDate: '2024-02-12', amount: 1800.00, status: 'pending' },
+            { id: 'INV-2024-022', client: 'BlueCorp Ltd', clientEmail: 'mike@bluecorp.com', date: '2024-01-10', dueDate: '2024-01-25', amount: 3200.00, status: 'overdue' },
+            { id: 'INV-2024-021', client: 'GreenTech Solutions', clientEmail: 'emma@greentech.co', date: '2024-01-08', dueDate: '2024-02-08', amount: 1500.00, status: 'paid' },
+            { id: 'INV-2024-020', client: 'RedTech Ventures', clientEmail: 'alex@redtech.com', date: '2024-01-05', dueDate: '2024-02-05', amount: 2100.00, status: 'pending' },
+            { id: 'INV-2024-019', client: 'Acme Corp', clientEmail: 'john@acmecorp.com', date: '2024-01-03', dueDate: '2024-02-03', amount: 2800.00, status: 'paid' },
+            { id: 'INV-2024-018', client: 'TechStart Inc', clientEmail: 'sarah@techstart.io', date: '2024-01-01', dueDate: '2024-01-15', amount: 1900.00, status: 'overdue' },
+            { id: 'INV-2024-017', client: 'BlueCorp Ltd', clientEmail: 'mike@bluecorp.com', date: '2023-12-28', dueDate: '2024-01-28', amount: 2600.00, status: 'paid' },
+            { id: 'INV-2024-016', client: 'GreenTech Solutions', clientEmail: 'emma@greentech.co', date: '2023-12-25', dueDate: '2024-01-25', amount: 1700.00, status: 'draft' },
+            { id: 'INV-2024-015', client: 'RedTech Ventures', clientEmail: 'alex@redtech.com', date: '2023-12-22', dueDate: '2024-01-22', amount: 2300.00, status: 'pending' }
+        ];
+        
+        // Render invoices table
+        function renderInvoices() {
+            const tbody = document.getElementById('invoices-tbody');
+            tbody.innerHTML = '';
+            
+            invoices.forEach((invoice, index) => {
+                const row = document.createElement('tr');
+                row.className = 'table-row-enter hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors';
+                row.style.animationDelay = `${index * 0.05}s`;
+                
+                const formattedDate = new Date(invoice.date).toLocaleDateString();
+                const formattedDueDate = new Date(invoice.dueDate).toLocaleDateString();
+                const formattedAmount = `$${invoice.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+                
+                row.innerHTML = `
+                    <td class="p-4">
+                        <input type="checkbox" class="custom-checkbox row-checkbox" data-invoice-id="${invoice.id}" onchange="updateBulkActions()">
+                    </td>
+                    <td class="p-4">
+                        <div class="font-mono font-medium text-gray-900 dark:text-gray-100">${invoice.id}</div>
+                    </td>
+                    <td class="p-4">
+                        <div>
+                            <div class="font-medium text-gray-900 dark:text-gray-100">${invoice.client}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">${invoice.clientEmail}</div>
+                        </div>
+                    </td>
+                    <td class="p-4">
+                        <span class="text-gray-900 dark:text-gray-100">${formattedDate}</span>
+                    </td>
+                    <td class="p-4">
+                        <span class="text-gray-900 dark:text-gray-100">${formattedDueDate}</span>
+                    </td>
+                    <td class="p-4">
+                        <span class="font-medium text-gray-900 dark:text-gray-100">${formattedAmount}</span>
+                    </td>
+                    <td class="p-4">
+                        <span class="status-${invoice.status}">${invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}</span>
+                    </td>
+                    <td class="p-4">
+                        <div class="flex items-center gap-1">
+                            <button class="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" title="View">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                            </button>
+                            <button class="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" title="Edit">
+                                <i data-lucide="edit" class="w-4 h-4"></i>
+                            </button>
+                            <button class="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" title="Download">
+                                <i data-lucide="download" class="w-4 h-4"></i>
+                            </button>
+                            <div class="relative">
+                                <button class="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" title="More" onclick="toggleDropdown(this)">
+                                    <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                                </button>
+                                <div class="dropdown-menu hidden">
+                                    <button class="dropdown-item">
+                                        <i data-lucide="send" class="w-4 h-4"></i>
+                                        <span>Send</span>
+                                    </button>
+                                    <button class="dropdown-item">
+                                        <i data-lucide="copy" class="w-4 h-4"></i>
+                                        <span>Duplicate</span>
+                                    </button>
+                                    <hr class="my-2 border-gray-200 dark:border-gray-700">
+                                    <button class="dropdown-item text-red-600 dark:text-red-400">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                        <span>Delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            // Re-initialize icons
+            lucide.createIcons();
+        }
+        
+        // Toggle dropdown menu
+        function toggleDropdown(button) {
+            const dropdown = button.nextElementSibling;
+            const allDropdowns = document.querySelectorAll('.dropdown-menu');
+            
+            // Close all other dropdowns
+            allDropdowns.forEach(d => {
+                if (d !== dropdown) d.classList.add('hidden');
+            });
+            
+            // Toggle current dropdown
+            dropdown.classList.toggle('hidden');
+        }
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.relative')) {
+                document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.add('hidden'));
+            }
+        });
+        
+        // Toggle select all checkboxes
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('select-all');
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            
+            updateBulkActions();
+        }
+        
+        // Update bulk actions visibility
+        function updateBulkActions() {
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
+            const bulkActions = document.getElementById('bulk-actions');
+            const selectedCount = document.getElementById('selected-count');
+            const selectAll = document.getElementById('select-all');
+            
+            const selectedLength = checkedBoxes.length;
+            selectedCount.textContent = selectedLength;
+            
+            if (selectedLength > 0) {
+                bulkActions.classList.remove('hidden');
+            } else {
+                bulkActions.classList.add('hidden');
+            }
+            
+            // Update select all state
+            selectAll.indeterminate = selectedLength > 0 && selectedLength < checkboxes.length;
+            selectAll.checked = selectedLength === checkboxes.length;
+        }
+        
+        // Initialize page
+        renderInvoices();
+    </script>
+</body>
+</html>

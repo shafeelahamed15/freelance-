@@ -1,0 +1,183 @@
+:root {
+  /* ClientHandle Brand Colors */
+  --background: oklch(0.0980 0 0);
+  --foreground: oklch(0.9804 0 0);
+  --card: oklch(0.1176 0 0);
+  --card-foreground: oklch(0.9804 0 0);
+  --popover: oklch(0.1176 0 0);
+  --popover-foreground: oklch(0.9804 0 0);
+  --primary: oklch(0.4863 0.1592 264.5200);
+  --primary-foreground: oklch(1.0000 0 0);
+  --secondary: oklch(0.1647 0 0);
+  --secondary-foreground: oklch(0.9804 0 0);
+  --muted: oklch(0.1569 0 0);
+  --muted-foreground: oklch(0.6784 0 0);
+  --accent: oklch(0.6400 0.1800 142.4953);
+  --accent-foreground: oklch(0.0980 0 0);
+  --destructive: oklch(0.5945 0.2276 25.3310);
+  --destructive-foreground: oklch(1.0000 0 0);
+  --border: oklch(0.2196 0 0);
+  --input: oklch(0.2196 0 0);
+  --ring: oklch(0.4863 0.1592 264.5200);
+  
+  /* Pricing specific colors */
+  --pricing-popular: oklch(0.6400 0.1800 142.4953);
+  --pricing-popular-foreground: oklch(0.0980 0 0);
+  --pricing-feature-check: oklch(0.6400 0.1800 142.4953);
+  --pricing-feature-unavailable: oklch(0.4471 0 0);
+  
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  /* Spacing & Layout */
+  --radius: 0.75rem;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  
+  /* Pricing tier specific */
+  --tier-starter: oklch(0.4863 0.1592 264.5200);
+  --tier-professional: oklch(0.6400 0.1800 142.4953);
+  --tier-business: oklch(0.6863 0.1592 35.7200);
+  --tier-enterprise: oklch(0.7255 0.1800 280.5000);
+}
+
+/* Base styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+  font-family: var(--font-sans) !important;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Pricing specific animations */
+.pricing-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pricing-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+}
+
+.pricing-toggle {
+  transition: all 0.2s ease-in-out;
+}
+
+.pricing-feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pricing-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.pricing-feature-unavailable {
+  opacity: 0.4;
+}
+
+.pricing-cta-button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pricing-cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Popular badge animation */
+.popular-badge {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* FAQ accordion animations */
+.faq-item {
+  transition: all 0.3s ease-in-out;
+}
+
+.faq-content {
+  transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+  overflow: hidden;
+}
+
+/* Testimonial card animations */
+.testimonial-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.testimonial-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Pricing comparison table */
+.comparison-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.comparison-table th,
+.comparison-table td {
+  border: 1px solid var(--border);
+  padding: 1rem;
+  text-align: center;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.comparison-table th {
+  background: var(--card);
+  font-weight: 600;
+}
+
+.comparison-table tr:hover td {
+  background: var(--muted);
+}
+
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .comparison-table {
+    font-size: 0.875rem;
+  }
+  
+  .comparison-table th,
+  .comparison-table td {
+    padding: 0.75rem 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pricing-card {
+    margin: 0 1rem;
+  }
+  
+  .comparison-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}

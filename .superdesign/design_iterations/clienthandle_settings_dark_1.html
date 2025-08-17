@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - ClientHandle</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Dark Mode System -->
+    <link rel="stylesheet" href="./clienthandle_dark_mode_system.css">
+    
+    <script>
+        // Initialize theme before content loads
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    
+    <!-- Custom Styles -->
+    <style>
+        /* Tab Animations */
+        .tab-enter {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: tabEnter 0.4s ease-out forwards;
+        }
+        
+        @keyframes tabEnter {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Tab Navigation Styles */
+        .tab-nav {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            background: var(--card);
+            border-radius: var(--radius) var(--radius) 0 0;
+            overflow-x: auto;
+        }
+        
+        .tab-button {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 1rem 1.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            position: relative;
+        }
+        
+        .tab-button:hover {
+            color: var(--text-primary);
+            background: var(--hover);
+        }
+        
+        .tab-button.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: var(--card);
+        }
+        
+        .tab-content {
+            display: none;
+            background: var(--card);
+            border-radius: 0 0 var(--radius) var(--radius);
+            border: 1px solid var(--border);
+            border-top: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group .help-text {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        
+        .form-input-group {
+            position: relative;
+        }
+        
+        .form-input-group .input-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+        
+        .form-input-group .input-icon + .form-input {
+            padding-left: 2.5rem;
+        }
+        
+        .form-input {
+            background: var(--input) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text-primary) !important;
+            border-radius: var(--radius) !important;
+            padding: 0.75rem 1rem;
+            transition: var(--transition) !important;
+            width: 100%;
+        }
+        
+        .form-input:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.1) !important;
+            outline: none !important;
+        }
+        
+        .form-input::placeholder {
+            color: var(--text-muted) !important;
+        }
+        
+        .form-textarea {
+            background: var(--input) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text-primary) !important;
+            border-radius: var(--radius) !important;
+            padding: 0.75rem 1rem;
+            transition: var(--transition) !important;
+            width: 100%;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-textarea:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.1) !important;
+            outline: none !important;
+        }
+        
+        .form-select {
+            background: var(--input) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text-primary) !important;
+            border-radius: var(--radius) !important;
+            padding: 0.75rem 2.5rem 0.75rem 1rem;
+            transition: var(--transition) !important;
+            width: 100%;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+        }
+        
+        .form-select:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.1) !important;
+            outline: none !important;
+        }
+        
+        /* Toggle Switch Styles */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 3rem;
+            height: 1.5rem;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--input);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            border-radius: 1.5rem;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 1rem;
+            width: 1rem;
+            left: 0.125rem;
+            bottom: 0.125rem;
+            background-color: var(--text-muted);
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+        
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(1.5rem);
+            background-color: var(--primary-foreground);
+        }
+        
+        /* Avatar Upload Styles */
+        .avatar-upload {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .avatar-preview {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            background: var(--muted);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .avatar-preview:hover {
+            border-color: var(--primary);
+        }
+        
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .avatar-upload input[type="file"] {
+            display: none;
+        }
+        
+        /* API Key Styles */
+        .api-key-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .api-key-token {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            background: var(--input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        /* Color Picker Styles */
+        .color-picker-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .color-option {
+            width: 3rem;
+            height: 3rem;
+            border-radius: var(--radius);
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.1);
+            border-color: var(--primary);
+        }
+        
+        .color-option.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.2);
+        }
+        
+        .color-option::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .color-option.selected::after {
+            opacity: 1;
+        }
+        
+        /* Section Styles */
+        .settings-section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .settings-section h3 {
+            color: var(--text-primary);
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .settings-section h3 i {
+            color: var(--primary);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .tab-nav {
+                flex-direction: column;
+            }
+            
+            .tab-button {
+                border-bottom: none;
+                border-right: 3px solid transparent;
+            }
+            
+            .tab-button.active {
+                border-bottom: none;
+                border-right-color: var(--primary);
+            }
+            
+            .color-picker-group {
+                grid-template-columns: repeat(auto-fill, minmax(2.5rem, 1fr));
+            }
+            
+            .color-option {
+                width: 2.5rem;
+                height: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="sidebar w-64 fixed left-0 top-0 h-full overflow-y-auto">
+            <div class="p-6">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-500 rounded-lg flex items-center justify-center">
+                        <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold text-gradient">ClientHandle</span>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="space-y-2">
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                        <span>Clients</span>
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="folder" class="w-5 h-5"></i>
+                        <span>Projects</span>
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                        <span>Invoices</span>
+                    </a>
+                    <a href="#" class="sidebar-item active flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 ml-64 min-h-screen bg-primary">
+            <!-- Header -->
+            <header class="nav border-b border-color px-6 py-4 sticky top-0 z-40">
+                <div class="flex items-center justify-between">
+                    <!-- Page Title -->
+                    <div>
+                        <h1 class="text-2xl font-bold text-primary">Settings</h1>
+                        <p class="text-secondary mt-1">Manage your account and application preferences</p>
+                    </div>
+                    
+                    <!-- Header Actions -->
+                    <div class="flex items-center gap-3">
+                        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+                            <i data-lucide="sun" class="theme-toggle-icon sun-icon"></i>
+                            <i data-lucide="moon" class="theme-toggle-icon moon-icon"></i>
+                        </button>
+                        <button id="save-settings" class="btn-primary flex items-center gap-2">
+                            <i data-lucide="save" class="w-4 h-4"></i>
+                            <span>Save Changes</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Content -->
+            <div class="p-6">
+                <!-- Settings Tabs -->
+                <div class="tab-enter">
+                    <!-- Tab Navigation -->
+                    <div class="tab-nav">
+                        <button class="tab-button active" onclick="switchTab(event, 'profile')">
+                            <i data-lucide="user" class="w-4 h-4 inline-block mr-2"></i>
+                            Profile
+                        </button>
+                        <button class="tab-button" onclick="switchTab(event, 'company')">
+                            <i data-lucide="building" class="w-4 h-4 inline-block mr-2"></i>
+                            Company
+                        </button>
+                        <button class="tab-button" onclick="switchTab(event, 'invoicing')">
+                            <i data-lucide="file-text" class="w-4 h-4 inline-block mr-2"></i>
+                            Invoicing
+                        </button>
+                        <button class="tab-button" onclick="switchTab(event, 'notifications')">
+                            <i data-lucide="bell" class="w-4 h-4 inline-block mr-2"></i>
+                            Notifications
+                        </button>
+                        <button class="tab-button" onclick="switchTab(event, 'security')">
+                            <i data-lucide="shield" class="w-4 h-4 inline-block mr-2"></i>
+                            Security
+                        </button>
+                        <button class="tab-button" onclick="switchTab(event, 'billing')">
+                            <i data-lucide="credit-card" class="w-4 h-4 inline-block mr-2"></i>
+                            Billing
+                        </button>
+                    </div>
+                    
+                    <!-- Profile Tab -->
+                    <div id="profile" class="tab-content active p-6">
+                        <div class="max-w-2xl">
+                            <!-- Avatar Section -->
+                            <div class="settings-section">
+                                <h3>
+                                    <i data-lucide="user" class="w-5 h-5"></i>
+                                    Profile Information
+                                </h3>
+                                
+                                <div class="flex items-start gap-6">
+                                    <div class="avatar-upload">
+                                        <div class="avatar-preview" onclick="document.getElementById('avatar-upload').click()">
+                                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop&crop=face" alt="Profile" id="avatar-img">
+                                        </div>
+                                        <input type="file" id="avatar-upload" accept="image/*" onchange="handleAvatarUpload(event)">
+                                    </div>
+                                    
+                                    <div class="flex-1 space-y-4">
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div class="form-group">
+                                                <label>First Name</label>
+                                                <input type="text" class="form-input" value="John" placeholder="Your first name">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Last Name</label>
+                                                <input type="text" class="form-input" value="Doe" placeholder="Your last name">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label>Email Address</label>
+                                            <div class="form-input-group">
+                                                <i data-lucide="mail" class="input-icon w-4 h-4"></i>
+                                                <input type="email" class="form-input" value="john.doe@example.com" placeholder="your@email.com">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label>Phone Number</label>
+                                            <div class="form-input-group">
+                                                <i data-lucide="phone" class="input-icon w-4 h-4"></i>
+                                                <input type="tel" class="form-input" value="+1 (555) 123-4567" placeholder="+1 (555) 123-4567">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label>Bio</label>
+                                            <textarea class="form-textarea" placeholder="Tell us about yourself...">Experienced freelance developer specializing in web applications and client management solutions.</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Preferences Section -->
+                            <div class="settings-section">
+                                <h3>
+                                    <i data-lucide="settings" class="w-5 h-5"></i>
+                                    Preferences
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    <div class="form-group">
+                                        <label>Time Zone</label>
+                                        <select class="form-select">
+                                            <option>Eastern Time (UTC-5)</option>
+                                            <option>Central Time (UTC-6)</option>
+                                            <option>Mountain Time (UTC-7)</option>
+                                            <option selected>Pacific Time (UTC-8)</option>
+                                            <option>UTC</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Date Format</label>
+                                        <select class="form-select">
+                                            <option>MM/DD/YYYY</option>
+                                            <option selected>DD/MM/YYYY</option>
+                                            <option>YYYY-MM-DD</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Currency</label>
+                                        <select class="form-select">
+                                            <option selected>USD - US Dollar</option>
+                                            <option>EUR - Euro</option>
+                                            <option>GBP - British Pound</option>
+                                            <option>CAD - Canadian Dollar</option>
+                                            <option>AUD - Australian Dollar</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Company Tab -->
+                    <div id="company" class="tab-content p-6">
+                        <div class="max-w-2xl space-y-6">
+                            <!-- Company Info -->
+                            <div class="settings-section">
+                                <h3>
+                                    <i data-lucide="building" class="w-5 h-5"></i>
+                                    Company Information
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    <div class="form-group">
+                                        <label>Company Name</label>
+                                        <input type="text" class="form-input" value="Freelance Pro LLC" placeholder="Your company name">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Business Address</label>
+                                        <textarea class="form-textarea" placeholder="123 Business Street&#10;Suite 100&#10;City, State 12345">123 Business Street
+Suite 100
+San Francisco, CA 94107</textarea>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="form-group">
+                                            <label>Tax ID / EIN</label>
+                                            <input type="text" class="form-input" value="12-3456789" placeholder="12-3456789">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Website</label>
+                                            <input type="url" class="form-input" value="https://freelancepro.com" placeholder="https://yourwebsite.com">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Brand Colors -->
+                            <div class="settings-section">
+                                <h3>
+                                    <i data-lucide="palette" class="w-5 h-5"></i>
+                                    Brand Colors
+                                </h3>
+                                
+                                <div class="form-group">
+                                    <label>Primary Color</label>
+                                    <div class="help-text">Used for buttons, links, and accents in your invoices and emails</div>
+                                    <div class="color-picker-group">
+                                        <div class="color-option selected" style="background: #3B82F6;" onclick="selectColor(this, 'primary')"></div>
+                                        <div class="color-option" style="background: #10B981;" onclick="selectColor(this, 'primary')"></div>
+                                        <div class="color-option" style="background: #8B5CF6;" onclick="selectColor(this, 'primary')"></div>
+                                        <div class="color-option" style="background: #F59E0B;" onclick="selectColor(this, 'primary')"></div>
+                                        <div class="color-option" style="background: #EF4444;" onclick="selectColor(this, 'primary')"></div>
+                                        <div class="color-option" style="background: #EC4899;" onclick="selectColor(this, 'primary')"></div>
+                                        <div class="color-option" style="background: #6B7280;" onclick="selectColor(this, 'primary')"></div>
+                                        <div class="color-option" style="background: #000000;" onclick="selectColor(this, 'primary')"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Secondary Color</label>
+                                    <div class="help-text">Used for secondary elements and backgrounds</div>
+                                    <div class="color-picker-group">
+                                        <div class="color-option" style="background: #3B82F6;" onclick="selectColor(this, 'secondary')"></div>
+                                        <div class="color-option selected" style="background: #10B981;" onclick="selectColor(this, 'secondary')"></div>
+                                        <div class="color-option" style="background: #8B5CF6;" onclick="selectColor(this, 'secondary')"></div>
+                                        <div class="color-option" style="background: #F59E0B;" onclick="selectColor(this, 'secondary')"></div>
+                                        <div class="color-option" style="background: #EF4444;" onclick="selectColor(this, 'secondary')"></div>
+                                        <div class="color-option" style="background: #EC4899;" onclick="selectColor(this, 'secondary')"></div>
+                                        <div class="color-option" style="background: #6B7280;" onclick="selectColor(this, 'secondary')"></div>
+                                        <div class="color-option" style="background: #F3F4F6;" onclick="selectColor(this, 'secondary')"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Invoicing Tab -->
+                    <div id="invoicing" class="tab-content p-6">
+                        <div class="max-w-2xl space-y-6">
+                            <!-- Invoice Settings -->
+                            <div class="settings-section">
+                                <h3>
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                    Invoice Defaults
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    <div class="form-group">
+                                        <label>Invoice Number Format</label>
+                                        <input type="text" class="form-input" value="INV-{YYYY}-{###}" placeholder="INV-{YYYY}-{###}">
+                                        <div class="help-text">Use {YYYY} for year, {MM} for month, {###} for incremental numbers</div>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="form-group">
+                                            <label>Default Payment Terms</label>
+                                            <select class="form-select">
+                                                <option>Due on Receipt</option>
+                                                <option>Net 15</option>
+                                                <option selected>Net 30</option>
+                                                <option>Net 60</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Default Tax Rate (%)</label>
+                                            <input type="number" class="form-input" value="10" min="0" max="100" step="0.01">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Default Invoice Notes</label>
+                                        <textarea class="form-textarea" placeholder="Thank you for your business!">Thank you for your business! Payment is due within 30 days. Please include the invoice number with your payment.</textarea>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Payment Instructions</label>
+                                        <textarea class="form-textarea" placeholder="Payment instructions...">Payment can be made via:
+- Bank transfer to Account #123456789
+- PayPal: payments@freelancepro.com
+- Check payable to Freelance Pro LLC</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Auto-send Settings -->
+                            <div class="settings-section">
+                                <h3>
+                                    <i data-lucide="send" class="w-5 h-5"></i>
+                                    Automation
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label class="font-medium text-primary">Auto-send Invoice Reminders</label>
+                                            <div class="text-sm text-muted">Automatically send reminder emails for overdue invoices</div>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label class="font-medium text-primary">Late Payment Fees</label>
+                                            <div class="text-sm text-muted">Automatically add late fees to overdue invoices</div>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox">
+                                            <span class="toggle-slider"></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Reminder Schedule</label>
+                                        <select class="form-select">
+                                            <option>3 days after due date</option>
+                                            <option selected>7 days after due date</option>
+                                            <option>14 days after due date</option>
+                                            <option>30 days after due date</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Notifications Tab -->
+                    <div id="notifications" class="tab-content p-6">
+                        <div class="max-w-2xl space-y-6">
+                            <!-- Email Notifications -->
+                            <div class="settings-section">
+                                <h3>
+                                    <i data-lucide="mail" class="w-5 h-5"></i>
+                                    Email Notifications
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label class="font-medium text-primary">New Client Signup</label>
+                                            <div class="text-sm text-muted">Get notified when a new client signs up</div>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label class="font-medium text-primary">Invoice Paid</label>
+                                            <div class="text-sm text-muted">Get notified when an invoice is paid</div>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label class="font-medium text-primary">Payment Overdue</label>
+                                            <div class="text-sm text-muted">Get notified when payments are overdue</div>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label class="font-medium text-primary">Weekly Summary</label>
+                                            <div class="text-sm text-muted">Receive weekly business summary emails</div>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox">
+                                            <span class="toggle-slider"></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label class="font-medium text-primary">Marketing Emails</label>
+                                            <div class="text-sm text-muted">Receive product updates and tips</div>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox">
+                                            <span class="toggle-slider"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Push Notifications -->
+                            <div class="settings-section">
+                                <h3>
+                                    <i data-lucide="bell" class="w-5 h-5"></i>
+                                    Push Notifications
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label class="font-medium text-primary">Browser Notifications</label>
+                                            <div class="text-sm text-muted">Show notifications in your browser</div>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label class="font-medium text-primary">Sound Alerts</label>
+                                            <div class="text-sm text-muted">Play sound for important notifications</div>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox">
+                                            <span class="toggle-slider"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Security Tab -->
+                    <div id="security" class="tab-content p-6">
+                        <div class="max-w-2xl space-y-6">
+                            <!-- Password Section -->
+                            <div class="settings-section">
+                                <h3>
+                                    <i data-lucide="lock" class="w-5 h-5"></i>
+                                    Password & Authentication
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    <div class="form-group">
+                                        <label>Current Password</label>
+                                        <input type="password" class="form-input" placeholder="Enter your current password">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>New Password</label>
+                                        <input type="password" class="form-input" placeholder="Enter your new password">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Confirm New Password</label>
+                                        <input type="password" class="form-input" placeholder="Confirm your new password">
+                                    </div>
+                                    
+                                    <button class="btn-secondary">Update Password</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Two-Factor Authentication -->
+                            <div class="settings-section">
+                                <h3>
+                                    <i data-lucide="smartphone" class="w-5 h-5"></i>
+                                    Two-Factor Authentication
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label class="font-medium text-primary">Two-Factor Authentication</label>
+                                            <div class="text-sm text-muted">Add an extra layer of security to your account</div>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox">
+                                            <span class="toggle-slider"></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="p-4 bg-secondary border border-color rounded-lg">
+                                        <div class="flex items-start gap-3">
+                                            <i data-lucide="info" class="w-5 h-5 text-primary flex-shrink-0 mt-0.5"></i>
+                                            <div>
+                                                <p class="text-primary font-medium mb-1">Setup 2FA</p>
+                                                <p class="text-secondary text-sm">Download an authenticator app like Google Authenticator or Authy, then scan the QR code to set up two-factor authentication.</p>
+                                                <button class="btn-primary mt-3">Setup 2FA</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- API Keys -->
+                            <div class="settings-section">
+                                <h3>
+                                    <i data-lucide="key" class="w-5 h-5"></i>
+                                    API Keys
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    <p class="text-secondary text-sm">API keys allow you to integrate ClientHandle with other applications. Keep your keys secure and never share them.</p>
+                                    
+                                    <div class="api-key-item">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h4 class="font-medium text-primary">Production API Key</h4>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs text-success bg-success/20 px-2 py-1 rounded-full">Active</span>
+                                                <button class="action-btn" title="Copy">
+                                                    <i data-lucide="copy" class="w-4 h-4"></i>
+                                                </button>
+                                                <button class="action-btn text-destructive" title="Revoke">
+                                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="api-key-token">
+                                            sk_live_1234567890abcdef•••••••••••••••••••••••••••••••••
+                                        </div>
+                                        <p class="text-muted text-xs mt-2">Created on January 15, 2024 • Last used 2 days ago</p>
+                                    </div>
+                                    
+                                    <div class="api-key-item">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h4 class="font-medium text-primary">Test API Key</h4>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs text-warning bg-warning/20 px-2 py-1 rounded-full">Test</span>
+                                                <button class="action-btn" title="Copy">
+                                                    <i data-lucide="copy" class="w-4 h-4"></i>
+                                                </button>
+                                                <button class="action-btn text-destructive" title="Revoke">
+                                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="api-key-token">
+                                            sk_test_abcdef1234567890•••••••••••••••••••••••••••••••••
+                                        </div>
+                                        <p class="text-muted text-xs mt-2">Created on January 10, 2024 • Last used 1 week ago</p>
+                                    </div>
+                                    
+                                    <button class="btn-primary">
+                                        <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                                        Generate New API Key
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Billing Tab -->
+                    <div id="billing" class="tab-content p-6">
+                        <div class="max-w-2xl space-y-6">
+                            <!-- Current Plan -->
+                            <div class="settings-section">
+                                <h3>
+                                    <i data-lucide="credit-card" class="w-5 h-5"></i>
+                                    Current Plan
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-4 bg-secondary border border-color rounded-lg">
+                                        <div>
+                                            <h4 class="font-semibold text-primary">Professional Plan</h4>
+                                            <p class="text-secondary text-sm">$19/month • Billed monthly</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-2xl font-bold text-primary">$19</div>
+                                            <div class="text-xs text-muted">per month</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex gap-3">
+                                        <button class="btn-primary">Upgrade Plan</button>
+                                        <button class="btn-secondary">Switch to Yearly</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Payment Method -->
+                            <div class="settings-section">
+                                <h3>
+                                    <i data-lucide="credit-card" class="w-5 h-5"></i>
+                                    Payment Method
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    <div class="flex items-center gap-4 p-4 bg-secondary border border-color rounded-lg">
+                                        <div class="w-12 h-8 bg-primary rounded flex items-center justify-center">
+                                            <i data-lucide="credit-card" class="w-5 h-5 text-primary-foreground"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="font-medium text-primary">•••• •••• •••• 4242</div>
+                                            <div class="text-sm text-secondary">Expires 12/27</div>
+                                        </div>
+                                        <button class="btn-secondary">Update</button>
+                                    </div>
+                                    
+                                    <button class="btn-secondary">
+                                        <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                                        Add Payment Method
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Billing History -->
+                            <div class="settings-section">
+                                <h3>
+                                    <i data-lucide="receipt" class="w-5 h-5"></i>
+                                    Billing History
+                                </h3>
+                                
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-3 border border-color rounded-lg">
+                                        <div>
+                                            <div class="font-medium text-primary">January 2024</div>
+                                            <div class="text-sm text-secondary">Professional Plan</div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="font-medium text-primary">$19.00</div>
+                                            <button class="text-primary text-sm hover:underline">Download</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between p-3 border border-color rounded-lg">
+                                        <div>
+                                            <div class="font-medium text-primary">December 2023</div>
+                                            <div class="text-sm text-secondary">Professional Plan</div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="font-medium text-primary">$19.00</div>
+                                            <button class="text-primary text-sm hover:underline">Download</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between p-3 border border-color rounded-lg">
+                                        <div>
+                                            <div class="font-medium text-primary">November 2023</div>
+                                            <div class="text-sm text-secondary">Professional Plan</div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="font-medium text-primary">$19.00</div>
+                                            <button class="text-primary text-sm hover:underline">Download</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Danger Zone -->
+                            <div class="settings-section border-destructive">
+                                <h3>
+                                    <i data-lucide="alert-triangle" class="w-5 h-5 text-destructive"></i>
+                                    <span class="text-destructive">Danger Zone</span>
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <h4 class="font-medium text-primary mb-2">Cancel Subscription</h4>
+                                        <p class="text-secondary text-sm mb-4">
+                                            Your subscription will remain active until the end of your current billing period. 
+                                            You can reactivate at any time.
+                                        </p>
+                                        <button class="btn-secondary border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground">
+                                            Cancel Subscription
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Tab switching functionality
+        function switchTab(event, tabName) {
+            // Remove active class from all tabs and buttons
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabButtons = document.querySelectorAll('.tab-button');
+            
+            tabContents.forEach(content => content.classList.remove('active'));
+            tabButtons.forEach(button => button.classList.remove('active'));
+            
+            // Add active class to clicked tab and button
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // Avatar upload handler
+        function handleAvatarUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('avatar-img').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // Color selection
+        function selectColor(element, type) {
+            // Remove selected class from siblings
+            const siblings = element.parentElement.querySelectorAll('.color-option');
+            siblings.forEach(sibling => sibling.classList.remove('selected'));
+            
+            // Add selected class to clicked element
+            element.classList.add('selected');
+        }
+        
+        // Save settings
+        document.getElementById('save-settings').addEventListener('click', function() {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i><span>Saved!</span>';
+            this.classList.add('bg-success', 'border-success');
+            
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.classList.remove('bg-success', 'border-success');
+                lucide.createIcons();
+            }, 2000);
+        });
+        
+        // Theme switching functionality
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Re-initialize icons to ensure they display correctly
+            setTimeout(() => {
+                lucide.createIcons();
+            }, 100);
+        }
+        
+        // Initialize theme on page load
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+        
+        // Initialize theme
+        initTheme();
+        
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            }
+        });
+        
+        // Toggle switch functionality
+        document.querySelectorAll('.toggle-switch input').forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                // Add any specific toggle logic here
+                console.log(`Toggle ${this.parentElement.parentElement.querySelector('label').textContent} changed to ${this.checked}`);
+            });
+        });
+        
+        // Form validation and interactions
+        document.querySelectorAll('.form-input, .form-textarea, .form-select').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+    </script>
+</body>
+</html>

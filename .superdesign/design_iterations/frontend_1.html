@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClientHandle - Modern Client Management Solution</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <!-- Custom Theme -->
+    <link rel="stylesheet" href="./frontend_theme_1.css">
+    <!-- Dark Mode System -->
+    <link rel="stylesheet" href="./clienthandle_dark_mode_system.css">
+    
+    <!-- Custom Styles -->
+    <style>
+        /* Animation Keyframes */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(60px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) scale(0.8);
+            }
+            60% {
+                transform: translateY(-10px) scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+        
+        /* Custom Animation Classes */
+        .animate-fade-in-up {
+            animation: fadeInUp 0.8s var(--ease-out) forwards;
+        }
+        
+        .animate-bounce-in {
+            animation: bounceIn 1s var(--ease-bounce) forwards;
+        }
+        
+        .animate-delayed-1 { animation-delay: 0.2s; }
+        .animate-delayed-2 { animation-delay: 0.4s; }
+        .animate-delayed-3 { animation-delay: 0.6s; }
+        
+        /* Video Player Styles */
+        .video-container {
+            position: relative;
+            background: var(--video-bg);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-video);
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--video-overlay);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity var(--duration-normal) var(--ease-out);
+            cursor: pointer;
+        }
+        
+        .play-button {
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--duration-normal) var(--ease-bounce);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .play-button:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .play-button:active {
+            transform: scale(0.95);
+        }
+        
+        /* Card Hover Effects */
+        .feature-card {
+            transition: all var(--duration-normal) var(--ease-out);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        /* Button Styles */
+        .btn-primary {
+            background: var(--gradient-primary);
+            transition: all var(--duration-fast) var(--ease-out);
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+            filter: brightness(110%);
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        /* Navigation Styles */
+        .nav-sticky {
+            transition: all var(--duration-normal) var(--ease-out);
+        }
+        
+        .nav-sticky.scrolled {
+            background-color: var(--card);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu {
+            transform: translateY(-20px);
+            opacity: 0;
+            transition: all var(--duration-normal) var(--ease-out);
+        }
+        
+        .mobile-menu.open {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Scroll Reveal */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s var(--ease-out);
+        }
+        
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="nav-sticky fixed top-0 left-0 right-0 z-50 px-4 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-600 to-green-500 flex items-center justify-center">
+                    <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                </div>
+                <span class="text-xl font-bold text-gradient">ClientHandle</span>
+            </div>
+            
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#home" class="text-muted-foreground hover:text-foreground transition-colors duration-200">Home</a>
+                <a href="#features" class="text-muted-foreground hover:text-foreground transition-colors duration-200">Features</a>
+                <a href="#demo" class="text-muted-foreground hover:text-foreground transition-colors duration-200">Demo</a>
+                <a href="#about" class="text-muted-foreground hover:text-foreground transition-colors duration-200">About</a>
+            </div>
+            
+            <!-- Right Side -->
+            <div class="hidden md:flex items-center space-x-4">
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+                    <i data-lucide="sun" class="theme-toggle-icon sun-icon"></i>
+                    <i data-lucide="moon" class="theme-toggle-icon moon-icon"></i>
+                </button>
+                
+                <!-- Search -->
+                <div class="relative">
+                    <input type="text" placeholder="Search..." class="bg-input border border-border rounded-lg px-4 py-2 pl-10 focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"></i>
+                </div>
+                
+                <!-- User Profile -->
+                <button class="flex items-center space-x-2 bg-secondary rounded-lg px-4 py-2 hover:bg-secondary/80 transition-colors duration-200">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-r from-blue-600 to-green-500"></div>
+                    <span class="text-sm">Profile</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                </button>
+            </div>
+            
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-secondary transition-colors duration-200">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu md:hidden mt-4 bg-card rounded-lg border border-border p-4">
+            <div class="flex flex-col space-y-4">
+                <a href="#home" class="text-muted-foreground hover:text-foreground transition-colors duration-200">Home</a>
+                <a href="#features" class="text-muted-foreground hover:text-foreground transition-colors duration-200">Features</a>
+                <a href="#demo" class="text-muted-foreground hover:text-foreground transition-colors duration-200">Demo</a>
+                <a href="#about" class="text-muted-foreground hover:text-foreground transition-colors duration-200">About</a>
+                <hr class="border-border">
+                <button class="theme-toggle w-full justify-center" onclick="toggleTheme()" aria-label="Toggle dark mode">
+                    <i data-lucide="sun" class="theme-toggle-icon sun-icon"></i>
+                    <i data-lucide="moon" class="theme-toggle-icon moon-icon"></i>
+                    <span class="ml-2 text-sm">Toggle Theme</span>
+                </button>
+                <input type="text" placeholder="Search..." class="bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                <button class="flex items-center justify-center space-x-2 bg-secondary rounded-lg px-4 py-2 hover:bg-secondary/80 transition-colors duration-200">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-r from-blue-600 to-green-500"></div>
+                    <span class="text-sm">Profile</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section id="home" class="pt-24 pb-16 px-4">
+        <div class="max-w-7xl mx-auto text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 opacity-0 animate-bounce-in">
+                Streamline Your Client 
+                <span class="text-gradient">Management</span>
+            </h1>
+            <p class="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto opacity-0 animate-fade-in-up animate-delayed-1">
+                Transform how you manage clients, track projects, and grow your business with ClientHandle's 
+                intuitive platform. Watch our demo to see how it works.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center opacity-0 animate-fade-in-up animate-delayed-2">
+                <button class="btn-primary px-8 py-3 rounded-lg text-white font-semibold flex items-center justify-center space-x-2">
+                    <i data-lucide="play" class="w-5 h-5"></i>
+                    <span>Watch Demo</span>
+                </button>
+                <button class="border border-border px-8 py-3 rounded-lg font-semibold hover:bg-secondary transition-colors duration-200">
+                    Learn More
+                </button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Video Showcase Section -->
+    <section id="demo" class="py-16 px-4 scroll-reveal">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-5xl font-bold mb-4">See ClientHandle In Action</h2>
+                <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+                    Watch how ClientHandle simplifies client management, automates workflows, and helps you deliver exceptional service to every client.
+                </p>
+            </div>
+            
+            <!-- Video Player Container -->
+            <div class="video-container aspect-video mb-8">
+                <!-- Video Placeholder with Thumbnail -->
+                <div class="w-full h-full bg-gradient-to-br from-blue-900/20 to-green-900/20 flex items-center justify-center relative">
+                    <!-- Thumbnail Image -->
+                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=675&fit=crop&auto=format" 
+                         alt="ClientHandle Dashboard Demo" 
+                         class="w-full h-full object-cover">
+                    
+                    <!-- Play Overlay -->
+                    <div class="video-overlay" id="video-overlay">
+                        <div class="play-button">
+                            <i data-lucide="play" class="w-8 h-8 text-white ml-1"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading Spinner (hidden by default) -->
+                    <div id="loading-spinner" class="absolute inset-0 bg-video-overlay hidden flex items-center justify-center">
+                        <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                    
+                    <!-- Actual Video Element (hidden by default) -->
+                    <video id="demo-video" class="w-full h-full object-cover hidden" controls>
+                        <source src="#" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+            
+            <!-- Video Description -->
+            <div class="text-center max-w-3xl mx-auto">
+                <h3 class="text-2xl font-semibold mb-4">Complete Client Management Solution</h3>
+                <p class="text-muted-foreground leading-relaxed">
+                    This 3-minute demo showcases ClientHandle's core features: client onboarding, project tracking, 
+                    automated invoicing, and communication tools that help businesses improve client satisfaction by 85%.
+                </p>
+                
+                <!-- Video Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-primary mb-2">85%</div>
+                        <div class="text-muted-foreground">Client Satisfaction</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-primary mb-2">5K+</div>
+                        <div class="text-muted-foreground">Active Businesses</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-primary mb-2">50%</div>
+                        <div class="text-muted-foreground">Faster Invoicing</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Featured Section -->
+    <section id="features" class="py-16 px-4 scroll-reveal">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-bold mb-4">Why Choose ClientHandle?</h2>
+                <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+                    Built specifically for service-based businesses who need to manage clients efficiently and scale their operations.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Feature 1 -->
+                <div class="feature-card bg-card border border-border rounded-xl p-8">
+                    <div class="w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg flex items-center justify-center mb-6">
+                        <i data-lucide="zap" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-4">Smart Client Management</h3>
+                    <p class="text-muted-foreground leading-relaxed mb-6">
+                        Centralize all your client information, track project progress, and automate routine tasks. 
+                        ClientHandle keeps your business organized and your clients happy.
+                    </p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center space-x-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            <span class="text-sm">Centralized client database</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            <span class="text-sm">Automated project tracking</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            <span class="text-sm">Smart task reminders</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="feature-card bg-card border border-border rounded-xl p-8">
+                    <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-lg flex items-center justify-center mb-6">
+                        <i data-lucide="credit-card" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-4">Automated Billing & Invoicing</h3>
+                    <p class="text-muted-foreground leading-relaxed mb-6">
+                        Generate professional invoices, track payments, and get paid faster with our integrated billing system. 
+                        Never miss a payment or lose track of what clients owe you.
+                    </p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center space-x-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            <span class="text-sm">Automatic invoice generation</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            <span class="text-sm">Payment tracking & reminders</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            <span class="text-sm">Multiple payment gateways</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="bg-card border-t border-border py-12 px-4 scroll-reveal">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Brand -->
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-600 to-green-500 flex items-center justify-center">
+                            <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold text-gradient">ClientHandle</span>
+                    </div>
+                    <p class="text-muted-foreground">
+                        Simplifying client management for service-based businesses worldwide.
+                    </p>
+                    <!-- Social Links -->
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center hover:bg-secondary/80 transition-colors duration-200">
+                            <i data-lucide="twitter" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center hover:bg-secondary/80 transition-colors duration-200">
+                            <i data-lucide="linkedin" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center hover:bg-secondary/80 transition-colors duration-200">
+                            <i data-lucide="github" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Links -->
+                <div>
+                    <h4 class="font-semibold mb-4">Product</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-muted-foreground hover:text-foreground transition-colors duration-200">Features</a></li>
+                        <li><a href="#" class="text-muted-foreground hover:text-foreground transition-colors duration-200">Pricing</a></li>
+                        <li><a href="#" class="text-muted-foreground hover:text-foreground transition-colors duration-200">Demo</a></li>
+                        <li><a href="#" class="text-muted-foreground hover:text-foreground transition-colors duration-200">Integrations</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-muted-foreground hover:text-foreground transition-colors duration-200">About</a></li>
+                        <li><a href="#" class="text-muted-foreground hover:text-foreground transition-colors duration-200">Blog</a></li>
+                        <li><a href="#" class="text-muted-foreground hover:text-foreground transition-colors duration-200">Careers</a></li>
+                        <li><a href="#" class="text-muted-foreground hover:text-foreground transition-colors duration-200">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Newsletter -->
+                <div>
+                    <h4 class="font-semibold mb-4">Stay Updated</h4>
+                    <p class="text-muted-foreground text-sm mb-4">
+                        Get the latest updates and features delivered to your inbox.
+                    </p>
+                    <div class="flex">
+                        <input type="email" placeholder="Enter your email" class="flex-1 bg-input border border-border rounded-l-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <button class="btn-primary px-4 py-2 rounded-r-lg">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="border-border my-8">
+            
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <p class="text-muted-foreground text-sm">
+                    © 2024 ClientHandle. All rights reserved.
+                </p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-muted-foreground hover:text-foreground text-sm transition-colors duration-200">Privacy Policy</a>
+                    <a href="#" class="text-muted-foreground hover:text-foreground text-sm transition-colors duration-200">Terms of Service</a>
+                    <a href="#" class="text-muted-foreground hover:text-foreground text-sm transition-colors duration-200">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+        });
+        
+        // Sticky navigation
+        const nav = document.querySelector('.nav-sticky');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+        
+        // Video player functionality
+        const videoOverlay = document.getElementById('video-overlay');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const demoVideo = document.getElementById('demo-video');
+        
+        videoOverlay.addEventListener('click', () => {
+            // Show loading spinner
+            videoOverlay.style.opacity = '0';
+            loadingSpinner.classList.remove('hidden');
+            
+            // Simulate video loading
+            setTimeout(() => {
+                loadingSpinner.classList.add('hidden');
+                // In a real implementation, you would set the video source here
+                // demoVideo.src = 'path/to/your/video.mp4';
+                // demoVideo.classList.remove('hidden');
+                // demoVideo.play();
+                
+                // For demo purposes, we'll just hide the overlay
+                videoOverlay.style.display = 'none';
+                
+                // Show a message instead of actual video
+                const message = document.createElement('div');
+                message.className = 'absolute inset-0 flex items-center justify-center bg-video-overlay text-white text-xl font-semibold';
+                message.textContent = 'ClientHandle Demo Video - Add your demo video URL here';
+                document.querySelector('.video-container').appendChild(message);
+            }, 1500);
+        });
+        
+        // Scroll reveal animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all scroll-reveal elements
+        document.querySelectorAll('.scroll-reveal').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,370 @@
+/* ClientHandle Working Dark Mode System */
+
+/* Configure Tailwind to use class-based dark mode */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Root CSS variables for both themes */
+:root {
+  /* Light theme colors */
+  --color-primary: 59 130 246; /* blue-500 */
+  --color-primary-dark: 37 99 235; /* blue-600 */
+  --color-accent: 34 197 94; /* green-500 */
+  --color-accent-dark: 22 163 74; /* green-600 */
+  --color-background: 255 255 255; /* white */
+  --color-background-secondary: 249 250 251; /* gray-50 */
+  --color-surface: 255 255 255; /* white */
+  --color-text-primary: 17 24 39; /* gray-900 */
+  --color-text-secondary: 75 85 99; /* gray-600 */
+  --color-text-muted: 156 163 175; /* gray-400 */
+  --color-border: 229 231 235; /* gray-200 */
+  --color-border-hover: 209 213 219; /* gray-300 */
+}
+
+/* Dark theme colors */
+.dark {
+  --color-primary: 96 165 250; /* blue-400 */
+  --color-primary-dark: 59 130 246; /* blue-500 */
+  --color-accent: 74 222 128; /* green-400 */
+  --color-accent-dark: 34 197 94; /* green-500 */
+  --color-background: 17 24 39; /* gray-900 */
+  --color-background-secondary: 31 41 55; /* gray-800 */
+  --color-surface: 31 41 55; /* gray-800 */
+  --color-text-primary: 243 244 246; /* gray-100 */
+  --color-text-secondary: 156 163 175; /* gray-400 */
+  --color-text-muted: 107 114 128; /* gray-500 */
+  --color-border: 55 65 81; /* gray-700 */
+  --color-border-hover: 75 85 99; /* gray-600 */
+}
+
+/* Base styles */
+body {
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-text-primary));
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Custom component classes that work with both themes */
+.theme-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: rgb(var(--color-surface));
+  border: 1px solid rgb(var(--color-border));
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle:hover {
+  background-color: rgb(var(--color-background-secondary));
+  border-color: rgb(var(--color-border-hover));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: rgb(var(--color-text-secondary));
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:hover .theme-toggle-icon {
+  color: rgb(var(--color-text-primary));
+  transform: rotate(15deg);
+}
+
+/* Light mode - show moon icon */
+:root:not(.dark) .theme-toggle .sun-icon {
+  display: none;
+}
+
+:root:not(.dark) .theme-toggle .moon-icon {
+  display: block;
+}
+
+/* Dark mode - show sun icon */
+.dark .theme-toggle .moon-icon {
+  display: none;
+}
+
+.dark .theme-toggle .sun-icon {
+  display: block;
+}
+
+/* Override Tailwind classes with CSS variables */
+.bg-primary-custom {
+  background-color: rgb(var(--color-primary)) !important;
+}
+
+.bg-accent-custom {
+  background-color: rgb(var(--color-accent)) !important;
+}
+
+.bg-surface-custom {
+  background-color: rgb(var(--color-surface)) !important;
+}
+
+.bg-background-custom {
+  background-color: rgb(var(--color-background)) !important;
+}
+
+.bg-background-secondary-custom {
+  background-color: rgb(var(--color-background-secondary)) !important;
+}
+
+.text-primary-custom {
+  color: rgb(var(--color-text-primary)) !important;
+}
+
+.text-secondary-custom {
+  color: rgb(var(--color-text-secondary)) !important;
+}
+
+.text-muted-custom {
+  color: rgb(var(--color-text-muted)) !important;
+}
+
+.border-custom {
+  border-color: rgb(var(--color-border)) !important;
+}
+
+.border-hover-custom:hover {
+  border-color: rgb(var(--color-border-hover)) !important;
+}
+
+/* Card components */
+.card-custom {
+  background-color: rgb(var(--color-surface));
+  border: 1px solid rgb(var(--color-border));
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.card-custom:hover {
+  background-color: rgb(var(--color-background-secondary));
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Input components */
+.input-custom {
+  background-color: rgb(var(--color-surface));
+  border: 1px solid rgb(var(--color-border));
+  color: rgb(var(--color-text-primary));
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.input-custom:focus {
+  outline: none;
+  border-color: rgb(var(--color-primary));
+  box-shadow: 0 0 0 3px rgba(var(--color-primary), 0.1);
+}
+
+.input-custom::placeholder {
+  color: rgb(var(--color-text-muted));
+}
+
+/* Button components */
+.btn-primary-custom {
+  background-color: rgb(var(--color-primary));
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-primary-custom:hover {
+  background-color: rgb(var(--color-primary-dark));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(var(--color-primary), 0.3);
+}
+
+.btn-secondary-custom {
+  background-color: rgb(var(--color-surface));
+  color: rgb(var(--color-text-primary));
+  border: 1px solid rgb(var(--color-border));
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-secondary-custom:hover {
+  background-color: rgb(var(--color-background-secondary));
+  border-color: rgb(var(--color-primary));
+}
+
+/* Navigation styles */
+.nav-custom {
+  background-color: rgba(var(--color-surface), 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgb(var(--color-border));
+}
+
+.nav-link-custom {
+  color: rgb(var(--color-text-secondary));
+  transition: color 0.2s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+}
+
+.nav-link-custom:hover,
+.nav-link-custom.active {
+  color: rgb(var(--color-text-primary));
+  background-color: rgb(var(--color-background-secondary));
+}
+
+/* Sidebar styles */
+.sidebar-custom {
+  background-color: rgb(var(--color-surface));
+  border-right: 1px solid rgb(var(--color-border));
+}
+
+.sidebar-item-custom {
+  color: rgb(var(--color-text-secondary));
+  transition: all 0.2s ease;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-item-custom:hover,
+.sidebar-item-custom.active {
+  background-color: rgb(var(--color-background-secondary));
+  color: rgb(var(--color-text-primary));
+}
+
+/* Table styles */
+.table-custom {
+  background-color: rgb(var(--color-surface));
+  border: 1px solid rgb(var(--color-border));
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.table-custom th {
+  background-color: rgb(var(--color-background-secondary));
+  color: rgb(var(--color-text-secondary));
+  padding: 1rem;
+  border-bottom: 1px solid rgb(var(--color-border));
+  font-weight: 600;
+}
+
+.table-custom td {
+  color: rgb(var(--color-text-primary));
+  padding: 1rem;
+  border-bottom: 1px solid rgb(var(--color-border));
+}
+
+.table-custom tbody tr:hover {
+  background-color: rgb(var(--color-background-secondary));
+}
+
+/* Status badges */
+.status-paid {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: rgb(34, 197, 94);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-pending {
+  background-color: rgba(251, 191, 36, 0.1);
+  color: rgb(251, 191, 36);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-overdue {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: rgb(239, 68, 68);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-draft {
+  background-color: rgba(107, 114, 128, 0.1);
+  color: rgb(107, 114, 128);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Pricing card styles */
+.pricing-card-custom {
+  background-color: rgb(var(--color-surface));
+  border: 1px solid rgb(var(--color-border));
+  border-radius: 0.75rem;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.pricing-card-custom:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border-color: rgb(var(--color-primary));
+}
+
+.pricing-card-custom.popular {
+  border-color: rgb(var(--color-accent));
+  border-width: 2px;
+}
+
+.popular-badge {
+  background-color: rgb(var(--color-accent));
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  animation: pulse 2s infinite;
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .theme-toggle {
+    width: 2rem;
+    height: 2rem;
+  }
+  
+  .theme-toggle-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid rgb(var(--color-primary));
+  outline-offset: 2px;
+}

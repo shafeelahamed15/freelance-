@@ -1,0 +1,383 @@
+:root {
+  /* Background Colors - Matching ClientHandle Dashboard */
+  --background: oklch(0.9900 0.0020 264.5200);
+  --foreground: oklch(0.1400 0.0080 264.5200);
+  --card: oklch(1.0000 0 0);
+  --card-foreground: oklch(0.1400 0.0080 264.5200);
+  --popover: oklch(1.0000 0 0);
+  --popover-foreground: oklch(0.1400 0.0080 264.5200);
+
+  /* Brand Colors - Professional Business Theme */
+  --primary: oklch(0.4863 0.1592 264.5200);
+  --primary-foreground: oklch(0.9900 0.0020 264.5200);
+  --secondary: oklch(0.9500 0.0200 264.5200);
+  --secondary-foreground: oklch(0.2400 0.0100 264.5200);
+  --muted: oklch(0.9600 0.0150 264.5200);
+  --muted-foreground: oklch(0.4500 0.0200 264.5200);
+  --accent: oklch(0.6400 0.1800 142.4953);
+  --accent-foreground: oklch(0.9900 0.0020 264.5200);
+
+  /* Invoice Status Colors */
+  --invoice-paid: oklch(0.6200 0.1700 142.4953);
+  --invoice-paid-foreground: oklch(0.9900 0.0020 264.5200);
+  --invoice-sent: oklch(0.7500 0.1900 85.8729);
+  --invoice-sent-foreground: oklch(0.1400 0.0080 264.5200);
+  --invoice-overdue: oklch(0.6000 0.2200 27.3250);
+  --invoice-overdue-foreground: oklch(0.9900 0.0020 264.5200);
+  --invoice-draft: oklch(0.5000 0.0200 264.5200);
+  --invoice-draft-foreground: oklch(0.9900 0.0020 264.5200);
+  --invoice-partial: oklch(0.5500 0.1800 264.5200);
+  --invoice-partial-foreground: oklch(0.9900 0.0020 264.5200);
+
+  /* UI Element Colors */
+  --border: oklch(0.8900 0.0100 264.5200);
+  --input: oklch(0.9600 0.0150 264.5200);
+  --ring: oklch(0.4863 0.1592 264.5200);
+
+  /* Summary Card Colors */
+  --card-revenue: oklch(0.4863 0.1592 264.5200);
+  --card-outstanding: oklch(0.7500 0.1900 85.8729);
+  --card-paid: oklch(0.6200 0.1700 142.4953);
+  --card-overdue: oklch(0.6000 0.2200 27.3250);
+
+  /* Chart Colors for Analytics */
+  --chart-1: oklch(0.4863 0.1592 264.5200);
+  --chart-2: oklch(0.6400 0.1800 142.4953);
+  --chart-3: oklch(0.7500 0.1900 85.8729);
+  --chart-4: oklch(0.6000 0.1500 300.8178);
+  --chart-5: oklch(0.5500 0.1800 200.4765);
+
+  /* Sidebar Colors */
+  --sidebar: oklch(0.9800 0.0100 264.5200);
+  --sidebar-foreground: oklch(0.1400 0.0080 264.5200);
+  --sidebar-primary: oklch(0.4863 0.1592 264.5200);
+  --sidebar-primary-foreground: oklch(0.9900 0.0020 264.5200);
+  --sidebar-accent: oklch(0.9500 0.0200 264.5200);
+  --sidebar-accent-foreground: oklch(0.2400 0.0100 264.5200);
+  --sidebar-border: oklch(0.8900 0.0100 264.5200);
+  --sidebar-ring: oklch(0.4863 0.1592 264.5200);
+
+  /* Typography */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Merriweather', ui-serif, Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* Border Radius */
+  --radius: 0.5rem;
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: calc(var(--radius) - 1px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  /* Shadows */
+  --shadow-2xs: 0 1px 2px 0px hsl(265 65% 49% / 0.05);
+  --shadow-xs: 0 1px 3px 0px hsl(265 65% 49% / 0.08);
+  --shadow-sm: 0 2px 4px -1px hsl(265 65% 49% / 0.10), 0 1px 2px -1px hsl(265 65% 49% / 0.06);
+  --shadow: 0 4px 6px -1px hsl(265 65% 49% / 0.12), 0 2px 4px -1px hsl(265 65% 49% / 0.08);
+  --shadow-md: 0 6px 8px -1px hsl(265 65% 49% / 0.14), 0 4px 6px -1px hsl(265 65% 49% / 0.10);
+  --shadow-lg: 0 10px 15px -3px hsl(265 65% 49% / 0.16), 0 6px 8px -2px hsl(265 65% 49% / 0.12);
+  --shadow-xl: 0 20px 25px -5px hsl(265 65% 49% / 0.18), 0 10px 15px -3px hsl(265 65% 49% / 0.14);
+  --shadow-2xl: 0 25px 50px -12px hsl(265 65% 49% / 0.25);
+
+  /* Table Shadows */
+  --shadow-table: 0 1px 3px 0px hsl(265 65% 49% / 0.08), 0 0 0 1px hsl(265 65% 49% / 0.04);
+  --shadow-card-hover: 0 8px 25px -5px hsl(265 65% 49% / 0.15);
+
+  /* Spacing */
+  --spacing: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-10: 2.5rem;
+  --spacing-12: 3rem;
+  --spacing-16: 4rem;
+  --spacing-20: 5rem;
+
+  /* Letter Spacing */
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+
+  /* Animation Durations */
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-slower: 800ms;
+
+  /* Easing Functions */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box !important;
+}
+
+body {
+  font-family: var(--font-sans) !important;
+  background-color: oklch(var(--background)) !important;
+  color: oklch(var(--foreground)) !important;
+  line-height: 1.6 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: var(--tracking-tight) !important;
+  line-height: 1.2 !important;
+  color: oklch(var(--foreground)) !important;
+}
+
+h1 {
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+}
+
+h2 {
+  font-size: 1.5rem !important;
+}
+
+h3 {
+  font-size: 1.25rem !important;
+}
+
+p {
+  font-family: var(--font-sans) !important;
+  line-height: 1.6 !important;
+  color: oklch(var(--muted-foreground)) !important;
+}
+
+/* Invoice Status Badges */
+.status-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.375rem !important;
+  padding: 0.25rem 0.75rem !important;
+  border-radius: var(--radius) !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+.status-paid {
+  background-color: oklch(var(--invoice-paid) / 0.1) !important;
+  color: oklch(var(--invoice-paid)) !important;
+  border: 1px solid oklch(var(--invoice-paid) / 0.2) !important;
+}
+
+.status-sent {
+  background-color: oklch(var(--invoice-sent) / 0.1) !important;
+  color: oklch(var(--invoice-sent)) !important;
+  border: 1px solid oklch(var(--invoice-sent) / 0.2) !important;
+}
+
+.status-overdue {
+  background-color: oklch(var(--invoice-overdue) / 0.1) !important;
+  color: oklch(var(--invoice-overdue)) !important;
+  border: 1px solid oklch(var(--invoice-overdue) / 0.2) !important;
+}
+
+.status-draft {
+  background-color: oklch(var(--invoice-draft) / 0.1) !important;
+  color: oklch(var(--invoice-draft)) !important;
+  border: 1px solid oklch(var(--invoice-draft) / 0.2) !important;
+}
+
+.status-partial {
+  background-color: oklch(var(--invoice-partial) / 0.1) !important;
+  color: oklch(var(--invoice-partial)) !important;
+  border: 1px solid oklch(var(--invoice-partial) / 0.2) !important;
+}
+
+/* Summary Cards */
+.summary-card {
+  background: oklch(var(--card)) !important;
+  border: 1px solid oklch(var(--border)) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: var(--spacing-6) !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: all var(--duration-normal) var(--ease-out) !important;
+}
+
+.summary-card:hover {
+  box-shadow: var(--shadow-card-hover) !important;
+  transform: translateY(-2px) !important;
+}
+
+.summary-card-revenue {
+  border-left: 4px solid oklch(var(--card-revenue)) !important;
+}
+
+.summary-card-outstanding {
+  border-left: 4px solid oklch(var(--card-outstanding)) !important;
+}
+
+.summary-card-paid {
+  border-left: 4px solid oklch(var(--card-paid)) !important;
+}
+
+.summary-card-overdue {
+  border-left: 4px solid oklch(var(--card-overdue)) !important;
+}
+
+/* Table Styles */
+.invoice-table {
+  background: oklch(var(--card)) !important;
+  border: 1px solid oklch(var(--border)) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-table) !important;
+  overflow: hidden !important;
+}
+
+.invoice-row {
+  border-bottom: 1px solid oklch(var(--border)) !important;
+  transition: all var(--duration-fast) var(--ease-out) !important;
+}
+
+.invoice-row:hover {
+  background-color: oklch(var(--muted) / 0.5) !important;
+}
+
+.invoice-row:last-child {
+  border-bottom: none !important;
+}
+
+/* Button Styles */
+.btn-primary {
+  background: oklch(var(--primary)) !important;
+  color: oklch(var(--primary-foreground)) !important;
+  border: 1px solid oklch(var(--primary)) !important;
+  border-radius: var(--radius) !important;
+  padding: var(--spacing-2) var(--spacing-4) !important;
+  font-weight: 500 !important;
+  transition: all var(--duration-fast) var(--ease-out) !important;
+  cursor: pointer !important;
+}
+
+.btn-primary:hover {
+  background: oklch(var(--primary) / 0.9) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.btn-secondary {
+  background: oklch(var(--secondary)) !important;
+  color: oklch(var(--secondary-foreground)) !important;
+  border: 1px solid oklch(var(--border)) !important;
+  border-radius: var(--radius) !important;
+  padding: var(--spacing-2) var(--spacing-4) !important;
+  font-weight: 500 !important;
+  transition: all var(--duration-fast) var(--ease-out) !important;
+  cursor: pointer !important;
+}
+
+.btn-secondary:hover {
+  background: oklch(var(--muted)) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+/* Input Styles */
+.form-input {
+  background: oklch(var(--input)) !important;
+  border: 1px solid oklch(var(--border)) !important;
+  border-radius: var(--radius) !important;
+  padding: var(--spacing-2) var(--spacing-3) !important;
+  font-family: var(--font-sans) !important;
+  transition: all var(--duration-fast) var(--ease-out) !important;
+}
+
+.form-input:focus {
+  outline: none !important;
+  border-color: oklch(var(--ring)) !important;
+  box-shadow: 0 0 0 2px oklch(var(--ring) / 0.2) !important;
+}
+
+/* Filter Pills */
+.filter-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.25rem !important;
+  padding: 0.375rem 0.75rem !important;
+  border-radius: 9999px !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  border: 1px solid oklch(var(--border)) !important;
+  background: oklch(var(--card)) !important;
+  color: oklch(var(--foreground)) !important;
+  cursor: pointer !important;
+  transition: all var(--duration-fast) var(--ease-out) !important;
+}
+
+.filter-pill:hover {
+  background: oklch(var(--muted)) !important;
+}
+
+.filter-pill.active {
+  background: oklch(var(--primary)) !important;
+  color: oklch(var(--primary-foreground)) !important;
+  border-color: oklch(var(--primary)) !important;
+}
+
+/* Sidebar Styles */
+.sidebar-active {
+  background-color: oklch(var(--sidebar-primary)) !important;
+  color: oklch(var(--sidebar-primary-foreground)) !important;
+}
+
+/* Animation Classes */
+.animate-fade-in {
+  animation: fadeIn 0.4s var(--ease-out) forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s var(--ease-out) forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s var(--ease-out) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

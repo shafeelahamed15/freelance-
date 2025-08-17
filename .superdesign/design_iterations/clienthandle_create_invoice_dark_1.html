@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Invoice - ClientHandle</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Dark Mode System -->
+    <link rel="stylesheet" href="./clienthandle_dark_mode_system.css">
+    
+    <script>
+        // Initialize theme before content loads
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    
+    <!-- Custom Styles -->
+    <style>
+        /* Form Animations */
+        .form-field-enter {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fieldEnter 0.3s ease-out forwards;
+        }
+        
+        @keyframes fieldEnter {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .line-item-enter {
+            opacity: 0;
+            transform: scale(0.95);
+            animation: lineItemEnter 0.2s ease-out forwards;
+        }
+        
+        @keyframes lineItemEnter {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* Preview Updates */
+        .preview-update {
+            animation: previewUpdate 0.3s ease-out;
+        }
+        
+        @keyframes previewUpdate {
+            0% { background-color: var(--accent); }
+            100% { background-color: transparent; }
+        }
+        
+        /* Custom Form Styles */
+        .form-input {
+            background: var(--input) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text-primary) !important;
+            border-radius: var(--radius) !important;
+            transition: var(--transition) !important;
+            padding: 0.75rem 1rem;
+        }
+        
+        .form-input:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.1) !important;
+            outline: none !important;
+        }
+        
+        .form-input::placeholder {
+            color: var(--text-muted) !important;
+        }
+        
+        .form-textarea {
+            background: var(--input) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text-primary) !important;
+            border-radius: var(--radius) !important;
+            transition: var(--transition) !important;
+            padding: 0.75rem 1rem;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-textarea:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.1) !important;
+            outline: none !important;
+        }
+        
+        .custom-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            appearance: none;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            background: var(--card) !important;
+            border-right: 1px solid var(--border) !important;
+        }
+        
+        /* Invoice Preview Styles */
+        .invoice-preview {
+            background: var(--card) !important;
+            border: 1px solid var(--border) !important;
+            box-shadow: var(--shadow);
+            border-radius: var(--radius);
+        }
+        
+        .invoice-header {
+            border-bottom: 1px solid var(--border);
+            padding: 2rem;
+        }
+        
+        .invoice-section {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .invoice-section:last-child {
+            border-bottom: none;
+        }
+        
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .invoice-table th,
+        .invoice-table td {
+            padding: 0.75rem 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .invoice-table th {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .invoice-table td {
+            color: var(--text-primary);
+        }
+        
+        .invoice-total {
+            background: var(--bg-secondary);
+            font-weight: 600;
+        }
+        
+        /* Line Item Styles */
+        .line-item-row {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: var(--transition);
+        }
+        
+        .line-item-row:hover {
+            background: var(--hover);
+        }
+        
+        /* Button Styles */
+        .btn-add-item {
+            background: var(--accent) !important;
+            color: var(--accent-foreground) !important;
+            border: none !important;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-add-item:hover {
+            background: oklch(from var(--accent) calc(l - 0.05) c h) !important;
+            transform: translateY(-2px);
+        }
+        
+        .btn-remove {
+            background: var(--destructive) !important;
+            color: var(--destructive-foreground) !important;
+            border: none !important;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+        
+        .btn-remove:hover {
+            background: oklch(from var(--destructive) calc(l - 0.05) c h) !important;
+        }
+        
+        /* Status Badges */
+        .status-draft {
+            background: var(--warning);
+            color: var(--warning-foreground);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="sidebar w-64 fixed left-0 top-0 h-full overflow-y-auto">
+            <div class="p-6">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-500 rounded-lg flex items-center justify-center">
+                        <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold text-gradient">ClientHandle</span>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="space-y-2">
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                        <span>Clients</span>
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="folder" class="w-5 h-5"></i>
+                        <span>Projects</span>
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                        <span>Invoices</span>
+                    </a>
+                    <a href="#" class="sidebar-item active flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="plus" class="w-5 h-5"></i>
+                        <span>Create Invoice</span>
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 ml-64 min-h-screen bg-primary">
+            <!-- Header -->
+            <header class="nav border-b border-color px-6 py-4 sticky top-0 z-40">
+                <div class="flex items-center justify-between">
+                    <!-- Page Title -->
+                    <div>
+                        <h1 class="text-2xl font-bold text-primary">Create New Invoice</h1>
+                        <p class="text-secondary mt-1">Invoice #<span id="invoice-number" class="font-mono">INV-2024-006</span></p>
+                    </div>
+                    
+                    <!-- Header Actions -->
+                    <div class="flex items-center gap-3">
+                        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+                            <i data-lucide="sun" class="theme-toggle-icon sun-icon"></i>
+                            <i data-lucide="moon" class="theme-toggle-icon moon-icon"></i>
+                        </button>
+                        <button id="save-draft" class="btn-secondary flex items-center gap-2">
+                            <i data-lucide="save" class="w-4 h-4"></i>
+                            <span>Save Draft</span>
+                        </button>
+                        <button id="send-invoice" class="btn-primary flex items-center gap-2">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>Send Invoice</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Content -->
+            <div class="p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Left Panel - Invoice Form -->
+                    <div class="space-y-6">
+                        <!-- Client Selection -->
+                        <div class="card p-6 form-field-enter">
+                            <h3 class="text-lg font-semibold text-primary mb-4">Client Details</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-secondary mb-2">Select Client</label>
+                                    <select id="client-select" class="form-input custom-select w-full">
+                                        <option value="">Choose a client...</option>
+                                        <option value="acme-corp">Acme Corp - john@acmecorp.com</option>
+                                        <option value="techstart">TechStart Inc - sarah@techstart.io</option>
+                                        <option value="bluecorp">BlueCorp Ltd - mike@bluecorp.com</option>
+                                        <option value="greentech">GreenTech Solutions - emma@greentech.co</option>
+                                        <option value="redtech">RedTech Ventures - alex@redtech.com</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-secondary mb-2">Invoice Date</label>
+                                        <input type="date" id="invoice-date" class="form-input w-full" onchange="updateDatePreview()">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-secondary mb-2">Due Date</label>
+                                        <input type="date" id="due-date" class="form-input w-full" onchange="updateDatePreview()">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-secondary mb-2">Payment Terms</label>
+                                    <select class="form-input custom-select w-full">
+                                        <option>Net 30</option>
+                                        <option>Net 15</option>
+                                        <option>Due on Receipt</option>
+                                        <option>Net 60</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Line Items -->
+                        <div class="card p-6 form-field-enter">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-primary">Invoice Items</h3>
+                                <button onclick="addLineItem()" class="btn-add-item">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                    <span>Add Item</span>
+                                </button>
+                            </div>
+                            
+                            <div id="line-items-container">
+                                <!-- Line items will be added here -->
+                            </div>
+                            
+                            <!-- Totals -->
+                            <div class="mt-6 pt-6 border-t border-color">
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-secondary">
+                                        <span>Subtotal:</span>
+                                        <span id="subtotal">$0.00</span>
+                                    </div>
+                                    <div class="flex justify-between text-secondary">
+                                        <span>Tax (10%):</span>
+                                        <span id="tax-amount">$0.00</span>
+                                    </div>
+                                    <div class="flex justify-between text-lg font-semibold text-primary">
+                                        <span>Total:</span>
+                                        <span id="total-amount">$0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Information -->
+                        <div class="card p-6 form-field-enter">
+                            <h3 class="text-lg font-semibold text-primary mb-4">Additional Information</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-secondary mb-2">Notes</label>
+                                    <textarea id="invoice-notes" class="form-textarea w-full" placeholder="Add any additional notes for the client..." onchange="updateNotesPreview()"></textarea>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-secondary mb-2">Payment Instructions</label>
+                                    <textarea class="form-textarea w-full" placeholder="Payment can be made via bank transfer to..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Panel - Invoice Preview -->
+                    <div class="space-y-6">
+                        <!-- Preview Header -->
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-primary">Invoice Preview</h3>
+                            <span class="status-draft">Draft</span>
+                        </div>
+                        
+                        <!-- Invoice Preview -->
+                        <div class="invoice-preview">
+                            <!-- Invoice Header -->
+                            <div class="invoice-header">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h2 class="text-2xl font-bold text-primary mb-2">INVOICE</h2>
+                                        <p class="text-secondary">#<span id="preview-invoice-number">INV-2024-006</span></p>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-lg font-semibold text-primary mb-1">ClientHandle</div>
+                                        <div class="text-sm text-secondary">
+                                            <p>123 Business St</p>
+                                            <p>City, State 12345</p>
+                                            <p>hello@clienthandle.com</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Bill To Section -->
+                            <div class="invoice-section">
+                                <div class="grid grid-cols-2 gap-8">
+                                    <div>
+                                        <h4 class="text-sm font-semibold text-secondary mb-2">BILL TO</h4>
+                                        <div id="preview-client-info" class="text-primary">
+                                            <p class="font-medium">Select a client</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-semibold text-secondary mb-2">INVOICE DETAILS</h4>
+                                        <div class="space-y-1 text-sm text-primary">
+                                            <div class="flex justify-between">
+                                                <span>Date:</span>
+                                                <span id="preview-invoice-date">-</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>Due Date:</span>
+                                                <span id="preview-due-date">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Items Table -->
+                            <div class="invoice-section">
+                                <table class="invoice-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Description</th>
+                                            <th class="text-center">Qty</th>
+                                            <th class="text-right">Rate</th>
+                                            <th class="text-right">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="preview-items">
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-8">
+                                                No items added yet
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Totals -->
+                            <div class="invoice-section">
+                                <div class="flex justify-end">
+                                    <div class="w-64">
+                                        <div class="space-y-2">
+                                            <div class="flex justify-between text-primary">
+                                                <span>Subtotal:</span>
+                                                <span id="preview-subtotal">$0.00</span>
+                                            </div>
+                                            <div class="flex justify-between text-primary">
+                                                <span>Tax (10%):</span>
+                                                <span id="preview-tax">$0.00</span>
+                                            </div>
+                                            <div class="flex justify-between font-bold text-primary text-lg invoice-total p-2 rounded">
+                                                <span>Total:</span>
+                                                <span id="preview-total">$0.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Notes -->
+                            <div id="preview-notes-section" class="invoice-section" style="display: none;">
+                                <h4 class="text-sm font-semibold text-secondary mb-2">NOTES</h4>
+                                <p id="preview-notes" class="text-primary"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        let lineItemCounter = 0;
+        
+        // Client data
+        const clientData = {
+            'acme-corp': {
+                name: 'Acme Corp',
+                email: 'john@acmecorp.com',
+                address: '456 Corporate Blvd\nBusiness City, BC 67890'
+            },
+            'techstart': {
+                name: 'TechStart Inc',
+                email: 'sarah@techstart.io',
+                address: '789 Innovation Dr\nTech Valley, TV 54321'
+            },
+            'bluecorp': {
+                name: 'BlueCorp Ltd',
+                email: 'mike@bluecorp.com',
+                address: '321 Blue Street\nCorporate Town, CT 98765'
+            },
+            'greentech': {
+                name: 'GreenTech Solutions',
+                email: 'emma@greentech.co',
+                address: '654 Green Avenue\nEco City, EC 13579'
+            },
+            'redtech': {
+                name: 'RedTech Ventures',
+                email: 'alex@redtech.com',
+                address: '987 Red Road\nVenture Valley, VV 24680'
+            }
+        };
+        
+        // Update client preview
+        document.getElementById('client-select').addEventListener('change', function() {
+            const clientKey = this.value;
+            const previewElement = document.getElementById('preview-client-info');
+            
+            if (clientKey && clientData[clientKey]) {
+                const client = clientData[clientKey];
+                previewElement.innerHTML = `
+                    <p class="font-medium">${client.name}</p>
+                    <p class="text-sm text-secondary">${client.email}</p>
+                    <div class="text-sm text-secondary whitespace-pre-line mt-1">${client.address}</div>
+                `;
+                previewElement.classList.add('preview-update');
+                setTimeout(() => previewElement.classList.remove('preview-update'), 300);
+            } else {
+                previewElement.innerHTML = '<p class="font-medium">Select a client</p>';
+            }
+        });
+        
+        // Add line item
+        function addLineItem() {
+            lineItemCounter++;
+            const container = document.getElementById('line-items-container');
+            
+            const lineItem = document.createElement('div');
+            lineItem.className = 'line-item-row line-item-enter';
+            lineItem.innerHTML = `
+                <div class="grid grid-cols-12 gap-4 items-end">
+                    <div class="col-span-5">
+                        <label class="block text-sm font-medium text-secondary mb-1">Description</label>
+                        <input type="text" class="form-input w-full" placeholder="Service or product description" onchange="updatePreview()">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-secondary mb-1">Quantity</label>
+                        <input type="number" class="form-input w-full" value="1" min="1" onchange="updatePreview()">
+                    </div>
+                    <div class="col-span-3">
+                        <label class="block text-sm font-medium text-secondary mb-1">Rate ($)</label>
+                        <input type="number" class="form-input w-full" placeholder="0.00" step="0.01" onchange="updatePreview()">
+                    </div>
+                    <div class="col-span-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-medium text-primary">$<span class="amount">0.00</span></span>
+                            <button type="button" class="btn-remove" onclick="removeLineItem(this)">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(lineItem);
+            
+            // Re-initialize icons for the new elements
+            lucide.createIcons();
+            
+            updatePreview();
+        }
+        
+        // Remove line item
+        function removeLineItem(button) {
+            button.closest('.line-item-row').remove();
+            updatePreview();
+        }
+        
+        // Update preview
+        function updatePreview() {
+            const lineItems = document.querySelectorAll('.line-item-row');
+            const previewItems = document.getElementById('preview-items');
+            let subtotal = 0;
+            
+            if (lineItems.length === 0) {
+                previewItems.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-8">
+                            No items added yet
+                        </td>
+                    </tr>
+                `;
+            } else {
+                let itemsHTML = '';
+                
+                lineItems.forEach(item => {
+                    const description = item.querySelector('input[placeholder*="description"]').value || 'Untitled Item';
+                    const quantity = parseFloat(item.querySelector('input[type="number"]').value) || 1;
+                    const rate = parseFloat(item.querySelector('input[placeholder="0.00"]').value) || 0;
+                    const amount = quantity * rate;
+                    
+                    // Update line item amount display
+                    item.querySelector('.amount').textContent = amount.toFixed(2);
+                    
+                    subtotal += amount;
+                    
+                    itemsHTML += `
+                        <tr>
+                            <td class="text-primary">${description}</td>
+                            <td class="text-center text-primary">${quantity}</td>
+                            <td class="text-right text-primary">$${rate.toFixed(2)}</td>
+                            <td class="text-right text-primary">$${amount.toFixed(2)}</td>
+                        </tr>
+                    `;
+                });
+                
+                previewItems.innerHTML = itemsHTML;
+            }
+            
+            // Calculate totals
+            const tax = subtotal * 0.1; // 10% tax
+            const total = subtotal + tax;
+            
+            // Update totals in form
+            document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('tax-amount').textContent = `$${tax.toFixed(2)}`;
+            document.getElementById('total-amount').textContent = `$${total.toFixed(2)}`;
+            
+            // Update totals in preview
+            document.getElementById('preview-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('preview-tax').textContent = `$${tax.toFixed(2)}`;
+            document.getElementById('preview-total').textContent = `$${total.toFixed(2)}`;
+        }
+        
+        // Update date preview
+        function updateDatePreview() {
+            const invoiceDate = document.getElementById('invoice-date').value;
+            const dueDate = document.getElementById('due-date').value;
+            
+            document.getElementById('preview-invoice-date').textContent = 
+                invoiceDate ? new Date(invoiceDate).toLocaleDateString() : '-';
+            document.getElementById('preview-due-date').textContent = 
+                dueDate ? new Date(dueDate).toLocaleDateString() : '-';
+        }
+        
+        // Update notes preview
+        function updateNotesPreview() {
+            const notes = document.getElementById('invoice-notes').value;
+            const notesSection = document.getElementById('preview-notes-section');
+            const notesElement = document.getElementById('preview-notes');
+            
+            if (notes.trim()) {
+                notesElement.textContent = notes;
+                notesSection.style.display = 'block';
+            } else {
+                notesSection.style.display = 'none';
+            }
+        }
+        
+        // Save draft
+        document.getElementById('save-draft').addEventListener('click', function() {
+            this.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i><span>Saved!</span>';
+            lucide.createIcons();
+            setTimeout(() => {
+                this.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i><span>Save Draft</span>';
+                lucide.createIcons();
+            }, 2000);
+        });
+        
+        // Send invoice
+        document.getElementById('send-invoice').addEventListener('click', function() {
+            // Add send functionality here
+            alert('Invoice sent successfully!');
+        });
+        
+        // Initialize date fields with current date
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('invoice-date').value = today;
+        
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 30);
+        document.getElementById('due-date').value = dueDate.toISOString().split('T')[0];
+        
+        // Update preview dates on load
+        updateDatePreview();
+        
+        // Add initial line item
+        addLineItem();
+        
+        // Theme switching functionality
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Re-initialize icons to ensure they display correctly
+            setTimeout(() => {
+                lucide.createIcons();
+            }, 100);
+        }
+        
+        // Initialize theme on page load
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+        
+        // Initialize theme
+        initTheme();
+        
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,385 @@
+/* ClientHandle Dark Mode Styles */
+/* This file provides the CSS for dark mode components and utilities */
+
+/* Theme Toggle Button Styles */
+.theme-toggle {
+    @apply relative inline-flex items-center justify-center;
+    @apply w-10 h-10 rounded-lg cursor-pointer;
+    @apply bg-white dark:bg-gray-800;
+    @apply border border-gray-200 dark:border-gray-700;
+    @apply hover:bg-gray-50 dark:hover:bg-gray-700;
+    @apply transition-all duration-200 ease-in-out;
+    @apply shadow-sm hover:shadow-md;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+    @apply dark:focus:ring-offset-gray-900;
+}
+
+.theme-toggle:hover {
+    transform: translateY(-1px);
+}
+
+.theme-toggle-icon {
+    @apply w-5 h-5 transition-all duration-200;
+    @apply text-gray-600 dark:text-gray-400;
+}
+
+.theme-toggle:hover .theme-toggle-icon {
+    @apply text-gray-900 dark:text-gray-100;
+    transform: rotate(15deg);
+}
+
+/* Icon visibility based on theme */
+html:not(.dark) .sun-icon {
+    display: none;
+}
+
+html:not(.dark) .moon-icon {
+    display: block;
+}
+
+html.dark .sun-icon {
+    display: block;
+}
+
+html.dark .moon-icon {
+    display: none;
+}
+
+/* Custom gradient text that works in both themes */
+.gradient-text {
+    background: linear-gradient(135deg, #3b82f6, #22c55e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Card components with proper dark mode */
+.card-dark {
+    @apply bg-white dark:bg-gray-800;
+    @apply border border-gray-200 dark:border-gray-700;
+    @apply shadow-sm hover:shadow-md;
+    @apply transition-all duration-200;
+    @apply rounded-lg;
+}
+
+.card-dark:hover {
+    @apply bg-gray-50 dark:bg-gray-750;
+}
+
+/* Input components with dark mode support */
+.input-dark {
+    @apply bg-white dark:bg-gray-800;
+    @apply border border-gray-200 dark:border-gray-700;
+    @apply text-gray-900 dark:text-gray-100;
+    @apply placeholder-gray-500 dark:placeholder-gray-400;
+    @apply focus:ring-blue-500 focus:border-blue-500;
+    @apply dark:focus:ring-blue-400 dark:focus:border-blue-400;
+    @apply transition-colors duration-200;
+}
+
+/* Button components */
+.btn-primary-dark {
+    @apply bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700;
+    @apply text-white font-medium;
+    @apply px-4 py-2 rounded-lg;
+    @apply transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+    @apply dark:focus:ring-offset-gray-900;
+}
+
+.btn-secondary-dark {
+    @apply bg-white dark:bg-gray-800;
+    @apply border border-gray-200 dark:border-gray-700;
+    @apply text-gray-900 dark:text-gray-100;
+    @apply hover:bg-gray-50 dark:hover:bg-gray-700;
+    @apply font-medium px-4 py-2 rounded-lg;
+    @apply transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+    @apply dark:focus:ring-offset-gray-900;
+}
+
+/* Navigation components */
+.nav-dark {
+    @apply bg-white/80 dark:bg-gray-900/80;
+    @apply backdrop-blur-lg;
+    @apply border-b border-gray-200 dark:border-gray-800;
+}
+
+.nav-link-dark {
+    @apply text-gray-600 dark:text-gray-400;
+    @apply hover:text-gray-900 dark:hover:text-gray-100;
+    @apply transition-colors duration-200;
+    @apply px-3 py-2 rounded-md;
+}
+
+.nav-link-dark.active {
+    @apply text-blue-600 dark:text-blue-400;
+    @apply bg-blue-50 dark:bg-blue-900/20;
+}
+
+/* Sidebar components */
+.sidebar-dark {
+    @apply bg-white dark:bg-gray-900;
+    @apply border-r border-gray-200 dark:border-gray-800;
+}
+
+.sidebar-item-dark {
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg;
+    @apply text-gray-700 dark:text-gray-300;
+    @apply hover:bg-gray-50 dark:hover:bg-gray-800;
+    @apply hover:text-gray-900 dark:hover:text-gray-100;
+    @apply transition-all duration-200;
+}
+
+.sidebar-item-dark.active {
+    @apply bg-blue-50 dark:bg-blue-900/20;
+    @apply text-blue-600 dark:text-blue-400;
+}
+
+/* Table components */
+.table-dark {
+    @apply bg-white dark:bg-gray-800;
+    @apply border border-gray-200 dark:border-gray-700;
+    @apply rounded-lg overflow-hidden;
+}
+
+.table-dark th {
+    @apply bg-gray-50 dark:bg-gray-900;
+    @apply text-gray-900 dark:text-gray-100;
+    @apply font-semibold;
+    @apply border-b border-gray-200 dark:border-gray-700;
+}
+
+.table-dark td {
+    @apply text-gray-900 dark:text-gray-100;
+    @apply border-b border-gray-200 dark:border-gray-700;
+}
+
+.table-dark tbody tr:hover {
+    @apply bg-gray-50 dark:bg-gray-750;
+}
+
+/* Modal/Dialog components */
+.modal-dark {
+    @apply bg-white dark:bg-gray-800;
+    @apply border border-gray-200 dark:border-gray-700;
+    @apply shadow-xl;
+    @apply rounded-lg;
+}
+
+.modal-overlay-dark {
+    @apply bg-black/50 dark:bg-black/70;
+    @apply backdrop-blur-sm;
+}
+
+/* Status badges */
+.status-paid {
+    @apply bg-green-100 dark:bg-green-900/30;
+    @apply text-green-800 dark:text-green-400;
+    @apply px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.status-pending {
+    @apply bg-yellow-100 dark:bg-yellow-900/30;
+    @apply text-yellow-800 dark:text-yellow-400;
+    @apply px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.status-overdue {
+    @apply bg-red-100 dark:bg-red-900/30;
+    @apply text-red-800 dark:text-red-400;
+    @apply px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.status-draft {
+    @apply bg-gray-100 dark:bg-gray-700;
+    @apply text-gray-800 dark:text-gray-300;
+    @apply px-2 py-1 rounded-full text-xs font-medium;
+}
+
+/* Pricing specific components */
+.pricing-card-dark {
+    @apply bg-white dark:bg-gray-800;
+    @apply border border-gray-200 dark:border-gray-700;
+    @apply rounded-xl p-8 shadow-sm hover:shadow-lg;
+    @apply transition-all duration-300;
+}
+
+.pricing-card-dark:hover {
+    transform: translateY(-8px);
+    @apply border-blue-500 dark:border-blue-400;
+}
+
+.pricing-card-dark.popular {
+    @apply border-2 border-green-400;
+    @apply shadow-lg;
+}
+
+.popular-badge {
+    @apply bg-green-400 text-gray-900;
+    @apply px-4 py-2 rounded-full text-sm font-medium;
+    animation: pulse 2s infinite;
+}
+
+/* Toggle switch components */
+.toggle-switch {
+    @apply relative inline-block w-11 h-6;
+}
+
+.toggle-switch input {
+    @apply opacity-0 w-0 h-0;
+}
+
+.toggle-slider {
+    @apply absolute cursor-pointer top-0 left-0 right-0 bottom-0;
+    @apply bg-gray-300 dark:bg-gray-600;
+    @apply rounded-full transition-colors duration-200;
+}
+
+.toggle-slider:before {
+    @apply absolute content-[''] h-4 w-4 left-1 bottom-1;
+    @apply bg-white dark:bg-gray-200;
+    @apply rounded-full transition-transform duration-200;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    @apply bg-blue-500 dark:bg-blue-600;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+}
+
+/* Form components */
+.form-group-dark {
+    @apply mb-4;
+}
+
+.form-label-dark {
+    @apply block text-sm font-medium mb-2;
+    @apply text-gray-700 dark:text-gray-300;
+}
+
+.form-select-dark {
+    @apply bg-white dark:bg-gray-800;
+    @apply border border-gray-200 dark:border-gray-700;
+    @apply text-gray-900 dark:text-gray-100;
+    @apply rounded-lg px-3 py-2;
+    @apply focus:ring-blue-500 focus:border-blue-500;
+    @apply dark:focus:ring-blue-400 dark:focus:border-blue-400;
+}
+
+.form-textarea-dark {
+    @apply bg-white dark:bg-gray-800;
+    @apply border border-gray-200 dark:border-gray-700;
+    @apply text-gray-900 dark:text-gray-100;
+    @apply placeholder-gray-500 dark:placeholder-gray-400;
+    @apply rounded-lg px-3 py-2;
+    @apply focus:ring-blue-500 focus:border-blue-500;
+    @apply dark:focus:ring-blue-400 dark:focus:border-blue-400;
+    @apply resize-vertical;
+}
+
+/* FAQ components */
+.faq-item-dark {
+    @apply bg-white dark:bg-gray-800;
+    @apply border border-gray-200 dark:border-gray-700;
+    @apply rounded-lg;
+}
+
+.faq-content {
+    @apply transition-all duration-300 ease-out overflow-hidden;
+}
+
+/* Testimonial components */
+.testimonial-card-dark {
+    @apply bg-white dark:bg-gray-800;
+    @apply border border-gray-200 dark:border-gray-700;
+    @apply rounded-lg p-6;
+    @apply transition-all duration-300;
+    @apply hover:shadow-lg;
+}
+
+.testimonial-card-dark:hover {
+    transform: translateY(-4px);
+}
+
+/* Custom scrollbar for dark mode */
+.scrollbar-dark {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(75 85 99) rgb(31 41 55);
+}
+
+.scrollbar-dark::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollbar-dark::-webkit-scrollbar-track {
+    @apply bg-gray-800;
+}
+
+.scrollbar-dark::-webkit-scrollbar-thumb {
+    @apply bg-gray-600 rounded-full;
+}
+
+.scrollbar-dark::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500;
+}
+
+/* Animation utilities */
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus improvements for keyboard navigation */
+.focus-visible-dark:focus-visible {
+    @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+    @apply dark:ring-blue-400 dark:ring-offset-gray-900;
+}
+
+/* Print styles */
+@media print {
+    .theme-toggle {
+        display: none !important;
+    }
+    
+    .dark * {
+        @apply text-black bg-white;
+        background-image: none !important;
+        color: black !important;
+        border-color: black !important;
+    }
+}

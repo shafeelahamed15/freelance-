@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Management - ClientHandle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="clienthandle_theme_1.css">
+    <style>
+        body {
+            font-family: var(--font-sans) !important;
+            background-color: oklch(var(--background)) !important;
+            color: oklch(var(--foreground)) !important;
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        .animate-slideUp {
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        .animate-hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            transition: all 0.2s ease;
+        }
+        
+        .animate-quick-action:hover {
+            transform: scale(1.05);
+            transition: all 0.15s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes tableRowLoad {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .sidebar-active {
+            background-color: oklch(var(--sidebar-primary)) !important;
+            color: oklch(var(--sidebar-primary-foreground)) !important;
+        }
+        
+        .client-row {
+            animation: tableRowLoad 0.3s ease-out;
+            transition: all 0.15s ease;
+        }
+        
+        .client-row:hover {
+            background-color: oklch(var(--muted));
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .filter-pill {
+            transition: all 0.2s ease;
+        }
+        
+        .filter-pill.active {
+            background-color: oklch(var(--primary));
+            color: oklch(var(--primary-foreground));
+        }
+        
+        .action-btn {
+            transition: all 0.15s ease;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal-enter {
+            animation: modalEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        @keyframes modalEnter {
+            from { 
+                opacity: 0; 
+                transform: scale(0.95) translateY(-20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1) translateY(0); 
+            }
+        }
+        
+        .status-dot-active { background-color: oklch(var(--client-active)); }
+        .status-dot-pending { background-color: oklch(var(--invoice-pending)); }
+        .status-dot-onboard { background-color: oklch(var(--accent)); }
+        .status-dot-inactive { background-color: oklch(var(--muted-foreground)); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation Header -->
+    <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+            <button id="sidebar-toggle" class="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
+                <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <i data-lucide="users" class="w-4 h-4 text-white"></i>
+                </div>
+                <h1 class="text-xl font-semibold text-gray-900">ClientHandle</h1>
+            </div>
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="flex-1 max-w-md mx-8">
+            <div class="relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                <input 
+                    type="text" 
+                    placeholder="Search clients... (⌘K)"
+                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+            </div>
+        </div>
+        
+        <!-- Header Actions -->
+        <div class="flex items-center gap-4">
+            <button class="p-2 hover:bg-gray-100 rounded-lg relative">
+                <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
+                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">2</span>
+            </button>
+            
+            <div class="flex items-center gap-3">
+                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face&auto=format" 
+                     alt="Profile" class="w-8 h-8 rounded-full">
+                <div class="hidden sm:block">
+                    <p class="text-sm font-medium text-gray-900">John Smith</p>
+                    <p class="text-xs text-gray-500">Admin</p>
+                </div>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-64 bg-white border-r border-gray-200 min-h-screen transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+            <nav class="p-4 space-y-2">
+                <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                    <i data-lucide="home" class="w-5 h-5"></i>
+                    <span class="font-medium">Dashboard</span>
+                </a>
+                
+                <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 sidebar-active">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                    <span class="font-medium">Clients</span>
+                    <span class="ml-auto bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">42</span>
+                </a>
+                
+                <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                    <i data-lucide="receipt" class="w-5 h-5"></i>
+                    <span class="font-medium">Invoices</span>
+                    <span class="ml-auto bg-amber-100 text-amber-600 text-xs px-2 py-1 rounded-full">8</span>
+                </a>
+                
+                <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                    <i data-lucide="mail" class="w-5 h-5"></i>
+                    <span class="font-medium">Templates</span>
+                </a>
+                
+                
+                <div class="border-t border-gray-200 pt-4 mt-4">
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                        <span class="font-medium">Settings</span>
+                    </a>
+                    
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                        <i data-lucide="wrench" class="w-5 h-5"></i>
+                        <span class="font-medium">Admin</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 animate-fadeIn">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center gap-2 text-sm text-gray-600 mb-6">
+                <i data-lucide="home" class="w-4 h-4"></i>
+                <span>Dashboard</span>
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                <span class="text-gray-900 font-medium">Clients</span>
+            </nav>
+
+            <!-- Page Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Client Management</h2>
+                    <p class="text-gray-600">Manage your client relationships and track project progress.</p>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <button class="btn-primary px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i>
+                        Add Client
+                    </button>
+                    
+                    <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                        <i data-lucide="mail" class="w-4 h-4"></i>
+                        Bulk Email
+                    </button>
+                    
+                    <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Filters -->
+            <div class="mb-6">
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="text-sm font-medium text-gray-700">Filter by status:</span>
+                    <button class="filter-pill active px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200">
+                        All (42)
+                    </button>
+                    <button class="filter-pill px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200">
+                        <span class="w-2 h-2 bg-green-500 rounded-full inline-block mr-1.5"></span>
+                        Active (28)
+                    </button>
+                    <button class="filter-pill px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200">
+                        <span class="w-2 h-2 bg-amber-500 rounded-full inline-block mr-1.5"></span>
+                        Pending (8)
+                    </button>
+                    <button class="filter-pill px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200">
+                        <span class="w-2 h-2 bg-blue-500 rounded-full inline-block mr-1.5"></span>
+                        Onboarding (6)
+                    </button>
+                    <button class="filter-pill px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200">
+                        <span class="w-2 h-2 bg-gray-400 rounded-full inline-block mr-1.5"></span>
+                        Inactive (0)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Advanced Search & Controls -->
+            <div class="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+                <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
+                    <!-- Search Inputs -->
+                    <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <input 
+                            type="text" 
+                            placeholder="Search by name..."
+                            class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                        <input 
+                            type="text" 
+                            placeholder="Search by email..."
+                            class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                        <select class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option>All Statuses</option>
+                            <option>Active</option>
+                            <option>Pending</option>
+                            <option>Onboarding</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Sort & View Controls -->
+                    <div class="flex items-center gap-3">
+                        <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <option>Sort by Name</option>
+                            <option>Sort by Date</option>
+                            <option>Sort by Revenue</option>
+                        </select>
+                        
+                        <div class="flex items-center border border-gray-300 rounded-lg">
+                            <button class="p-2 bg-gray-50 text-blue-600 rounded-l-lg">
+                                <i data-lucide="list" class="w-4 h-4"></i>
+                            </button>
+                            <button class="p-2 text-gray-400 hover:text-gray-600">
+                                <i data-lucide="grid-3x3" class="w-4 h-4"></i>
+                            </button>
+                            <button class="p-2 text-gray-400 hover:text-gray-600 rounded-r-lg">
+                                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Client Table -->
+            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <!-- Table Header -->
+                <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm font-medium text-gray-900">42 clients</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-500">Bulk actions:</span>
+                        <select class="text-sm border border-gray-300 rounded px-2 py-1">
+                            <option>Choose action...</option>
+                            <option>Send email</option>
+                            <option>Update status</option>
+                            <option>Export selected</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Table Content -->
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="text-left py-4 px-6 font-medium text-gray-700">Client</th>
+                                <th class="text-left py-4 px-6 font-medium text-gray-700">Status</th>
+                                <th class="text-left py-4 px-6 font-medium text-gray-700">Revenue</th>
+                                <th class="text-left py-4 px-6 font-medium text-gray-700">Last Contact</th>
+                                <th class="text-left py-4 px-6 font-medium text-gray-700">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <!-- Client Row 1 -->
+                            <tr class="client-row hover:bg-gray-50" style="animation-delay: 0.1s">
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=40&h=40&fit=crop&auto=format" 
+                                             alt="ABC Corp" class="w-10 h-10 rounded-full">
+                                        <div>
+                                            <p class="font-semibold text-gray-900">ABC Corporation</p>
+                                            <p class="text-sm text-gray-600">john@abccorp.com</p>
+                                            <p class="text-xs text-gray-500">+1-555-0123 • 3 projects</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                                        <div class="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
+                                        Active
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="font-semibold text-gray-900">$15,000</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div>
+                                        <p class="text-sm text-gray-900">2 days ago</p>
+                                        <p class="text-xs text-gray-500">Jan 10, 2024</p>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center gap-2">
+                                        <button class="action-btn animate-quick-action p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg" title="Send Email">
+                                            <i data-lucide="mail" class="w-4 h-4"></i>
+                                        </button>
+                                        <button class="action-btn animate-quick-action p-2 text-green-600 bg-green-50 hover:bg-green-100 rounded-lg" title="Create Invoice">
+                                            <i data-lucide="receipt" class="w-4 h-4"></i>
+                                        </button>
+                                        <button class="action-btn animate-quick-action p-2 text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg" title="View Details" onclick="openClientModal('ABC Corporation')">
+                                            <i data-lucide="eye" class="w-4 h-4"></i>
+                                        </button>
+                                        <button class="action-btn animate-quick-action p-2 text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg" title="Edit Client">
+                                            <i data-lucide="edit" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Client Row 2 -->
+                            <tr class="client-row hover:bg-gray-50" style="animation-delay: 0.2s">
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                        <img src="https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=40&h=40&fit=crop&auto=format" 
+                                             alt="XYZ Ltd" class="w-10 h-10 rounded-full">
+                                        <div>
+                                            <p class="font-semibold text-gray-900">XYZ Limited</p>
+                                            <p class="text-sm text-gray-600">contact@xyz.com</p>
+                                            <p class="text-xs text-gray-500">+1-555-0456 • 1 project</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-100 text-amber-700 text-xs font-medium rounded-full">
+                                        <div class="w-1.5 h-1.5 bg-amber-600 rounded-full"></div>
+                                        Pending
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="font-semibold text-gray-900">$8,500</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div>
+                                        <p class="text-sm text-gray-900">1 week ago</p>
+                                        <p class="text-xs text-gray-500">Jan 3, 2024</p>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center gap-2">
+                                        <button class="action-btn animate-quick-action p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg" title="Send Email">
+                                            <i data-lucide="mail" class="w-4 h-4"></i>
+                                        </button>
+                                        <button class="action-btn animate-quick-action p-2 text-green-600 bg-green-50 hover:bg-green-100 rounded-lg" title="Create Invoice">
+                                            <i data-lucide="receipt" class="w-4 h-4"></i>
+                                        </button>
+                                        <button class="action-btn animate-quick-action p-2 text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg" title="View Details">
+                                            <i data-lucide="eye" class="w-4 h-4"></i>
+                                        </button>
+                                        <button class="action-btn animate-quick-action p-2 text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg" title="Edit Client">
+                                            <i data-lucide="edit" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Client Row 3 -->
+                            <tr class="client-row hover:bg-gray-50" style="animation-delay: 0.3s">
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                        <img src="https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=40&h=40&fit=crop&auto=format" 
+                                             alt="StartupCo" class="w-10 h-10 rounded-full">
+                                        <div>
+                                            <p class="font-semibold text-gray-900">StartupCo Inc</p>
+                                            <p class="text-sm text-gray-600">hello@startup.co</p>
+                                            <p class="text-xs text-gray-500">+1-555-0789 • 2 projects</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                                        <div class="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
+                                        Onboarding
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="font-semibold text-gray-900">$22,000</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div>
+                                        <p class="text-sm text-gray-900">Today</p>
+                                        <p class="text-xs text-gray-500">Jan 15, 2024</p>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center gap-2">
+                                        <button class="action-btn animate-quick-action p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg" title="Send Email">
+                                            <i data-lucide="mail" class="w-4 h-4"></i>
+                                        </button>
+                                        <button class="action-btn animate-quick-action p-2 text-green-600 bg-green-50 hover:bg-green-100 rounded-lg" title="Create Invoice">
+                                            <i data-lucide="receipt" class="w-4 h-4"></i>
+                                        </button>
+                                        <button class="action-btn animate-quick-action p-2 text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg" title="View Details">
+                                            <i data-lucide="eye" class="w-4 h-4"></i>
+                                        </button>
+                                        <button class="action-btn animate-quick-action p-2 text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg" title="Edit Client">
+                                            <i data-lucide="edit" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Client Row 4 -->
+                            <tr class="client-row hover:bg-gray-50" style="animation-delay: 0.4s">
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                        <img src="https://images.unsplash.com/photo-1556740758-90de374c12ad?w=40&h=40&fit=crop&auto=format" 
+                                             alt="TechFirm" class="w-10 h-10 rounded-full">
+                                        <div>
+                                            <p class="font-semibold text-gray-900">TechFirm LLC</p>
+                                            <p class="text-sm text-gray-600">info@techfirm.com</p>
+                                            <p class="text-xs text-gray-500">+1-555-0321 • 4 projects</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                                        <div class="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
+                                        Active
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="font-semibold text-gray-900">$12,300</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div>
+                                        <p class="text-sm text-gray-900">5 days ago</p>
+                                        <p class="text-xs text-gray-500">Dec 28, 2023</p>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center gap-2">
+                                        <button class="action-btn animate-quick-action p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg" title="Send Email">
+                                            <i data-lucide="mail" class="w-4 h-4"></i>
+                                        </button>
+                                        <button class="action-btn animate-quick-action p-2 text-green-600 bg-green-50 hover:bg-green-100 rounded-lg" title="Create Invoice">
+                                            <i data-lucide="receipt" class="w-4 h-4"></i>
+                                        </button>
+                                        <button class="action-btn animate-quick-action p-2 text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg" title="View Details">
+                                            <i data-lucide="eye" class="w-4 h-4"></i>
+                                        </button>
+                                        <button class="action-btn animate-quick-action p-2 text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg" title="Edit Client">
+                                            <i data-lucide="edit" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Table Footer -->
+                <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                    <div class="text-sm text-gray-600">
+                        Showing 1-4 of 42 clients
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        <button class="px-3 py-1 border border-gray-300 text-gray-600 rounded hover:bg-gray-50 disabled:opacity-50" disabled>
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        </button>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded font-medium">1</span>
+                        <span class="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded cursor-pointer">2</span>
+                        <span class="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded cursor-pointer">3</span>
+                        <button class="px-3 py-1 border border-gray-300 text-gray-600 rounded hover:bg-gray-50">
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Client Details Modal -->
+    <div id="client-modal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-overlay fixed inset-0" onclick="closeClientModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="modal-enter bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+                <!-- Modal Header -->
+                <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=48&h=48&fit=crop&auto=format" 
+                             alt="Client" class="w-12 h-12 rounded-full">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900" id="modal-client-name">ABC Corporation</h3>
+                            <p class="text-sm text-gray-600">john@abccorp.com</p>
+                        </div>
+                    </div>
+                    <button onclick="closeClientModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+                        <i data-lucide="x" class="w-5 h-5 text-gray-600"></i>
+                    </button>
+                </div>
+
+                <!-- Modal Content -->
+                <div class="p-6 overflow-y-auto max-h-[70vh]">
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div class="text-center p-4 bg-blue-50 rounded-lg">
+                            <p class="text-2xl font-bold text-blue-600">3</p>
+                            <p class="text-sm text-gray-600">Active Projects</p>
+                        </div>
+                        <div class="text-center p-4 bg-green-50 rounded-lg">
+                            <p class="text-2xl font-bold text-green-600">$15,000</p>
+                            <p class="text-sm text-gray-600">Total Revenue</p>
+                        </div>
+                        <div class="text-center p-4 bg-amber-50 rounded-lg">
+                            <p class="text-2xl font-bold text-amber-600">$12,000</p>
+                            <p class="text-sm text-gray-600">Paid Amount</p>
+                        </div>
+                        <div class="text-center p-4 bg-purple-50 rounded-lg">
+                            <p class="text-2xl font-bold text-purple-600">23</p>
+                            <p class="text-sm text-gray-600">Emails Sent</p>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-900">Invoice #1234 sent</p>
+                                    <p class="text-xs text-gray-500">Jan 10, 2024 2:30 PM</p>
+                                </div>
+                                <span class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">Delivered</span>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-900">Welcome email delivered</p>
+                                    <p class="text-xs text-gray-500">Jan 5, 2024 9:15 AM</p>
+                                </div>
+                                <span class="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">Opened</span>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                                <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-900">Payment received $5,000</p>
+                                    <p class="text-xs text-gray-500">Jan 3, 2024 4:20 PM</p>
+                                </div>
+                                <span class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">Completed</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <button class="flex items-center gap-2 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg text-blue-700 transition-colors">
+                                <i data-lucide="mail" class="w-4 h-4"></i>
+                                Send Email
+                            </button>
+                            
+                            <button class="flex items-center gap-2 p-3 bg-green-50 hover:bg-green-100 rounded-lg text-green-700 transition-colors">
+                                <i data-lucide="receipt" class="w-4 h-4"></i>
+                                Create Invoice
+                            </button>
+                            
+                            <button class="flex items-center gap-2 p-3 bg-purple-50 hover:bg-purple-100 rounded-lg text-purple-700 transition-colors">
+                                <i data-lucide="link" class="w-4 h-4"></i>
+                                Portal Access
+                            </button>
+                            
+                            <button class="flex items-center gap-2 p-3 bg-gray-50 hover:bg-gray-100 rounded-lg text-gray-700 transition-colors">
+                                <i data-lucide="edit" class="w-4 h-4"></i>
+                                Edit Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+                    <button onclick="closeClientModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                        Close
+                    </button>
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Sidebar toggle functionality
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        sidebarToggle?.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+        });
+        
+        // Filter functionality
+        document.querySelectorAll('.filter-pill').forEach(pill => {
+            pill.addEventListener('click', function() {
+                document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // Modal functionality
+        function openClientModal(clientName) {
+            const modal = document.getElementById('client-modal');
+            const nameElement = document.getElementById('modal-client-name');
+            if (nameElement) nameElement.textContent = clientName;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeClientModal() {
+            const modal = document.getElementById('client-modal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Quick action animations
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 100);
+            });
+        });
+        
+        // Row selection functionality
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const row = this.closest('tr');
+                if (this.checked) {
+                    row?.classList.add('bg-blue-50');
+                } else {
+                    row?.classList.remove('bg-blue-50');
+                }
+            });
+        });
+        
+        // Escape key to close modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeClientModal();
+            }
+        });
+        
+        // Search functionality (demo)
+        const searchInputs = document.querySelectorAll('input[type="text"]');
+        searchInputs.forEach(input => {
+            input.addEventListener('input', function() {
+                // Add search animation feedback
+                this.classList.add('ring-2', 'ring-blue-500');
+                setTimeout(() => {
+                    this.classList.remove('ring-2', 'ring-blue-500');
+                }, 300);
+            });
+        });
+    </script>
+</body>
+</html>

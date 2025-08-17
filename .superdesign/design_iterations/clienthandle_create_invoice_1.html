@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Invoice - ClientHandle</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Custom Theme -->
+    <link rel="stylesheet" href="./invoices_theme_1.css">
+    <!-- Dark Mode System -->
+    <link rel="stylesheet" href="./clienthandle_dark_mode_system.css">
+    
+    <script>
+        // Initialize theme before content loads
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    
+    <!-- Custom Styles -->
+    <style>
+        /* Form Animations */
+        .form-field-enter {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fieldEnter 0.3s ease-out forwards;
+        }
+        
+        @keyframes fieldEnter {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .line-item-enter {
+            opacity: 0;
+            transform: scale(0.95);
+            animation: lineItemEnter 0.2s ease-out forwards;
+        }
+        
+        @keyframes lineItemEnter {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* Preview Updates */
+        .preview-update {
+            background: rgba(59, 130, 246, 0.1);
+            transition: background-color 0.5s ease;
+        }
+        
+        /* Custom Select Styling */
+        .custom-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+        
+        /* Line Item Row Hover */
+        .line-item-row:hover {
+            background-color: oklch(var(--muted) / 0.3);
+        }
+        
+        /* Auto-calculation highlight */
+        .calc-highlight {
+            background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.1), transparent);
+            animation: calcPulse 0.6s ease;
+        }
+        
+        @keyframes calcPulse {
+            0%, 100% { background: transparent; }
+            50% { background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.1), transparent); }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Main Layout Container -->
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 min-h-screen bg-white border-r border-gray-200">
+            <div class="p-6">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-500 rounded-lg flex items-center justify-center">
+                        <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold" style="background: linear-gradient(135deg, oklch(0.4863 0.1592 264.5200), oklch(0.6400 0.1800 142.4953)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">ClientHandle</span>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="space-y-2">
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                        <span>Clients</span>
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="folder" class="w-5 h-5"></i>
+                        <span>Projects</span>
+                    </a>
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                        <span>Invoices</span>
+                    </a>
+                    <a href="#" class="sidebar-item active flex items-center gap-3 px-3 py-2 rounded-lg">
+                        <i data-lucide="plus" class="w-5 h-5"></i>
+                        <span>Create Invoice</span>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 min-h-screen bg-gray-50">
+            <!-- Header -->
+            <header class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-40">
+                <div class="flex items-center justify-between">
+                    <!-- Page Title -->
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Create New Invoice</h1>
+                        <p class="text-gray-600 mt-1">Invoice #<span id="invoice-number" class="font-mono">INV-2024-006</span></p>
+                    </div>
+                    
+                    <!-- Header Actions -->
+                    <div class="flex items-center gap-3">
+                        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+                            <i data-lucide="sun" class="theme-toggle-icon sun-icon"></i>
+                            <i data-lucide="moon" class="theme-toggle-icon moon-icon"></i>
+                        </button>
+                        <button id="save-draft" class="btn-secondary flex items-center gap-2">
+                            <i data-lucide="save" class="w-4 h-4"></i>
+                            <span>Save Draft</span>
+                        </button>
+                        <button id="send-invoice" class="btn-primary flex items-center gap-2">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>Send Invoice</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Content -->
+            <div class="p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Left Panel - Invoice Form -->
+                    <div class="space-y-6">
+                        <!-- Client Selection -->
+                        <div class="bg-white rounded-lg border border-gray-200 p-6 form-field-enter">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Client Details</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Client</label>
+                                    <select id="client-select" class="form-input custom-select w-full">
+                                        <option value="">Choose a client...</option>
+                                        <option value="acme-corp">Acme Corp - john@acmecorp.com</option>
+                                        <option value="techstart">TechStart Inc - sarah@techstart.io</option>
+                                        <option value="bluecorp">BlueCorp Ltd - mike@bluecorp.com</option>
+                                        <option value="greentech">GreenTech Solutions - emma@greentech.co</option>
+                                        <option value="redtech">RedTech Ventures - alex@redtech.com</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Invoice Date</label>
+                                        <input type="date" id="invoice-date" class="form-input w-full" value="2024-01-30">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Due Date</label>
+                                        <input type="date" id="due-date" class="form-input w-full" value="2024-02-14">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Payment Terms</label>
+                                    <select id="payment-terms" class="form-input custom-select w-full">
+                                        <option value="net-15">Net 15 days</option>
+                                        <option value="net-30" selected>Net 30 days</option>
+                                        <option value="net-60">Net 60 days</option>
+                                        <option value="due-on-receipt">Due on receipt</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Line Items -->
+                        <div class="bg-white rounded-lg border border-gray-200 p-6 form-field-enter" style="animation-delay: 0.1s">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900">Line Items</h3>
+                                <button id="add-line-item" class="btn-secondary text-sm flex items-center gap-2">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                    Add Item
+                                </button>
+                            </div>
+                            
+                            <!-- Line Items Header -->
+                            <div class="grid grid-cols-12 gap-3 text-xs font-medium text-gray-500 uppercase tracking-wide mb-3 px-3">
+                                <div class="col-span-5">Description</div>
+                                <div class="col-span-2 text-center">Quantity</div>
+                                <div class="col-span-2 text-center">Rate</div>
+                                <div class="col-span-2 text-center">Amount</div>
+                                <div class="col-span-1"></div>
+                            </div>
+                            
+                            <!-- Line Items Container -->
+                            <div id="line-items-container" class="space-y-2">
+                                <!-- Line Item 1 -->
+                                <div class="line-item-row grid grid-cols-12 gap-3 items-center p-3 rounded-lg border border-gray-100 line-item-enter">
+                                    <div class="col-span-5">
+                                        <input type="text" placeholder="Description of service..." class="form-input w-full text-sm" data-field="description">
+                                    </div>
+                                    <div class="col-span-2">
+                                        <input type="number" value="1" min="1" class="form-input w-full text-sm text-center" data-field="quantity">
+                                    </div>
+                                    <div class="col-span-2">
+                                        <div class="relative">
+                                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
+                                            <input type="number" step="0.01" placeholder="0.00" class="form-input w-full text-sm text-center pl-6" data-field="rate">
+                                        </div>
+                                    </div>
+                                    <div class="col-span-2">
+                                        <div class="text-sm font-medium text-gray-900 text-center amount-display">$0.00</div>
+                                    </div>
+                                    <div class="col-span-1 text-center">
+                                        <button class="remove-line-item p-1 text-gray-400 hover:text-red-500 transition-colors">
+                                            <i data-lucide="x" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Notes and Additional Info -->
+                        <div class="bg-white rounded-lg border border-gray-200 p-6 form-field-enter" style="animation-delay: 0.2s">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Additional Information</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
+                                    <textarea id="invoice-notes" rows="3" class="form-input w-full resize-none" placeholder="Add any additional notes or instructions..."></textarea>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Tax Rate (%)</label>
+                                        <input type="number" id="tax-rate" step="0.01" value="10" class="form-input w-full">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Discount (%)</label>
+                                        <input type="number" id="discount-rate" step="0.01" value="0" class="form-input w-full">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Panel - Invoice Preview -->
+                    <div class="lg:sticky lg:top-24 lg:h-fit">
+                        <div class="bg-white rounded-lg border border-gray-200 shadow-lg overflow-hidden form-field-enter" style="animation-delay: 0.3s">
+                            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                                    <i data-lucide="eye" class="w-5 h-5"></i>
+                                    Live Preview
+                                </h3>
+                                <p class="text-sm text-gray-600">This is how your invoice will look</p>
+                            </div>
+                            
+                            <!-- Invoice Preview Content -->
+                            <div class="p-8 bg-white" id="invoice-preview">
+                                <!-- Invoice Header -->
+                                <div class="flex justify-between items-start mb-8">
+                                    <div>
+                                        <div class="flex items-center gap-3 mb-4">
+                                            <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-green-500 rounded-lg flex items-center justify-center">
+                                                <i data-lucide="zap" class="w-6 h-6 text-white"></i>
+                                            </div>
+                                            <div>
+                                                <h2 class="text-xl font-bold" style="background: linear-gradient(135deg, oklch(0.4863 0.1592 264.5200), oklch(0.6400 0.1800 142.4953)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">ClientHandle</h2>
+                                                <p class="text-sm text-gray-600">Your Business Solutions</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-sm text-gray-600">
+                                            <p>123 Business Street</p>
+                                            <p>Suite 100, Business City, BC 12345</p>
+                                            <p>contact@clienthandle.com</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="text-right">
+                                        <h1 class="text-3xl font-bold text-gray-900 mb-2">INVOICE</h1>
+                                        <p class="text-sm text-gray-600">Invoice #<span id="preview-invoice-number">INV-2024-006</span></p>
+                                        <p class="text-sm text-gray-600">Date: <span id="preview-invoice-date">January 30, 2024</span></p>
+                                        <p class="text-sm text-gray-600">Due: <span id="preview-due-date">February 14, 2024</span></p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Bill To Section -->
+                                <div class="mb-8">
+                                    <h3 class="text-sm font-semibold text-gray-900 mb-2">BILL TO:</h3>
+                                    <div id="preview-client-info" class="text-sm text-gray-600">
+                                        <p class="text-gray-400 italic">Select a client to see details here</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Line Items Table -->
+                                <div class="mb-8">
+                                    <table class="w-full">
+                                        <thead>
+                                            <tr class="border-b-2 border-gray-200">
+                                                <th class="text-left py-3 text-sm font-semibold text-gray-900">Description</th>
+                                                <th class="text-center py-3 text-sm font-semibold text-gray-900 w-20">Qty</th>
+                                                <th class="text-center py-3 text-sm font-semibold text-gray-900 w-24">Rate</th>
+                                                <th class="text-right py-3 text-sm font-semibold text-gray-900 w-24">Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="preview-line-items">
+                                            <tr>
+                                                <td class="py-3 text-sm text-gray-400 italic" colspan="4">Add line items to see them here</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <!-- Totals -->
+                                <div class="border-t border-gray-200 pt-4">
+                                    <div class="flex justify-end">
+                                        <div class="w-64 space-y-2">
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-gray-600">Subtotal:</span>
+                                                <span id="preview-subtotal" class="font-medium">$0.00</span>
+                                            </div>
+                                            <div class="flex justify-between text-sm" id="discount-row" style="display: none;">
+                                                <span class="text-gray-600">Discount:</span>
+                                                <span id="preview-discount" class="font-medium text-green-600">-$0.00</span>
+                                            </div>
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-gray-600">Tax (<span id="preview-tax-rate">10</span>%):</span>
+                                                <span id="preview-tax" class="font-medium">$0.00</span>
+                                            </div>
+                                            <div class="border-t border-gray-200 pt-2">
+                                                <div class="flex justify-between text-lg font-bold">
+                                                    <span>Total:</span>
+                                                    <span id="preview-total" class="text-blue-600">$0.00</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Notes -->
+                                <div id="preview-notes-section" class="mt-8 pt-6 border-t border-gray-200" style="display: none;">
+                                    <h3 class="text-sm font-semibold text-gray-900 mb-2">Notes:</h3>
+                                    <p id="preview-notes" class="text-sm text-gray-600"></p>
+                                </div>
+                                
+                                <!-- Terms -->
+                                <div class="mt-8 pt-6 border-t border-gray-200">
+                                    <h3 class="text-sm font-semibold text-gray-900 mb-2">Payment Terms:</h3>
+                                    <p id="preview-payment-terms" class="text-sm text-gray-600">Net 30 days</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Client data for preview
+        const clientData = {
+            'acme-corp': {
+                name: 'Acme Corp',
+                contact: 'John Smith',
+                email: 'john@acmecorp.com',
+                address: '456 Corporate Blvd\nBusiness Park, BP 67890'
+            },
+            'techstart': {
+                name: 'TechStart Inc',
+                contact: 'Sarah Johnson',
+                email: 'sarah@techstart.io',
+                address: '789 Innovation Drive\nTech Valley, TV 54321'
+            },
+            'bluecorp': {
+                name: 'BlueCorp Ltd',
+                contact: 'Mike Wilson',
+                email: 'mike@bluecorp.com',
+                address: '321 Blue Street\nCorporate City, CC 98765'
+            },
+            'greentech': {
+                name: 'GreenTech Solutions',
+                contact: 'Emma Davis',
+                email: 'emma@greentech.co',
+                address: '654 Green Avenue\nEco Park, EP 13579'
+            },
+            'redtech': {
+                name: 'RedTech Ventures',
+                contact: 'Alex Brown',
+                email: 'alex@redtech.com',
+                address: '987 Red Road\nVenture Valley, VV 24681'
+            }
+        };
+        
+        // Payment terms mapping
+        const paymentTerms = {
+            'net-15': 'Net 15 days',
+            'net-30': 'Net 30 days',
+            'net-60': 'Net 60 days',
+            'due-on-receipt': 'Due on receipt'
+        };
+        
+        // Initialize form handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Client selection handler
+            document.getElementById('client-select').addEventListener('change', updateClientPreview);
+            
+            // Date handlers
+            document.getElementById('invoice-date').addEventListener('change', updateDatePreview);
+            document.getElementById('due-date').addEventListener('change', updateDatePreview);
+            
+            // Payment terms handler
+            document.getElementById('payment-terms').addEventListener('change', updatePaymentTermsPreview);
+            
+            // Line item handlers
+            document.getElementById('add-line-item').addEventListener('click', addLineItem);
+            
+            // Tax and discount handlers
+            document.getElementById('tax-rate').addEventListener('input', calculateTotals);
+            document.getElementById('discount-rate').addEventListener('input', calculateTotals);
+            
+            // Notes handler
+            document.getElementById('invoice-notes').addEventListener('input', updateNotesPreview);
+            
+            // Initialize line item listeners for the first row
+            initLineItemListeners();
+            
+            // Save and Send handlers
+            document.getElementById('save-draft').addEventListener('click', saveDraft);
+            document.getElementById('send-invoice').addEventListener('click', sendInvoice);
+        });
+        
+        // Update client preview
+        function updateClientPreview() {
+            const selectedClient = document.getElementById('client-select').value;
+            const previewClientInfo = document.getElementById('preview-client-info');
+            
+            if (selectedClient && clientData[selectedClient]) {
+                const client = clientData[selectedClient];
+                previewClientInfo.innerHTML = `
+                    <p class="font-semibold text-gray-900">${client.name}</p>
+                    <p>Attn: ${client.contact}</p>
+                    <p>${client.email}</p>
+                    <div class="mt-2">${client.address.replace(/\n/g, '<br>')}</div>
+                `;
+                previewClientInfo.classList.add('preview-update');
+                setTimeout(() => previewClientInfo.classList.remove('preview-update'), 500);
+            } else {
+                previewClientInfo.innerHTML = '<p class="text-gray-400 italic">Select a client to see details here</p>';
+            }
+        }
+        
+        // Update date preview
+        function updateDatePreview() {
+            const invoiceDate = document.getElementById('invoice-date').value;
+            const dueDate = document.getElementById('due-date').value;
+            
+            if (invoiceDate) {
+                document.getElementById('preview-invoice-date').textContent = new Date(invoiceDate).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            }
+            
+            if (dueDate) {
+                document.getElementById('preview-due-date').textContent = new Date(dueDate).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            }
+        }
+        
+        // Update payment terms preview
+        function updatePaymentTermsPreview() {
+            const selectedTerms = document.getElementById('payment-terms').value;
+            document.getElementById('preview-payment-terms').textContent = paymentTerms[selectedTerms] || 'Net 30 days';
+        }
+        
+        // Add new line item
+        function addLineItem() {
+            const container = document.getElementById('line-items-container');
+            const newItem = document.createElement('div');
+            newItem.className = 'line-item-row grid grid-cols-12 gap-3 items-center p-3 rounded-lg border border-gray-100 line-item-enter';
+            newItem.innerHTML = `
+                <div class="col-span-5">
+                    <input type="text" placeholder="Description of service..." class="form-input w-full text-sm" data-field="description">
+                </div>
+                <div class="col-span-2">
+                    <input type="number" value="1" min="1" class="form-input w-full text-sm text-center" data-field="quantity">
+                </div>
+                <div class="col-span-2">
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">$</span>
+                        <input type="number" step="0.01" placeholder="0.00" class="form-input w-full text-sm text-center pl-6" data-field="rate">
+                    </div>
+                </div>
+                <div class="col-span-2">
+                    <div class="text-sm font-medium text-gray-900 text-center amount-display">$0.00</div>
+                </div>
+                <div class="col-span-1 text-center">
+                    <button class="remove-line-item p-1 text-gray-400 hover:text-red-500 transition-colors">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(newItem);
+            lucide.createIcons(); // Reinitialize icons
+            initLineItemListeners(); // Add listeners to new item
+        }
+        
+        // Initialize line item listeners
+        function initLineItemListeners() {
+            // Remove item handlers
+            document.querySelectorAll('.remove-line-item').forEach(button => {
+                button.onclick = function(e) {
+                    e.preventDefault();
+                    const row = this.closest('.line-item-row');
+                    row.style.animation = 'lineItemEnter 0.2s ease-out reverse';
+                    setTimeout(() => {
+                        row.remove();
+                        updateLineItemsPreview();
+                        calculateTotals();
+                    }, 200);
+                };
+            });
+            
+            // Input handlers for calculations
+            document.querySelectorAll('.line-item-row input').forEach(input => {
+                input.addEventListener('input', function() {
+                    updateLineItemAmount(this.closest('.line-item-row'));
+                    updateLineItemsPreview();
+                    calculateTotals();
+                });
+            });
+        }
+        
+        // Update individual line item amount
+        function updateLineItemAmount(row) {
+            const quantity = parseFloat(row.querySelector('[data-field="quantity"]').value) || 0;
+            const rate = parseFloat(row.querySelector('[data-field="rate"]').value) || 0;
+            const amount = quantity * rate;
+            
+            const amountDisplay = row.querySelector('.amount-display');
+            amountDisplay.textContent = '$' + amount.toFixed(2);
+            amountDisplay.classList.add('calc-highlight');
+            setTimeout(() => amountDisplay.classList.remove('calc-highlight'), 600);
+        }
+        
+        // Update line items preview
+        function updateLineItemsPreview() {
+            const previewBody = document.getElementById('preview-line-items');
+            const lineItems = document.querySelectorAll('.line-item-row');
+            
+            if (lineItems.length === 0) {
+                previewBody.innerHTML = '<tr><td class="py-3 text-sm text-gray-400 italic" colspan="4">Add line items to see them here</td></tr>';
+                return;
+            }
+            
+            let hasValidItems = false;
+            let html = '';
+            
+            lineItems.forEach(row => {
+                const description = row.querySelector('[data-field="description"]').value.trim();
+                const quantity = parseFloat(row.querySelector('[data-field="quantity"]').value) || 0;
+                const rate = parseFloat(row.querySelector('[data-field="rate"]').value) || 0;
+                const amount = quantity * rate;
+                
+                if (description || quantity > 0 || rate > 0) {
+                    hasValidItems = true;
+                    html += `
+                        <tr class="border-b border-gray-100">
+                            <td class="py-3 text-sm">${description || 'Untitled Item'}</td>
+                            <td class="py-3 text-sm text-center">${quantity}</td>
+                            <td class="py-3 text-sm text-center">$${rate.toFixed(2)}</td>
+                            <td class="py-3 text-sm text-right font-medium">$${amount.toFixed(2)}</td>
+                        </tr>
+                    `;
+                }
+            });
+            
+            if (!hasValidItems) {
+                previewBody.innerHTML = '<tr><td class="py-3 text-sm text-gray-400 italic" colspan="4">Add line items to see them here</td></tr>';
+            } else {
+                previewBody.innerHTML = html;
+            }
+        }
+        
+        // Calculate totals
+        function calculateTotals() {
+            const lineItems = document.querySelectorAll('.line-item-row');
+            let subtotal = 0;
+            
+            lineItems.forEach(row => {
+                const quantity = parseFloat(row.querySelector('[data-field="quantity"]').value) || 0;
+                const rate = parseFloat(row.querySelector('[data-field="rate"]').value) || 0;
+                subtotal += quantity * rate;
+            });
+            
+            const taxRate = parseFloat(document.getElementById('tax-rate').value) || 0;
+            const discountRate = parseFloat(document.getElementById('discount-rate').value) || 0;
+            
+            const discountAmount = subtotal * (discountRate / 100);
+            const subtotalAfterDiscount = subtotal - discountAmount;
+            const taxAmount = subtotalAfterDiscount * (taxRate / 100);
+            const total = subtotalAfterDiscount + taxAmount;
+            
+            // Update preview
+            document.getElementById('preview-subtotal').textContent = '$' + subtotal.toFixed(2);
+            document.getElementById('preview-tax-rate').textContent = taxRate.toFixed(1);
+            document.getElementById('preview-tax').textContent = '$' + taxAmount.toFixed(2);
+            document.getElementById('preview-total').textContent = '$' + total.toFixed(2);
+            
+            // Show/hide discount row
+            const discountRow = document.getElementById('discount-row');
+            if (discountRate > 0) {
+                document.getElementById('preview-discount').textContent = '-$' + discountAmount.toFixed(2);
+                discountRow.style.display = 'flex';
+            } else {
+                discountRow.style.display = 'none';
+            }
+            
+            // Add highlight effect to total
+            const totalElement = document.getElementById('preview-total');
+            totalElement.classList.add('calc-highlight');
+            setTimeout(() => totalElement.classList.remove('calc-highlight'), 600);
+        }
+        
+        // Update notes preview
+        function updateNotesPreview() {
+            const notes = document.getElementById('invoice-notes').value.trim();
+            const notesSection = document.getElementById('preview-notes-section');
+            const notesContent = document.getElementById('preview-notes');
+            
+            if (notes) {
+                notesContent.textContent = notes;
+                notesSection.style.display = 'block';
+            } else {
+                notesSection.style.display = 'none';
+            }
+        }
+        
+        // Save draft
+        function saveDraft() {
+            const button = document.getElementById('save-draft');
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Saving...';
+            button.disabled = true;
+            
+            // Simulate save
+            setTimeout(() => {
+                button.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Saved';
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    lucide.createIcons();
+                }, 2000);
+            }, 1500);
+        }
+        
+        // Send invoice
+        function sendInvoice() {
+            const clientSelect = document.getElementById('client-select');
+            if (!clientSelect.value) {
+                alert('Please select a client before sending the invoice.');
+                clientSelect.focus();
+                return;
+            }
+            
+            const lineItems = document.querySelectorAll('.line-item-row');
+            let hasValidItems = false;
+            
+            lineItems.forEach(row => {
+                const description = row.querySelector('[data-field="description"]').value.trim();
+                const rate = parseFloat(row.querySelector('[data-field="rate"]').value) || 0;
+                if (description && rate > 0) hasValidItems = true;
+            });
+            
+            if (!hasValidItems) {
+                alert('Please add at least one line item with description and rate.');
+                return;
+            }
+            
+            const button = document.getElementById('send-invoice');
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Sending...';
+            button.disabled = true;
+            
+            // Simulate send
+            setTimeout(() => {
+                button.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Sent!';
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    lucide.createIcons();
+                    
+                    // Show success message
+                    alert('Invoice sent successfully!');
+                }, 2000);
+            }, 2000);
+        }
+        
+        // Initialize date fields with current date
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('invoice-date').value = today;
+        
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 30);
+        document.getElementById('due-date').value = dueDate.toISOString().split('T')[0];
+        
+        // Update preview dates on load
+        updateDatePreview();
+    </script>
+</body>
+</html>

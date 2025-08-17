@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - ClientHandle</title>
+    
+    <!-- Tailwind CSS with dark mode support -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configure Tailwind for dark mode
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Initialize theme BEFORE page loads to prevent flash -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const shouldUseDark = savedTheme === 'dark' || (savedTheme === null && systemPrefersDark);
+
+            if (shouldUseDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
+    
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+        }
+        
+        /* EMBEDDED DARK MODE STYLES */
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            background-color: rgb(255 255 255);
+            border: 1px solid rgb(229 231 235);
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        }
+        
+        .dark .theme-toggle {
+            background-color: rgb(31 41 55);
+            border-color: rgb(75 85 99);
+        }
+        
+        .theme-toggle:hover {
+            background-color: rgb(249 250 251);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .dark .theme-toggle:hover {
+            background-color: rgb(55 65 81);
+        }
+        
+        .theme-toggle-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            transition: all 0.2s;
+            color: rgb(75 85 99);
+        }
+        
+        .dark .theme-toggle-icon {
+            color: rgb(156 163 175);
+        }
+        
+        .theme-toggle:hover .theme-toggle-icon {
+            color: rgb(17 24 39);
+            transform: rotate(15deg);
+        }
+        
+        .dark .theme-toggle:hover .theme-toggle-icon {
+            color: rgb(243 244 246);
+        }
+        
+        /* Icon visibility based on theme */
+        html:not(.dark) .sun-icon { display: none; }
+        html:not(.dark) .moon-icon { display: block; }
+        html.dark .sun-icon { display: block; }
+        html.dark .moon-icon { display: none; }
+        
+        /* Custom gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #3b82f6, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Card components */
+        .card-dark {
+            background-color: rgb(255 255 255);
+            border: 1px solid rgb(229 231 235);
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            transition: all 0.2s;
+            border-radius: 0.5rem;
+        }
+        
+        .dark .card-dark {
+            background-color: rgb(31 41 55);
+            border-color: rgb(75 85 99);
+        }
+        
+        .card-dark:hover {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        /* Input components */
+        .input-dark {
+            background-color: rgb(255 255 255);
+            border: 1px solid rgb(229 231 235);
+            color: rgb(17 24 39);
+            transition: colors 0.2s;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+        }
+        
+        .dark .input-dark {
+            background-color: rgb(31 41 55);
+            border-color: rgb(75 85 99);
+            color: rgb(243 244 246);
+        }
+        
+        .input-dark::placeholder {
+            color: rgb(107 114 128);
+        }
+        
+        .dark .input-dark::placeholder {
+            color: rgb(156 163 175);
+        }
+        
+        .input-dark:focus {
+            outline: none;
+            ring: 2px solid rgb(59 130 246);
+            border-color: rgb(59 130 246);
+        }
+        
+        .dark .input-dark:focus {
+            ring-color: rgb(96 165 250);
+            border-color: rgb(96 165 250);
+        }
+        
+        /* Button components */
+        .btn-primary-dark {
+            background-color: rgb(59 130 246);
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary-dark:hover {
+            background-color: rgb(37 99 235);
+        }
+        
+        .dark .btn-primary-dark {
+            background-color: rgb(37 99 235);
+        }
+        
+        .dark .btn-primary-dark:hover {
+            background-color: rgb(29 78 216);
+        }
+        
+        .btn-secondary-dark {
+            background-color: rgb(255 255 255);
+            border: 1px solid rgb(229 231 235);
+            color: rgb(17 24 39);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-secondary-dark:hover {
+            background-color: rgb(249 250 251);
+        }
+        
+        .dark .btn-secondary-dark {
+            background-color: rgb(31 41 55);
+            border-color: rgb(75 85 99);
+            color: rgb(243 244 246);
+        }
+        
+        .dark .btn-secondary-dark:hover {
+            background-color: rgb(55 65 81);
+        }
+        
+        /* Navigation components */
+        .nav-dark {
+            background-color: rgb(255 255 255 / 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgb(229 231 235);
+        }
+        
+        .dark .nav-dark {
+            background-color: rgb(17 24 39 / 0.8);
+            border-bottom-color: rgb(31 41 55);
+        }
+        
+        /* Sidebar components */
+        .sidebar-dark {
+            background-color: rgb(255 255 255);
+            border-right: 1px solid rgb(229 231 235);
+        }
+        
+        .dark .sidebar-dark {
+            background-color: rgb(17 24 39);
+            border-right-color: rgb(31 41 55);
+        }
+        
+        .sidebar-item-dark {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            color: rgb(55 65 81);
+            transition: all 0.2s;
+        }
+        
+        .sidebar-item-dark:hover {
+            background-color: rgb(249 250 251);
+            color: rgb(17 24 39);
+        }
+        
+        .dark .sidebar-item-dark {
+            color: rgb(209 213 219);
+        }
+        
+        .dark .sidebar-item-dark:hover {
+            background-color: rgb(31 41 55);
+            color: rgb(243 244 246);
+        }
+        
+        .sidebar-item-dark.active {
+            background-color: rgb(239 246 255);
+            color: rgb(37 99 235);
+        }
+        
+        .dark .sidebar-item-dark.active {
+            background-color: rgb(30 58 138 / 0.2);
+            color: rgb(96 165 250);
+        }
+        
+        /* Form components */
+        .form-label-dark {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: rgb(55 65 81);
+        }
+        
+        .dark .form-label-dark {
+            color: rgb(209 213 219);
+        }
+        
+        .form-select-dark {
+            background-color: rgb(255 255 255);
+            border: 1px solid rgb(229 231 235);
+            color: rgb(17 24 39);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+        }
+        
+        .dark .form-select-dark {
+            background-color: rgb(31 41 55);
+            border-color: rgb(75 85 99);
+            color: rgb(243 244 246);
+        }
+        
+        .form-textarea-dark {
+            background-color: rgb(255 255 255);
+            border: 1px solid rgb(229 231 235);
+            color: rgb(17 24 39);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            resize: vertical;
+        }
+        
+        .dark .form-textarea-dark {
+            background-color: rgb(31 41 55);
+            border-color: rgb(75 85 99);
+            color: rgb(243 244 246);
+        }
+        
+        .form-textarea-dark::placeholder {
+            color: rgb(107 114 128);
+        }
+        
+        .dark .form-textarea-dark::placeholder {
+            color: rgb(156 163 175);
+        }
+        
+        /* Toggle switch components */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 2.75rem;
+            height: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgb(209 213 219);
+            border-radius: 9999px;
+            transition: all 0.2s;
+        }
+        
+        .dark .toggle-slider {
+            background-color: rgb(75 85 99);
+        }
+        
+        .toggle-slider:before {
+            content: '';
+            position: absolute;
+            height: 1rem;
+            width: 1rem;
+            left: 0.25rem;
+            bottom: 0.25rem;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+        
+        .dark .toggle-slider:before {
+            background-color: rgb(229 231 235);
+        }
+        
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: rgb(59 130 246);
+        }
+        
+        .dark .toggle-switch input:checked + .toggle-slider {
+            background-color: rgb(37 99 235);
+        }
+        
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(1.25rem);
+        }
+        
+        /* API key display */
+        .api-key-display {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: rgb(243 244 246);
+            color: rgb(17 24 39);
+            border: 1px solid rgb(229 231 235);
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            letter-spacing: 0.025em;
+        }
+        
+        .dark .api-key-display {
+            background-color: rgb(31 41 55);
+            color: rgb(243 244 246);
+            border-color: rgb(75 85 99);
+        }
+        
+        /* QR code container */
+        .qr-code-container {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            display: inline-block;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            border: 1px solid rgb(229 231 235);
+        }
+        
+        .dark .qr-code-container {
+            background-color: rgb(31 41 55);
+            border-color: rgb(75 85 99);
+        }
+        
+        /* Custom scrollbar */
+        .scrollbar-dark {
+            scrollbar-width: thin;
+            scrollbar-color: rgb(75 85 99) rgb(31 41 55);
+        }
+        
+        .scrollbar-dark::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .scrollbar-dark::-webkit-scrollbar-track {
+            background-color: rgb(31 41 55);
+        }
+        
+        .scrollbar-dark::-webkit-scrollbar-thumb {
+            background-color: rgb(75 85 99);
+            border-radius: 9999px;
+        }
+        
+        .scrollbar-dark::-webkit-scrollbar-thumb:hover {
+            background-color: rgb(107 114 128);
+        }
+        
+        /* Tab animations */
+        .tab-content {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            display: none;
+        }
+        
+        .tab-content.active {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+        
+        .tab-button {
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .tab-button.active {
+            background-color: rgb(239 246 255);
+            color: rgb(37 99 235);
+        }
+        
+        .dark .tab-button.active {
+            background-color: rgb(30 58 138 / 0.2);
+            color: rgb(96 165 250);
+        }
+        
+        /* Form animations */
+        .form-section {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideInUp 0.4s ease forwards;
+        }
+        
+        .form-section:nth-child(2) { animation-delay: 0.1s; }
+        .form-section:nth-child(3) { animation-delay: 0.2s; }
+        .form-section:nth-child(4) { animation-delay: 0.3s; }
+        
+        @keyframes slideInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Save button animation */
+        .save-success {
+            animation: saveSuccess 0.6s ease;
+        }
+        
+        @keyframes saveSuccess {
+            0% { background-color: rgb(59 130 246); }
+            50% { background-color: rgb(34 197 94); transform: scale(1.02); }
+            100% { background-color: rgb(59 130 246); }
+        }
+        
+        /* Avatar upload */
+        .avatar-upload {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .avatar-upload:hover {
+            transform: scale(1.02);
+        }
+        
+        .avatar-upload input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <!-- Main Layout Container -->
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="sidebar-dark w-64 min-h-screen fixed left-0 top-0 overflow-y-auto scrollbar-dark">
+            <div class="p-6">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-500 rounded-lg flex items-center justify-center">
+                        <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold gradient-text">ClientHandle</span>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="space-y-2">
+                    <a href="#" class="sidebar-item-dark">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="sidebar-item-dark">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                        <span>Clients</span>
+                    </a>
+                    <a href="#" class="sidebar-item-dark">
+                        <i data-lucide="folder" class="w-5 h-5"></i>
+                        <span>Projects</span>
+                    </a>
+                    <a href="#" class="sidebar-item-dark">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                        <span>Invoices</span>
+                    </a>
+                    <a href="#" class="sidebar-item-dark active">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 ml-64 min-h-screen">
+            <!-- Header -->
+            <header class="nav-dark px-6 py-4 sticky top-0 z-40">
+                <div class="flex items-center justify-between">
+                    <!-- Page Title -->
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Settings</h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-1">Manage your account and application preferences</p>
+                    </div>
+                    
+                    <!-- Header Actions -->
+                    <div class="flex items-center gap-3">
+                        <button class="theme-toggle" aria-label="Toggle dark mode">
+                            <i data-lucide="sun" class="theme-toggle-icon sun-icon"></i>
+                            <i data-lucide="moon" class="theme-toggle-icon moon-icon"></i>
+                        </button>
+                        <button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg relative transition-colors">
+                            <i data-lucide="bell" class="w-5 h-5 text-gray-600 dark:text-gray-400"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">2</span>
+                        </button>
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-green-500"></div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Content -->
+            <div class="flex">
+                <!-- Settings Navigation Tabs -->
+                <div class="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 min-h-screen p-6">
+                    <nav class="space-y-1">
+                        <button class="tab-button active w-full flex items-center gap-3 px-3 py-2 text-left rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" data-tab="profile">
+                            <i data-lucide="user" class="w-5 h-5"></i>
+                            <span>Profile</span>
+                        </button>
+                        <button class="tab-button w-full flex items-center gap-3 px-3 py-2 text-left rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" data-tab="company">
+                            <i data-lucide="building" class="w-5 h-5"></i>
+                            <span>Company</span>
+                        </button>
+                        <button class="tab-button w-full flex items-center gap-3 px-3 py-2 text-left rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" data-tab="invoicing">
+                            <i data-lucide="receipt" class="w-5 h-5"></i>
+                            <span>Invoicing</span>
+                        </button>
+                        <button class="tab-button w-full flex items-center gap-3 px-3 py-2 text-left rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" data-tab="notifications">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                            <span>Notifications</span>
+                        </button>
+                        <button class="tab-button w-full flex items-center gap-3 px-3 py-2 text-left rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" data-tab="security">
+                            <i data-lucide="shield" class="w-5 h-5"></i>
+                            <span>Security</span>
+                        </button>
+                        <button class="tab-button w-full flex items-center gap-3 px-3 py-2 text-left rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" data-tab="billing">
+                            <i data-lucide="credit-card" class="w-5 h-5"></i>
+                            <span>Billing</span>
+                        </button>
+                    </nav>
+                </div>
+                
+                <!-- Settings Content -->
+                <div class="flex-1 p-6">
+                    <!-- Profile Tab -->
+                    <div id="profile-tab" class="tab-content active">
+                        <div class="max-w-4xl space-y-8">
+                            <!-- Profile Picture -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Profile Picture</h3>
+                                <div class="flex items-center gap-6">
+                                    <label class="avatar-upload">
+                                        <div class="w-20 h-20 rounded-full bg-gradient-to-r from-blue-600 to-green-500 flex items-center justify-center text-white text-2xl font-semibold cursor-pointer">
+                                            JD
+                                        </div>
+                                        <input type="file" accept="image/*" id="avatar-upload">
+                                    </label>
+                                    <div>
+                                        <button class="btn-primary-dark text-sm px-4 py-2 mr-2">
+                                            <i data-lucide="upload" class="w-4 h-4"></i>
+                                            Upload New Photo
+                                        </button>
+                                        <button class="btn-secondary-dark text-sm px-4 py-2">
+                                            Remove
+                                        </button>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">JPG, PNG or GIF. Max size 2MB.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Personal Information -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Personal Information</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="form-label-dark">First Name</label>
+                                        <input type="text" value="John" class="input-dark w-full">
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Last Name</label>
+                                        <input type="text" value="Doe" class="input-dark w-full">
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Email Address</label>
+                                        <input type="email" value="john.doe@clienthandle.com" class="input-dark w-full">
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Phone Number</label>
+                                        <input type="tel" value="+1 (555) 123-4567" class="input-dark w-full">
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label class="form-label-dark">Bio</label>
+                                        <textarea rows="3" class="form-textarea-dark w-full" placeholder="Tell us a little about yourself...">Experienced business consultant helping companies streamline their operations and improve client relationships.</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Save Button -->
+                            <div class="flex justify-end">
+                                <button class="btn-primary-dark px-6 py-3" id="save-profile">
+                                    <i data-lucide="save" class="w-4 h-4"></i>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Notifications Tab -->
+                    <div id="notifications-tab" class="tab-content">
+                        <div class="max-w-4xl space-y-8">
+                            <!-- Email Notifications -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Email Notifications</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="font-medium text-gray-900 dark:text-gray-100">New Client Inquiries</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Get notified when new clients submit contact forms</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="font-medium text-gray-900 dark:text-gray-100">Invoice Payments</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Get notified when invoices are paid</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="font-medium text-gray-900 dark:text-gray-100">Overdue Invoices</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Get reminded about overdue invoices</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="font-medium text-gray-900 dark:text-gray-100">Project Updates</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Get notified about project milestone updates</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Save Button -->
+                            <div class="flex justify-end">
+                                <button class="btn-primary-dark px-6 py-3">
+                                    <i data-lucide="save" class="w-4 h-4"></i>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Security Tab -->
+                    <div id="security-tab" class="tab-content">
+                        <div class="max-w-4xl space-y-8">
+                            <!-- Two-Factor Authentication -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Two-Factor Authentication</h3>
+                                <div class="flex items-start gap-6">
+                                    <div class="qr-code-container">
+                                        <div class="w-32 h-32 bg-gray-100 dark:bg-gray-700 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded flex items-center justify-center">
+                                            <i data-lucide="qr-code" class="w-12 h-12 text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                            Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.) to enable two-factor authentication.
+                                        </p>
+                                        <div class="mb-4">
+                                            <label class="form-label-dark">Manual Entry Key</label>
+                                            <div class="api-key-display">
+                                                MFRGG2LTMVZWS5DFNN2HE2LTMVZWS5DFNN2A
+                                            </div>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="form-label-dark">Enter verification code</label>
+                                            <input type="text" placeholder="000000" class="input-dark w-32 text-center font-mono">
+                                        </div>
+                                        <button class="btn-primary-dark">
+                                            Enable 2FA
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- API Keys -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">API Keys</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                        <div>
+                                            <p class="font-medium text-gray-900 dark:text-gray-100">Production API Key</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Created on Dec 15, 2024 • Last used 2 days ago</p>
+                                            <div class="api-key-display mt-2">
+                                                pk_live_51ABC...DEF123 (Hidden)
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button class="btn-secondary-dark text-sm">View</button>
+                                            <button class="text-sm text-red-600 dark:text-red-400 font-medium hover:text-red-700 dark:hover:text-red-300">Revoke</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button class="btn-primary-dark">
+                                        <i data-lucide="plus" class="w-4 h-4"></i>
+                                        Generate New API Key
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Company Tab -->
+                    <div id="company-tab" class="tab-content">
+                        <div class="max-w-4xl space-y-8">
+                            <!-- Company Information -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Company Information</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="md:col-span-2">
+                                        <label class="form-label-dark">Company Name</label>
+                                        <input type="text" value="ClientHandle Solutions" class="input-dark w-full">
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Industry</label>
+                                        <select class="form-select-dark w-full">
+                                            <option>Consulting</option>
+                                            <option>Technology</option>
+                                            <option>Marketing</option>
+                                            <option>Finance</option>
+                                            <option>Healthcare</option>
+                                            <option>Other</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Company Size</label>
+                                        <select class="form-select-dark w-full">
+                                            <option>1-10 employees</option>
+                                            <option>11-50 employees</option>
+                                            <option>51-200 employees</option>
+                                            <option>201+ employees</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Save Button -->
+                            <div class="flex justify-end">
+                                <button class="btn-primary-dark px-6 py-3">
+                                    <i data-lucide="save" class="w-4 h-4"></i>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Invoicing Tab -->
+                    <div id="invoicing-tab" class="tab-content">
+                        <div class="max-w-4xl space-y-8">
+                            <!-- Invoice Settings -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Invoice Defaults</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="form-label-dark">Default Payment Terms</label>
+                                        <select class="form-select-dark w-full">
+                                            <option>Net 15 days</option>
+                                            <option selected>Net 30 days</option>
+                                            <option>Net 60 days</option>
+                                            <option>Due on receipt</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="form-label-dark">Late Fee (%)</label>
+                                        <input type="number" step="0.01" value="2.5" class="input-dark w-full">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Save Button -->
+                            <div class="flex justify-end">
+                                <button class="btn-primary-dark px-6 py-3">
+                                    <i data-lucide="save" class="w-4 h-4"></i>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Billing Tab -->
+                    <div id="billing-tab" class="tab-content">
+                        <div class="max-w-4xl space-y-8">
+                            <!-- Current Plan -->
+                            <div class="form-section card-dark p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Current Plan</h3>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="text-xl font-bold text-gray-900 dark:text-gray-100">Professional Plan</h4>
+                                        <p class="text-gray-600 dark:text-gray-400">$29/month • Billed monthly</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-500 mt-1">Next billing date: January 15, 2025</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <button class="btn-secondary-dark mb-2">Change Plan</button>
+                                        <br>
+                                        <button class="btn-secondary-dark text-red-600 dark:text-red-400">Cancel Subscription</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- EMBEDDED DARK MODE JAVASCRIPT -->
+    <script>
+        // ClientHandle Dark Mode System - Embedded Version
+        class DarkModeManager {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                this.setInitialTheme();
+                this.listenForSystemChanges();
+                
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', () => {
+                        this.setupEventListeners();
+                        this.updateUI();
+                    });
+                } else {
+                    this.setupEventListeners();
+                    this.updateUI();
+                }
+            }
+
+            setInitialTheme() {
+                const savedTheme = localStorage.getItem('theme');
+                const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const shouldUseDark = savedTheme === 'dark' || (savedTheme === null && systemPrefersDark);
+
+                if (shouldUseDark) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+
+            getCurrentTheme() {
+                return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            }
+
+            toggleTheme() {
+                const currentTheme = this.getCurrentTheme();
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                this.setTheme(newTheme);
+            }
+
+            setTheme(theme) {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+                
+                localStorage.setItem('theme', theme);
+                this.updateUI();
+                this.dispatchThemeChangeEvent(theme);
+            }
+
+            updateUI() {
+                const isDark = this.getCurrentTheme() === 'dark';
+                
+                document.querySelectorAll('.theme-toggle').forEach(toggle => {
+                    const sunIcon = toggle.querySelector('.sun-icon');
+                    const moonIcon = toggle.querySelector('.moon-icon');
+                    
+                    if (sunIcon && moonIcon) {
+                        if (isDark) {
+                            sunIcon.style.display = 'block';
+                            moonIcon.style.display = 'none';
+                        } else {
+                            sunIcon.style.display = 'none';
+                            moonIcon.style.display = 'block';
+                        }
+                    }
+                });
+
+                if (window.lucide) {
+                    setTimeout(() => {
+                        window.lucide.createIcons();
+                    }, 100);
+                }
+            }
+
+            listenForSystemChanges() {
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                    if (!localStorage.getItem('theme')) {
+                        this.setTheme(e.matches ? 'dark' : 'light');
+                    }
+                });
+            }
+
+            setupEventListeners() {
+                document.querySelectorAll('.theme-toggle').forEach(button => {
+                    button.addEventListener('click', () => {
+                        this.toggleTheme();
+                    });
+                });
+
+                document.querySelectorAll('.theme-toggle').forEach(button => {
+                    button.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            this.toggleTheme();
+                        }
+                    });
+                });
+            }
+
+            dispatchThemeChangeEvent(theme) {
+                const event = new CustomEvent('themechange', {
+                    detail: { theme }
+                });
+                document.dispatchEvent(event);
+            }
+        }
+
+        // Initialize dark mode manager
+        const darkModeManager = new DarkModeManager();
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Tab switching functionality
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabName = button.getAttribute('data-tab');
+                
+                // Update active button
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Update active content
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                const activeTab = document.getElementById(`${tabName}-tab`);
+                if (activeTab) {
+                    activeTab.classList.add('active');
+                }
+                
+                // Reinitialize icons for the new content
+                setTimeout(() => {
+                    lucide.createIcons();
+                }, 100);
+            });
+        });
+        
+        // Avatar upload functionality
+        const avatarUpload = document.getElementById('avatar-upload');
+        if (avatarUpload) {
+            avatarUpload.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const avatarImg = document.querySelector('.avatar-upload div');
+                        avatarImg.style.backgroundImage = `url(${e.target.result})`;
+                        avatarImg.style.backgroundSize = 'cover';
+                        avatarImg.style.backgroundPosition = 'center';
+                        avatarImg.textContent = '';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        // Save profile functionality
+        const saveProfileBtn = document.getElementById('save-profile');
+        if (saveProfileBtn) {
+            saveProfileBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Add save animation
+                saveProfileBtn.classList.add('save-success');
+                saveProfileBtn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Saved!';
+                
+                setTimeout(() => {
+                    saveProfileBtn.classList.remove('save-success');
+                    saveProfileBtn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Save Changes';
+                    lucide.createIcons();
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

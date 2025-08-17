@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - ClientHandle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Dark Mode System -->
+    <link rel="stylesheet" href="./clienthandle_dark_mode_system.css">
+    
+    <script>
+        // Initialize theme before content loads
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    
+    <style>
+        /* Additional pricing-specific styles */
+        .pricing-card {
+            background: var(--card) !important;
+            border: 1px solid var(--border) !important;
+            transition: var(--transition-slow) !important;
+            border-radius: var(--radius) !important;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary);
+        }
+        
+        .pricing-card.popular {
+            border-color: var(--accent);
+            border-width: 2px;
+        }
+        
+        .popular-badge {
+            background: var(--accent);
+            color: var(--accent-foreground);
+            animation: pulse 2s infinite;
+        }
+        
+        .billing-toggle {
+            background: var(--input);
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            padding: 0.25rem;
+            transition: var(--transition);
+        }
+        
+        .billing-toggle-dot {
+            background: var(--primary);
+            border-radius: 9999px;
+            transition: var(--transition);
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+        
+        .pricing-feature {
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+        
+        .pricing-feature.unavailable {
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+        
+        .comparison-table {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        
+        .comparison-table th {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .comparison-table td {
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .comparison-table tbody tr:hover {
+            background: var(--hover);
+        }
+        
+        .faq-item {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+        
+        .faq-content {
+            transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+            overflow: hidden;
+        }
+        
+        .testimonial-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            transition: var(--transition-slow);
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, oklch(from var(--primary) l c h / 0.1), oklch(from var(--accent) l c h / 0.1));
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+        
+        /* Star rating styles */
+        .star-rating {
+            color: #fbbf24;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .comparison-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav sticky top-0 z-50 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-8">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-green-400 rounded-lg flex items-center justify-center">
+                            <i data-lucide="briefcase" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <span class="text-white font-semibold text-lg text-gradient">ClientHandle</span>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-6">
+                        <a href="#" class="nav-link">Dashboard</a>
+                        <a href="#" class="nav-link">Clients</a>
+                        <a href="#" class="nav-link">Invoices</a>
+                        <a href="#" class="nav-link active">Pricing</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+                        <i data-lucide="sun" class="theme-toggle-icon sun-icon"></i>
+                        <i data-lucide="moon" class="theme-toggle-icon moon-icon"></i>
+                    </button>
+                    <button class="nav-link">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                    </button>
+                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="min-h-screen bg-primary">
+        <!-- Hero Section -->
+        <section class="py-20 px-6">
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-5xl font-bold text-primary mb-6">
+                    Choose Your <span class="text-gradient">Perfect Plan</span>
+                </h1>
+                <p class="text-xl text-secondary mb-12 max-w-2xl mx-auto">
+                    Scale your freelance business with powerful client management tools. 
+                    Start free and upgrade as you grow.
+                </p>
+
+                <!-- Billing Toggle -->
+                <div class="flex items-center justify-center mb-12">
+                    <span class="text-secondary mr-3">Monthly</span>
+                    <div class="relative">
+                        <input type="checkbox" id="billingToggle" class="sr-only" onchange="toggleBilling()">
+                        <label for="billingToggle" class="flex items-center cursor-pointer">
+                            <div class="billing-toggle w-14 h-8 flex items-center">
+                                <div class="billing-toggle-dot transition-transform"></div>
+                            </div>
+                        </label>
+                    </div>
+                    <span class="text-secondary ml-3">Yearly</span>
+                    <span class="ml-3 px-2 py-1 bg-success/20 text-success text-sm font-medium rounded-full">
+                        Save 20%
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Cards -->
+        <section class="py-12 px-6">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-8">
+                    
+                    <!-- Starter Plan -->
+                    <div class="pricing-card p-8 relative">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-primary mb-2">Starter</h3>
+                            <p class="text-secondary text-sm">Perfect for beginners</p>
+                        </div>
+                        <div class="mb-6">
+                            <div class="flex items-baseline">
+                                <span class="text-4xl font-bold text-primary">$0</span>
+                                <span class="text-secondary ml-1">/month</span>
+                            </div>
+                            <p class="text-success text-sm mt-1">Forever free</p>
+                        </div>
+                        <ul class="mb-8 space-y-3">
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>Up to 3 clients</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>5 invoices per month</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>Basic email templates</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>Standard support</span>
+                            </li>
+                            <li class="pricing-feature unavailable flex items-center gap-3">
+                                <i data-lucide="x" class="w-5 h-5 text-muted flex-shrink-0"></i>
+                                <span>AI template generation</span>
+                            </li>
+                            <li class="pricing-feature unavailable flex items-center gap-3">
+                                <i data-lucide="x" class="w-5 h-5 text-muted flex-shrink-0"></i>
+                                <span>Advanced analytics</span>
+                            </li>
+                        </ul>
+                        <button class="w-full btn-secondary py-3 rounded-lg font-medium">
+                            Get Started Free
+                        </button>
+                    </div>
+
+                    <!-- Professional Plan -->
+                    <div class="pricing-card popular p-8 relative">
+                        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                            <div class="popular-badge px-4 py-2 rounded-full text-sm font-medium">
+                                Most Popular
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-primary mb-2">Professional</h3>
+                            <p class="text-secondary text-sm">For growing freelancers</p>
+                        </div>
+                        <div class="mb-6">
+                            <div class="flex items-baseline">
+                                <span class="text-4xl font-bold text-primary">
+                                    <span class="monthly-price">$19</span>
+                                    <span class="yearly-price hidden">$15</span>
+                                </span>
+                                <span class="text-secondary ml-1">/month</span>
+                            </div>
+                            <p class="yearly-savings hidden text-success text-sm mt-1">$48 saved yearly</p>
+                        </div>
+                        <ul class="mb-8 space-y-3">
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>Up to 15 clients</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>Unlimited invoices</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>AI template generation</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>Email automation</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>Basic analytics</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>Priority support</span>
+                            </li>
+                        </ul>
+                        <button class="w-full btn-primary py-3 rounded-lg font-medium">
+                            Start Professional
+                        </button>
+                    </div>
+
+                    <!-- Business Plan -->
+                    <div class="pricing-card p-8 relative">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-primary mb-2">Business</h3>
+                            <p class="text-secondary text-sm">For established agencies</p>
+                        </div>
+                        <div class="mb-6">
+                            <div class="flex items-baseline">
+                                <span class="text-4xl font-bold text-primary">
+                                    <span class="monthly-price">$49</span>
+                                    <span class="yearly-price hidden">$39</span>
+                                </span>
+                                <span class="text-secondary ml-1">/month</span>
+                            </div>
+                            <p class="yearly-savings hidden text-success text-sm mt-1">$120 saved yearly</p>
+                        </div>
+                        <ul class="mb-8 space-y-3">
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>Up to 50 clients</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>Unlimited everything</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>Advanced AI features</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>Team collaboration</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>Advanced analytics</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>Custom branding</span>
+                            </li>
+                        </ul>
+                        <button class="w-full btn-primary py-3 rounded-lg font-medium" style="background: var(--primary);">
+                            Start Business
+                        </button>
+                    </div>
+
+                    <!-- Enterprise Plan -->
+                    <div class="pricing-card p-8 relative">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-primary mb-2">Enterprise</h3>
+                            <p class="text-secondary text-sm">For large organizations</p>
+                        </div>
+                        <div class="mb-6">
+                            <div class="flex items-baseline">
+                                <span class="text-4xl font-bold text-primary">Custom</span>
+                            </div>
+                            <p class="text-secondary text-sm mt-1">Contact for pricing</p>
+                        </div>
+                        <ul class="mb-8 space-y-3">
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>Unlimited clients</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>White-label solution</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>API access</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>Dedicated support</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>Custom integrations</span>
+                            </li>
+                            <li class="pricing-feature flex items-center gap-3">
+                                <i data-lucide="check" class="w-5 h-5 text-success flex-shrink-0"></i>
+                                <span>SLA guarantees</span>
+                            </li>
+                        </ul>
+                        <button class="w-full btn-secondary py-3 rounded-lg font-medium border-primary text-primary">
+                            Contact Sales
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Comparison Table -->
+        <section class="py-20 px-6">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-3xl font-bold text-primary text-center mb-12">Compare All Features</h2>
+                <div class="overflow-x-auto">
+                    <table class="comparison-table w-full">
+                        <thead>
+                            <tr>
+                                <th class="text-left text-secondary font-medium p-4">Features</th>
+                                <th class="text-secondary font-medium p-4">Starter</th>
+                                <th class="text-success font-medium p-4">Professional</th>
+                                <th class="text-primary font-medium p-4">Business</th>
+                                <th class="text-primary font-medium p-4">Enterprise</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-left font-medium p-4">Active Clients</td>
+                                <td class="p-4">3</td>
+                                <td class="p-4">15</td>
+                                <td class="p-4">50</td>
+                                <td class="p-4">Unlimited</td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-medium p-4">Monthly Invoices</td>
+                                <td class="p-4">5</td>
+                                <td class="p-4">Unlimited</td>
+                                <td class="p-4">Unlimited</td>
+                                <td class="p-4">Unlimited</td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-medium p-4">AI Template Generation</td>
+                                <td class="p-4"><i data-lucide="x" class="w-5 h-5 text-destructive mx-auto"></i></td>
+                                <td class="p-4"><i data-lucide="check" class="w-5 h-5 text-success mx-auto"></i></td>
+                                <td class="p-4"><i data-lucide="check" class="w-5 h-5 text-success mx-auto"></i></td>
+                                <td class="p-4"><i data-lucide="check" class="w-5 h-5 text-success mx-auto"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-medium p-4">Email Automation</td>
+                                <td class="p-4"><i data-lucide="x" class="w-5 h-5 text-destructive mx-auto"></i></td>
+                                <td class="p-4"><i data-lucide="check" class="w-5 h-5 text-success mx-auto"></i></td>
+                                <td class="p-4"><i data-lucide="check" class="w-5 h-5 text-success mx-auto"></i></td>
+                                <td class="p-4"><i data-lucide="check" class="w-5 h-5 text-success mx-auto"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-medium p-4">Advanced Analytics</td>
+                                <td class="p-4"><i data-lucide="x" class="w-5 h-5 text-destructive mx-auto"></i></td>
+                                <td class="p-4">Basic</td>
+                                <td class="p-4"><i data-lucide="check" class="w-5 h-5 text-success mx-auto"></i></td>
+                                <td class="p-4"><i data-lucide="check" class="w-5 h-5 text-success mx-auto"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-medium p-4">Team Collaboration</td>
+                                <td class="p-4"><i data-lucide="x" class="w-5 h-5 text-destructive mx-auto"></i></td>
+                                <td class="p-4"><i data-lucide="x" class="w-5 h-5 text-destructive mx-auto"></i></td>
+                                <td class="p-4"><i data-lucide="check" class="w-5 h-5 text-success mx-auto"></i></td>
+                                <td class="p-4"><i data-lucide="check" class="w-5 h-5 text-success mx-auto"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-medium p-4">Custom Branding</td>
+                                <td class="p-4"><i data-lucide="x" class="w-5 h-5 text-destructive mx-auto"></i></td>
+                                <td class="p-4"><i data-lucide="x" class="w-5 h-5 text-destructive mx-auto"></i></td>
+                                <td class="p-4"><i data-lucide="check" class="w-5 h-5 text-success mx-auto"></i></td>
+                                <td class="p-4"><i data-lucide="check" class="w-5 h-5 text-success mx-auto"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-medium p-4">API Access</td>
+                                <td class="p-4"><i data-lucide="x" class="w-5 h-5 text-destructive mx-auto"></i></td>
+                                <td class="p-4"><i data-lucide="x" class="w-5 h-5 text-destructive mx-auto"></i></td>
+                                <td class="p-4"><i data-lucide="x" class="w-5 h-5 text-destructive mx-auto"></i></td>
+                                <td class="p-4"><i data-lucide="check" class="w-5 h-5 text-success mx-auto"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="text-left font-medium p-4">Support Level</td>
+                                <td class="p-4">Standard</td>
+                                <td class="p-4">Priority</td>
+                                <td class="p-4">Priority</td>
+                                <td class="p-4">Dedicated</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="py-20 px-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-primary text-center mb-12">Frequently Asked Questions</h2>
+                <div class="space-y-4">
+                    
+                    <div class="faq-item">
+                        <button class="w-full p-6 text-left flex items-center justify-between" onclick="toggleFaq(this)">
+                            <h3 class="text-lg font-medium text-primary">Can I change plans anytime?</h3>
+                            <i data-lucide="chevron-down" class="w-5 h-5 text-secondary transform transition-transform"></i>
+                        </button>
+                        <div class="faq-content max-h-0">
+                            <div class="px-6 pb-6 text-secondary">
+                                Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and billing is prorated.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="w-full p-6 text-left flex items-center justify-between" onclick="toggleFaq(this)">
+                            <h3 class="text-lg font-medium text-primary">Is there a free trial?</h3>
+                            <i data-lucide="chevron-down" class="w-5 h-5 text-secondary transform transition-transform"></i>
+                        </button>
+                        <div class="faq-content max-h-0">
+                            <div class="px-6 pb-6 text-secondary">
+                                Our Starter plan is completely free forever! For paid plans, we offer a 14-day free trial so you can explore all features risk-free.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="w-full p-6 text-left flex items-center justify-between" onclick="toggleFaq(this)">
+                            <h3 class="text-lg font-medium text-primary">What payment methods do you accept?</h3>
+                            <i data-lucide="chevron-down" class="w-5 h-5 text-secondary transform transition-transform"></i>
+                        </button>
+                        <div class="faq-content max-h-0">
+                            <div class="px-6 pb-6 text-secondary">
+                                We accept all major credit cards (Visa, MasterCard, American Express) and PayPal. All payments are processed securely through Stripe.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="w-full p-6 text-left flex items-center justify-between" onclick="toggleFaq(this)">
+                            <h3 class="text-lg font-medium text-primary">Can I export my data?</h3>
+                            <i data-lucide="chevron-down" class="w-5 h-5 text-secondary transform transition-transform"></i>
+                        </button>
+                        <div class="faq-content max-h-0">
+                            <div class="px-6 pb-6 text-secondary">
+                                Absolutely! You own your data and can export it anytime in CSV or JSON format. We believe in data portability.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="w-full p-6 text-left flex items-center justify-between" onclick="toggleFaq(this)">
+                            <h3 class="text-lg font-medium text-primary">Do you offer refunds?</h3>
+                            <i data-lucide="chevron-down" class="w-5 h-5 text-secondary transform transition-transform"></i>
+                        </button>
+                        <div class="faq-content max-h-0">
+                            <div class="px-6 pb-6 text-secondary">
+                                Yes, we offer a 30-day money-back guarantee for all paid plans. If you're not satisfied, contact our support team for a full refund.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="py-20 px-6">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-3xl font-bold text-primary text-center mb-12">What Our Users Say</h2>
+                <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8">
+                    
+                    <div class="testimonial-card p-6">
+                        <div class="flex items-center mb-4 star-rating">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <p class="text-primary mb-6">
+                            "ClientHandle transformed my freelance business. The AI templates save me hours every week, and my clients love the professional communication."
+                        </p>
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gradient-to-br from-pink-400 to-purple-600 rounded-full flex items-center justify-center">
+                                <span class="text-white font-medium text-sm">SM</span>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-primary font-medium">Sarah Martinez</div>
+                                <div class="text-secondary text-sm">Graphic Designer</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-card p-6">
+                        <div class="flex items-center mb-4 star-rating">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <p class="text-primary mb-6">
+                            "The analytics dashboard gives me insights I never had before. I can see which clients are most profitable and optimize my pricing."
+                        </p>
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-cyan-600 rounded-full flex items-center justify-center">
+                                <span class="text-white font-medium text-sm">MJ</span>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-primary font-medium">Mike Johnson</div>
+                                <div class="text-secondary text-sm">Web Developer</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-card p-6">
+                        <div class="flex items-center mb-4 star-rating">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <p class="text-primary mb-6">
+                            "As an agency owner, the team features are a game-changer. We can collaborate seamlessly and maintain consistent client communication."
+                        </p>
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center">
+                                <span class="text-white font-medium text-sm">EP</span>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-primary font-medium">Emily Parker</div>
+                                <div class="text-secondary text-sm">Agency Owner</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="py-20 px-6">
+            <div class="max-w-4xl mx-auto">
+                <div class="cta-section p-12 text-center">
+                    <h2 class="text-4xl font-bold text-primary mb-6">
+                        Ready to Scale Your <span class="text-gradient">Freelance Business?</span>
+                    </h2>
+                    <p class="text-xl text-secondary mb-8 max-w-2xl mx-auto">
+                        Join thousands of freelancers who trust ClientHandle to manage their client relationships and grow their business.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button class="btn-primary px-8 py-4 rounded-lg font-semibold text-lg">
+                            Start Free Trial
+                        </button>
+                        <button class="btn-secondary px-8 py-4 rounded-lg font-semibold text-lg">
+                            Schedule Demo
+                        </button>
+                    </div>
+                    <p class="text-muted text-sm mt-4">No credit card required • Cancel anytime</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Billing toggle functionality
+        function toggleBilling() {
+            const toggle = document.getElementById('billingToggle');
+            const dot = document.querySelector('.billing-toggle-dot');
+            const monthlyPrices = document.querySelectorAll('.monthly-price');
+            const yearlyPrices = document.querySelectorAll('.yearly-price');
+            const yearlySavings = document.querySelectorAll('.yearly-savings');
+            
+            if (toggle.checked) {
+                // Yearly billing
+                dot.style.transform = 'translateX(1.5rem)';
+                monthlyPrices.forEach(price => price.classList.add('hidden'));
+                yearlyPrices.forEach(price => price.classList.remove('hidden'));
+                yearlySavings.forEach(saving => saving.classList.remove('hidden'));
+            } else {
+                // Monthly billing
+                dot.style.transform = 'translateX(0)';
+                monthlyPrices.forEach(price => price.classList.remove('hidden'));
+                yearlyPrices.forEach(price => price.classList.add('hidden'));
+                yearlySavings.forEach(saving => saving.classList.add('hidden'));
+            }
+        }
+
+        // FAQ toggle functionality
+        function toggleFaq(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('[data-lucide="chevron-down"]');
+            const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+            
+            // Close all FAQs
+            document.querySelectorAll('.faq-content').forEach(faq => {
+                faq.style.maxHeight = '0px';
+            });
+            
+            document.querySelectorAll('.faq-item [data-lucide="chevron-down"]').forEach(chevron => {
+                chevron.style.transform = 'rotate(0deg)';
+            });
+            
+            // Open clicked FAQ if it wasn't already open
+            if (!isOpen) {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // Theme switching functionality
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Re-initialize icons to ensure they display correctly
+            setTimeout(() => {
+                lucide.createIcons();
+            }, 100);
+        }
+
+        // Initialize theme on page load
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        // Initialize theme
+        initTheme();
+
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

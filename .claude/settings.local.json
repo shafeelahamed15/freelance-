@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app:*)",
+      "Bash(npm install:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run:*)",
+      "Bash(firebase login:*)",
+      "Bash(firebase:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(npm uninstall:*)",
+      "Bash(rmdir:*)",
+      "Bash(rm:*)",
+      "Bash(node:*)",
+      "Bash(git add:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(gh:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(cat:*)",
+      "Bash(timeout:*)",
+      "Bash(curl:*)",
+      "Bash(grep:*)",
+      "Bash(taskkill:*)",
+      "Bash(set PORT=3001)",
+      "Bash(npx tsc:*)",
+      "Bash(if exist .next rmdir .next /s /q)",
+      "WebFetch(domain:www.figma.com)",
+      "Bash(python:*)",
+      "Bash(PORT=3001 npm run dev)",
+      "Bash(powershell:*)",
+      "Bash(npx next dev:*)",
+      "Bash(git init:*)",
+      "Bash(git rm:*)"
+    ],
+    "deny": [],
+    "defaultMode": "acceptEdits"
+  }
+}

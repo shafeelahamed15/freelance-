@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClientHandle - Professional Client Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="clienthandle_theme_1.css">
+    <style>
+        body {
+            font-family: var(--font-sans) !important;
+            background-color: oklch(var(--background)) !important;
+            color: oklch(var(--foreground)) !important;
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        .animate-slideUp {
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        .animate-hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            transition: all 0.2s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .sidebar-active {
+            background-color: oklch(var(--sidebar-primary)) !important;
+            color: oklch(var(--sidebar-primary-foreground)) !important;
+        }
+        
+        .metric-card {
+            background: oklch(var(--card));
+            border: 1px solid oklch(var(--border));
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+        }
+        
+        .status-dot-active { 
+            background-color: oklch(var(--client-active)); 
+        }
+        
+        .status-dot-pending { 
+            background-color: oklch(var(--invoice-pending)); 
+        }
+        
+        .status-dot-overdue { 
+            background-color: oklch(var(--invoice-overdue)); 
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation Header -->
+    <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+            <button id="sidebar-toggle" class="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
+                <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <i data-lucide="users" class="w-4 h-4 text-white"></i>
+                </div>
+                <h1 class="text-xl font-semibold text-gray-900">ClientHandle</h1>
+            </div>
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="flex-1 max-w-md mx-8">
+            <div class="relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                <input 
+                    type="text" 
+                    placeholder="Search clients, invoices... (⌘K)"
+                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+            </div>
+        </div>
+        
+        <!-- Header Actions -->
+        <div class="flex items-center gap-4">
+            <button class="p-2 hover:bg-gray-100 rounded-lg relative">
+                <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
+                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">2</span>
+            </button>
+            
+            <div class="flex items-center gap-3">
+                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face&auto=format" 
+                     alt="Profile" class="w-8 h-8 rounded-full">
+                <div class="hidden sm:block">
+                    <p class="text-sm font-medium text-gray-900">John Smith</p>
+                    <p class="text-xs text-gray-500">Admin</p>
+                </div>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-64 bg-white border-r border-gray-200 min-h-screen transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+            <nav class="p-4 space-y-2">
+                <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 sidebar-active">
+                    <i data-lucide="home" class="w-5 h-5"></i>
+                    <span class="font-medium">Dashboard</span>
+                </a>
+                
+                <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                    <span class="font-medium">Clients</span>
+                    <span class="ml-auto bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">42</span>
+                </a>
+                
+                <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                    <i data-lucide="receipt" class="w-5 h-5"></i>
+                    <span class="font-medium">Invoices</span>
+                    <span class="ml-auto bg-amber-100 text-amber-600 text-xs px-2 py-1 rounded-full">8</span>
+                </a>
+                
+                <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                    <i data-lucide="mail" class="w-5 h-5"></i>
+                    <span class="font-medium">Templates</span>
+                </a>
+                
+                
+                <div class="border-t border-gray-200 pt-4 mt-4">
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                        <span class="font-medium">Settings</span>
+                    </a>
+                    
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100">
+                        <i data-lucide="wrench" class="w-5 h-5"></i>
+                        <span class="font-medium">Admin</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 animate-fadeIn">
+            <!-- Dashboard Header -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Dashboard Overview</h2>
+                <p class="text-gray-600">Welcome back! Here's what's happening with your business.</p>
+            </div>
+
+            <!-- Metrics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Total Revenue -->
+                <div class="metric-card p-6 animate-hover-lift animate-slideUp" style="animation-delay: 0.1s">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-2 bg-green-100 rounded-lg">
+                            <i data-lucide="dollar-sign" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <span class="text-xs text-gray-500 bg-green-50 px-2 py-1 rounded-full">+12.5%</span>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-gray-900">$28,450</p>
+                        <p class="text-sm text-gray-600">Total Revenue</p>
+                    </div>
+                </div>
+
+                <!-- Active Clients -->
+                <div class="metric-card p-6 animate-hover-lift animate-slideUp" style="animation-delay: 0.2s">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-2 bg-blue-100 rounded-lg">
+                            <i data-lucide="users" class="w-5 h-5 text-blue-600"></i>
+                        </div>
+                        <span class="text-xs text-gray-500 bg-blue-50 px-2 py-1 rounded-full">42</span>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-gray-900">42</p>
+                        <p class="text-sm text-gray-600">Active Clients</p>
+                    </div>
+                </div>
+
+                <!-- Pending Invoices -->
+                <div class="metric-card p-6 animate-hover-lift animate-slideUp" style="animation-delay: 0.3s">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-2 bg-amber-100 rounded-lg">
+                            <i data-lucide="clock" class="w-5 h-5 text-amber-600"></i>
+                        </div>
+                        <span class="text-xs text-gray-500 bg-amber-50 px-2 py-1 rounded-full">8</span>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-gray-900">8</p>
+                        <p class="text-sm text-gray-600">Pending Invoices</p>
+                    </div>
+                </div>
+
+                <!-- Email Templates -->
+                <div class="metric-card p-6 animate-hover-lift animate-slideUp" style="animation-delay: 0.4s">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-2 bg-purple-100 rounded-lg">
+                            <i data-lucide="mail" class="w-5 h-5 text-purple-600"></i>
+                        </div>
+                        <span class="text-xs text-gray-500 bg-purple-50 px-2 py-1 rounded-full">15</span>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-gray-900">15</p>
+                        <p class="text-sm text-gray-600">Email Templates</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Quick Actions Panel -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <button class="w-full flex items-center gap-3 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg text-left transition-colors">
+                                <div class="p-2 bg-blue-100 rounded-lg">
+                                    <i data-lucide="user-plus" class="w-4 h-4 text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Add New Client</p>
+                                    <p class="text-sm text-gray-600">Create client profile</p>
+                                </div>
+                            </button>
+                            
+                            <button class="w-full flex items-center gap-3 p-3 bg-green-50 hover:bg-green-100 rounded-lg text-left transition-colors">
+                                <div class="p-2 bg-green-100 rounded-lg">
+                                    <i data-lucide="file-plus" class="w-4 h-4 text-green-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Create Invoice</p>
+                                    <p class="text-sm text-gray-600">Generate new invoice</p>
+                                </div>
+                            </button>
+                            
+                            <button class="w-full flex items-center gap-3 p-3 bg-purple-50 hover:bg-purple-100 rounded-lg text-left transition-colors">
+                                <div class="p-2 bg-purple-100 rounded-lg">
+                                    <i data-lucide="mail" class="w-4 h-4 text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Send Email</p>
+                                    <p class="text-sm text-gray-600">Compose message</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Analytics -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900">Revenue Analytics</h3>
+                            <select class="text-sm border border-gray-300 rounded-lg px-3 py-2">
+                                <option>Last 7 days</option>
+                                <option>Last 30 days</option>
+                                <option>Last 3 months</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Mock Chart -->
+                        <div class="h-64 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg flex items-center justify-center">
+                            <div class="text-center">
+                                <i data-lucide="trending-up" class="w-12 h-12 text-blue-500 mx-auto mb-2"></i>
+                                <p class="text-gray-600">Revenue trend chart</p>
+                                <p class="text-sm text-gray-500">$5,200 increase this month</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity & Client Overview -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Recent Activity -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900">Invoice #1234 paid</p>
+                                    <p class="text-xs text-gray-500">2 minutes ago</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900">New client onboarded</p>
+                                    <p class="text-xs text-gray-500">1 hour ago</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900">Email template created</p>
+                                    <p class="text-xs text-gray-500">3 hours ago</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-900">Payment reminder sent</p>
+                                    <p class="text-xs text-gray-500">5 hours ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Client Overview -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900">Client Overview</h3>
+                            <button class="text-sm text-blue-600 hover:text-blue-700 font-medium">View All</button>
+                        </div>
+                        
+                        <div class="overflow-hidden">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="text-left py-3 px-4 font-medium text-gray-700">Client</th>
+                                        <th class="text-left py-3 px-4 font-medium text-gray-700">Status</th>
+                                        <th class="text-left py-3 px-4 font-medium text-gray-700">Revenue</th>
+                                        <th class="text-left py-3 px-4 font-medium text-gray-700">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr class="table-row">
+                                        <td class="py-4 px-4">
+                                            <div class="flex items-center gap-3">
+                                                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=32&h=32&fit=crop&auto=format" 
+                                                     alt="ABC Corp" class="w-8 h-8 rounded-full">
+                                                <div>
+                                                    <p class="font-medium text-gray-900">ABC Corp</p>
+                                                    <p class="text-sm text-gray-500">john@abccorp.com</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-4">
+                                            <span class="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                                                <div class="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
+                                                Active
+                                            </span>
+                                        </td>
+                                        <td class="py-4 px-4">
+                                            <span class="font-medium text-gray-900">$15,000</span>
+                                        </td>
+                                        <td class="py-4 px-4">
+                                            <div class="flex items-center gap-2">
+                                                <button class="action-btn p-1.5 text-blue-600 hover:bg-blue-50 rounded">
+                                                    <i data-lucide="mail" class="w-4 h-4"></i>
+                                                </button>
+                                                <button class="action-btn p-1.5 text-green-600 hover:bg-green-50 rounded">
+                                                    <i data-lucide="receipt" class="w-4 h-4"></i>
+                                                </button>
+                                                <button class="action-btn p-1.5 text-gray-600 hover:bg-gray-50 rounded">
+                                                    <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr class="table-row">
+                                        <td class="py-4 px-4">
+                                            <div class="flex items-center gap-3">
+                                                <img src="https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=32&h=32&fit=crop&auto=format" 
+                                                     alt="XYZ Ltd" class="w-8 h-8 rounded-full">
+                                                <div>
+                                                    <p class="font-medium text-gray-900">XYZ Ltd</p>
+                                                    <p class="text-sm text-gray-500">contact@xyz.com</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-4">
+                                            <span class="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-700 text-xs rounded-full">
+                                                <div class="w-1.5 h-1.5 bg-amber-600 rounded-full"></div>
+                                                Pending
+                                            </span>
+                                        </td>
+                                        <td class="py-4 px-4">
+                                            <span class="font-medium text-gray-900">$8,500</span>
+                                        </td>
+                                        <td class="py-4 px-4">
+                                            <div class="flex items-center gap-2">
+                                                <button class="action-btn p-1.5 text-blue-600 hover:bg-blue-50 rounded">
+                                                    <i data-lucide="mail" class="w-4 h-4"></i>
+                                                </button>
+                                                <button class="action-btn p-1.5 text-green-600 hover:bg-green-50 rounded">
+                                                    <i data-lucide="receipt" class="w-4 h-4"></i>
+                                                </button>
+                                                <button class="action-btn p-1.5 text-gray-600 hover:bg-gray-50 rounded">
+                                                    <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr class="table-row">
+                                        <td class="py-4 px-4">
+                                            <div class="flex items-center gap-3">
+                                                <img src="https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=32&h=32&fit=crop&auto=format" 
+                                                     alt="StartupCo" class="w-8 h-8 rounded-full">
+                                                <div>
+                                                    <p class="font-medium text-gray-900">StartupCo</p>
+                                                    <p class="text-sm text-gray-500">hello@startup.co</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-4">
+                                            <span class="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                                                <div class="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
+                                                Active
+                                            </span>
+                                        </td>
+                                        <td class="py-4 px-4">
+                                            <span class="font-medium text-gray-900">$22,000</span>
+                                        </td>
+                                        <td class="py-4 px-4">
+                                            <div class="flex items-center gap-2">
+                                                <button class="action-btn p-1.5 text-blue-600 hover:bg-blue-50 rounded">
+                                                    <i data-lucide="mail" class="w-4 h-4"></i>
+                                                </button>
+                                                <button class="action-btn p-1.5 text-green-600 hover:bg-green-50 rounded">
+                                                    <i data-lucide="receipt" class="w-4 h-4"></i>
+                                                </button>
+                                                <button class="action-btn p-1.5 text-gray-600 hover:bg-gray-50 rounded">
+                                                    <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Sidebar toggle functionality
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        sidebarToggle?.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+        });
+        
+        // Add hover animations to metric cards
+        document.querySelectorAll('.metric-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-4px)';
+                this.style.boxShadow = 'var(--shadow-lg)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'var(--shadow)';
+            });
+        });
+        
+        // Quick action button animations
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 100);
+            });
+        });
+        
+        // Simulate real-time updates (demo purposes)
+        function updateMetrics() {
+            const revenue = document.querySelector('.metric-card:first-child .text-2xl');
+            if (revenue) {
+                const currentValue = parseInt(revenue.textContent.replace('$', '').replace(',', ''));
+                const newValue = currentValue + Math.floor(Math.random() * 100);
+                revenue.textContent = `$${newValue.toLocaleString()}`;
+            }
+        }
+        
+        // Update metrics every 10 seconds (demo)
+        setInterval(updateMetrics, 10000);
+        
+        // Add subtle animation delays to elements
+        document.addEventListener('DOMContentLoaded', () => {
+            const animatedElements = document.querySelectorAll('.animate-slideUp');
+            animatedElements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>
