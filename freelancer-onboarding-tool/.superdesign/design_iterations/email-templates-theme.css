@@ -1,0 +1,420 @@
+/* SuperDesign Email Templates Enhanced Theme System */
+/* Professional Freelancer Communication Design */
+
+:root {
+  /* === Core Brand Colors === */
+  --sd-primary: #4863eb;
+  --sd-primary-light: #6b7ff7;
+  --sd-primary-dark: #3651d8;
+  --sd-accent: #22c55e;
+  --sd-accent-light: #34d373;
+  --sd-accent-dark: #16a34a;
+  
+  /* === Secondary Palette === */
+  --sd-purple: #8b5cf6;
+  --sd-purple-light: #a78bfa;
+  --sd-purple-dark: #7c3aed;
+  --sd-orange: #f59e0b;
+  --sd-orange-light: #fbbf24;
+  --sd-orange-dark: #d97706;
+  --sd-rose: #ef4444;
+  --sd-rose-light: #f87171;
+  --sd-rose-dark: #dc2626;
+  
+  /* === Neutral Colors === */
+  --sd-gray-50: #f9fafb;
+  --sd-gray-100: #f3f4f6;
+  --sd-gray-200: #e5e7eb;
+  --sd-gray-300: #d1d5db;
+  --sd-gray-400: #9ca3af;
+  --sd-gray-500: #6b7280;
+  --sd-gray-600: #4b5563;
+  --sd-gray-700: #374151;
+  --sd-gray-800: #1f2937;
+  --sd-gray-900: #111827;
+  
+  /* === Email Template Specific Colors === */
+  --sd-email-bg: #f3f4f6;
+  --sd-email-container: #ffffff;
+  --sd-email-border: #e5e7eb;
+  --sd-email-text: #111827;
+  --sd-email-text-muted: #6b7280;
+  --sd-email-header-gradient: linear-gradient(135deg, var(--sd-primary) 0%, var(--sd-accent) 100%);
+  
+  /* === Typography === */
+  --sd-font-sans: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  --sd-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  
+  /* === Spacing === */
+  --sd-space-xs: 0.25rem;
+  --sd-space-sm: 0.5rem;
+  --sd-space-md: 1rem;
+  --sd-space-lg: 1.5rem;
+  --sd-space-xl: 2rem;
+  --sd-space-2xl: 3rem;
+  --sd-space-3xl: 4rem;
+  
+  /* === Radius === */
+  --sd-radius-sm: 0.375rem;
+  --sd-radius-md: 0.5rem;
+  --sd-radius-lg: 0.75rem;
+  --sd-radius-xl: 1rem;
+  --sd-radius-2xl: 1.5rem;
+  
+  /* === Shadows === */
+  --sd-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --sd-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --sd-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --sd-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  /* === Animations === */
+  --sd-transition-fast: 0.15s ease-out;
+  --sd-transition-normal: 0.25s ease-out;
+  --sd-transition-slow: 0.4s ease-out;
+}
+
+/* === Dark Mode === */
+[data-theme="dark"] {
+  --sd-email-bg: #111827;
+  --sd-email-container: #1f2937;
+  --sd-email-border: #374151;
+  --sd-email-text: #f9fafb;
+  --sd-email-text-muted: #9ca3af;
+  --sd-primary: #6b7ff7;
+  --sd-accent: #34d373;
+}
+
+/* === Template Card Styles === */
+.sd-template-card {
+  background: var(--sd-email-container);
+  border: 1px solid var(--sd-email-border);
+  border-radius: var(--sd-radius-xl);
+  padding: var(--sd-space-xl);
+  transition: all var(--sd-transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.sd-template-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--sd-email-header-gradient);
+  opacity: 0;
+  transition: opacity var(--sd-transition-normal);
+}
+
+.sd-template-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sd-shadow-xl);
+}
+
+.sd-template-card:hover::before {
+  opacity: 1;
+}
+
+/* === Button Styles === */
+.sd-btn-primary {
+  background: var(--sd-email-header-gradient);
+  color: white;
+  padding: var(--sd-space-md) var(--sd-space-xl);
+  border-radius: var(--sd-radius-lg);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all var(--sd-transition-normal);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sd-space-sm);
+}
+
+.sd-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--sd-shadow-lg);
+}
+
+.sd-btn-secondary {
+  background: transparent;
+  color: var(--sd-primary);
+  border: 2px solid var(--sd-primary);
+  padding: var(--sd-space-md) var(--sd-space-xl);
+  border-radius: var(--sd-radius-lg);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--sd-transition-normal);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sd-space-sm);
+}
+
+.sd-btn-secondary:hover {
+  background: var(--sd-primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* === Input Styles === */
+.sd-input {
+  background: var(--sd-email-container);
+  border: 2px solid var(--sd-email-border);
+  border-radius: var(--sd-radius-lg);
+  padding: var(--sd-space-md) var(--sd-space-lg);
+  font-size: 1rem;
+  transition: all var(--sd-transition-normal);
+  color: var(--sd-email-text);
+}
+
+.sd-input:focus {
+  outline: none;
+  border-color: var(--sd-primary);
+  box-shadow: 0 0 0 3px rgba(72, 99, 235, 0.1);
+}
+
+/* === Rich Text Editor Styles === */
+.sd-rich-editor {
+  background: var(--sd-email-container);
+  border: 2px solid var(--sd-email-border);
+  border-radius: var(--sd-radius-xl);
+  overflow: hidden;
+  transition: all var(--sd-transition-normal);
+}
+
+.sd-rich-editor:focus-within {
+  border-color: var(--sd-primary);
+  box-shadow: 0 0 0 3px rgba(72, 99, 235, 0.1);
+}
+
+.sd-rich-editor-toolbar {
+  background: var(--sd-gray-50);
+  padding: var(--sd-space-md);
+  border-bottom: 1px solid var(--sd-email-border);
+  display: flex;
+  gap: var(--sd-space-sm);
+  flex-wrap: wrap;
+}
+
+.sd-rich-editor-content {
+  padding: var(--sd-space-xl);
+  min-height: 300px;
+  font-family: var(--sd-font-sans);
+  line-height: 1.6;
+}
+
+/* === Template Category Tags === */
+.sd-category-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sd-space-xs);
+  padding: var(--sd-space-xs) var(--sd-space-md);
+  background: var(--sd-gray-100);
+  color: var(--sd-gray-700);
+  border-radius: var(--sd-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all var(--sd-transition-normal);
+}
+
+.sd-category-tag.active {
+  background: var(--sd-primary);
+  color: white;
+}
+
+.sd-category-tag:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--sd-shadow-sm);
+}
+
+/* === Stats Cards === */
+.sd-stats-card {
+  background: var(--sd-email-container);
+  border: 1px solid var(--sd-email-border);
+  border-radius: var(--sd-radius-xl);
+  padding: var(--sd-space-xl);
+  transition: all var(--sd-transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.sd-stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--sd-email-header-gradient);
+  opacity: 0;
+  transition: opacity var(--sd-transition-normal);
+}
+
+.sd-stats-card:hover::before {
+  opacity: 1;
+}
+
+/* === Modal Styles === */
+.sd-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  z-index: 50;
+  animation: sd-fade-in var(--sd-transition-normal);
+}
+
+.sd-modal-content {
+  background: var(--sd-email-container);
+  border-radius: var(--sd-radius-2xl);
+  box-shadow: var(--sd-shadow-xl);
+  animation: sd-slide-up var(--sd-transition-normal);
+  border: 1px solid var(--sd-email-border);
+}
+
+/* === Email Preview Styles === */
+.sd-email-preview {
+  background: var(--sd-email-bg);
+  border-radius: var(--sd-radius-lg);
+  padding: var(--sd-space-lg);
+  font-family: var(--sd-font-sans);
+}
+
+.sd-email-preview-header {
+  background: var(--sd-email-header-gradient);
+  color: white;
+  padding: var(--sd-space-2xl) var(--sd-space-xl);
+  text-align: center;
+  border-radius: var(--sd-radius-lg) var(--sd-radius-lg) 0 0;
+}
+
+.sd-email-preview-content {
+  background: var(--sd-email-container);
+  padding: var(--sd-space-2xl) var(--sd-space-xl);
+  border-radius: 0 0 var(--sd-radius-lg) var(--sd-radius-lg);
+}
+
+/* === Client Preview Modes === */
+.sd-client-preview-gmail {
+  font-family: 'Roboto', sans-serif;
+  background: #f6f8fc;
+}
+
+.sd-client-preview-outlook {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f4f4f4;
+}
+
+.sd-client-preview-apple {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #ffffff;
+}
+
+/* === Animations === */
+@keyframes sd-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sd-slide-up {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes sd-slide-in-left {
+  from { 
+    opacity: 0; 
+    transform: translateX(-20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes sd-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.sd-animate-float {
+  animation: sd-float 3s ease-in-out infinite;
+}
+
+.sd-animate-fade-in {
+  animation: sd-fade-in var(--sd-transition-normal);
+}
+
+.sd-animate-slide-up {
+  animation: sd-slide-up var(--sd-transition-normal);
+}
+
+.sd-animate-slide-in-left {
+  animation: sd-slide-in-left var(--sd-transition-normal);
+}
+
+/* === Utility Classes === */
+.sd-gradient-text {
+  background: var(--sd-email-header-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.sd-glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sd-hover-lift {
+  transition: transform var(--sd-transition-normal);
+}
+
+.sd-hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+  .sd-template-card {
+    padding: var(--sd-space-lg);
+  }
+  
+  .sd-btn-primary,
+  .sd-btn-secondary {
+    padding: var(--sd-space-sm) var(--sd-space-lg);
+  }
+  
+  .sd-email-preview-header,
+  .sd-email-preview-content {
+    padding: var(--sd-space-lg);
+  }
+  
+  .sd-rich-editor-content {
+    padding: var(--sd-space-lg);
+    min-height: 200px;
+  }
+}
+
+/* === Print Styles for Email Templates === */
+@media print {
+  .sd-template-card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+  
+  .sd-btn-primary,
+  .sd-btn-secondary {
+    background: transparent !important;
+    color: #333 !important;
+    border: 1px solid #333 !important;
+  }
+}

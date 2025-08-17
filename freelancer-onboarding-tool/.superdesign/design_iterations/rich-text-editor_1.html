@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperDesign Rich Text Email Template Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif !important;
+        }
+        
+        /* Rich Text Editor Specific Styles */
+        .rich-editor-container {
+            background: #ffffff !important;
+            border: 2px solid #e5e7eb !important;
+            border-radius: 1rem !important;
+            overflow: hidden !important;
+            transition: all 0.25s ease-out !important;
+        }
+        
+        .rich-editor-container:focus-within {
+            border-color: #4863eb !important;
+            box-shadow: 0 0 0 3px rgba(72, 99, 235, 0.1) !important;
+        }
+        
+        .editor-toolbar {
+            background: #f9fafb !important;
+            border-bottom: 1px solid #e5e7eb !important;
+            padding: 0.75rem !important;
+            display: flex !important;
+            gap: 0.5rem !important;
+            flex-wrap: wrap !important;
+        }
+        
+        .editor-btn {
+            padding: 0.5rem !important;
+            border-radius: 0.5rem !important;
+            background: transparent !important;
+            border: 1px solid #e5e7eb !important;
+            cursor: pointer !important;
+            transition: all 0.15s ease-out !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        
+        .editor-btn:hover {
+            background: #f3f4f6 !important;
+            border-color: #d1d5db !important;
+        }
+        
+        .editor-btn.active {
+            background: #4863eb !important;
+            color: white !important;
+            border-color: #4863eb !important;
+        }
+        
+        .editor-content {
+            padding: 1.5rem !important;
+            min-height: 400px !important;
+            font-family: 'Inter', sans-serif !important;
+            line-height: 1.6 !important;
+            outline: none !important;
+        }
+        
+        /* Variable insertion styles */
+        .variable-tag {
+            background: #dbeafe !important;
+            color: #1e40af !important;
+            padding: 0.125rem 0.5rem !important;
+            border-radius: 0.375rem !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            display: inline-block !important;
+            margin: 0 0.125rem !important;
+            border: 1px solid #93c5fd !important;
+        }
+        
+        /* Preview pane styles */
+        .preview-pane {
+            background: #f3f4f6 !important;
+            border-radius: 1rem !important;
+            padding: 1.5rem !important;
+            min-height: 400px !important;
+        }
+        
+        .email-preview {
+            background: white !important;
+            border-radius: 0.75rem !important;
+            overflow: hidden !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .email-header {
+            background: linear-gradient(135deg, #4863eb 0%, #22c55e 100%) !important;
+            color: white !important;
+            padding: 2rem 1.5rem !important;
+            text-align: center !important;
+        }
+        
+        .email-body {
+            padding: 2rem 1.5rem !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+        
+        /* Animation classes */
+        .slide-up {
+            animation: slideUp 0.3s ease-out !important;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-out !important;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-lg flex items-center justify-center">
+                    <i data-lucide="edit-3" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">Email Template Editor</h1>
+                    <p class="text-sm text-gray-600">Create professional email templates with rich formatting</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    <i data-lucide="eye" class="w-4 h-4 inline mr-2"></i>
+                    Preview
+                </button>
+                <button class="px-4 py-2 bg-gradient-to-r from-blue-600 to-green-500 text-white rounded-lg hover:shadow-lg transition-all">
+                    <i data-lucide="save" class="w-4 h-4 inline mr-2"></i>
+                    Save Template
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Editor Section -->
+            <div class="space-y-6 slide-up">
+                <!-- Template Meta -->
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Template Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Template Name</label>
+                            <input type="text" placeholder="Welcome Email Template" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option>Welcome Email</option>
+                                <option>Follow-up</option>
+                                <option>Invoice Reminder</option>
+                                <option>Project Completion</option>
+                                <option>Proposal</option>
+                                <option>Thank You</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Subject Line</label>
+                        <input type="text" placeholder="Welcome to our collaboration, {{client_name}}!" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                </div>
+
+                <!-- Rich Text Editor -->
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Email Content</h3>
+                        <button class="text-sm text-blue-600 hover:text-blue-700 flex items-center space-x-1">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Insert Variable</span>
+                        </button>
+                    </div>
+                    
+                    <div class="rich-editor-container">
+                        <!-- Toolbar -->
+                        <div class="editor-toolbar">
+                            <button class="editor-btn" title="Bold">
+                                <i data-lucide="bold" class="w-4 h-4"></i>
+                            </button>
+                            <button class="editor-btn" title="Italic">
+                                <i data-lucide="italic" class="w-4 h-4"></i>
+                            </button>
+                            <button class="editor-btn" title="Underline">
+                                <i data-lucide="underline" class="w-4 h-4"></i>
+                            </button>
+                            <div class="w-px h-6 bg-gray-300"></div>
+                            <button class="editor-btn" title="Heading">
+                                <i data-lucide="heading" class="w-4 h-4"></i>
+                            </button>
+                            <button class="editor-btn" title="Bullet List">
+                                <i data-lucide="list" class="w-4 h-4"></i>
+                            </button>
+                            <button class="editor-btn" title="Numbered List">
+                                <i data-lucide="list-ordered" class="w-4 h-4"></i>
+                            </button>
+                            <div class="w-px h-6 bg-gray-300"></div>
+                            <button class="editor-btn" title="Link">
+                                <i data-lucide="link" class="w-4 h-4"></i>
+                            </button>
+                            <button class="editor-btn" title="Insert Variable">
+                                <i data-lucide="braces" class="w-4 h-4"></i>
+                            </button>
+                            <div class="w-px h-6 bg-gray-300"></div>
+                            <button class="editor-btn" title="Undo">
+                                <i data-lucide="undo" class="w-4 h-4"></i>
+                            </button>
+                            <button class="editor-btn" title="Redo">
+                                <i data-lucide="redo" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Content Area -->
+                        <div class="editor-content" contenteditable="true" data-placeholder="Start writing your email template...">
+                            <p>Hi <span class="variable-tag">{{client_name}}</span>,</p>
+                            <br>
+                            <p>Welcome to our collaboration! I'm excited to work with you on <span class="variable-tag">{{project_name}}</span>.</p>
+                            <br>
+                            <p>Here's what you can expect from our partnership:</p>
+                            <ul>
+                                <li>Regular project updates and transparent communication</li>
+                                <li>High-quality deliverables on time</li>
+                                <li>Professional support throughout the project</li>
+                            </ul>
+                            <br>
+                            <p>I'll be in touch within 24 hours to discuss the next steps. If you have any questions in the meantime, don't hesitate to reach out.</p>
+                            <br>
+                            <p>Best regards,<br>
+                            <span class="variable-tag">{{freelancer_name}}</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variable Library -->
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Available Variables</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <button class="variable-tag hover:bg-blue-100 cursor-pointer transition-colors">{{client_name}}</button>
+                        <button class="variable-tag hover:bg-blue-100 cursor-pointer transition-colors">{{project_name}}</button>
+                        <button class="variable-tag hover:bg-blue-100 cursor-pointer transition-colors">{{freelancer_name}}</button>
+                        <button class="variable-tag hover:bg-blue-100 cursor-pointer transition-colors">{{company_name}}</button>
+                        <button class="variable-tag hover:bg-blue-100 cursor-pointer transition-colors">{{due_date}}</button>
+                        <button class="variable-tag hover:bg-blue-100 cursor-pointer transition-colors">{{amount}}</button>
+                        <button class="variable-tag hover:bg-blue-100 cursor-pointer transition-colors">{{project_url}}</button>
+                        <button class="variable-tag hover:bg-blue-100 cursor-pointer transition-colors">{{invoice_number}}</button>
+                        <button class="variable-tag hover:bg-blue-100 cursor-pointer transition-colors">{{current_date}}</button>
+                    </div>
+                    <button class="mt-4 text-sm text-blue-600 hover:text-blue-700 flex items-center space-x-1">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Add Custom Variable</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Preview Section -->
+            <div class="space-y-6 slide-up" style="animation-delay: 0.1s">
+                <!-- Preview Controls -->
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Live Preview</h3>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg">
+                                <i data-lucide="monitor" class="w-4 h-4 inline mr-1"></i>
+                                Desktop
+                            </button>
+                            <button class="px-3 py-1 text-sm text-gray-600 rounded-lg hover:bg-gray-100">
+                                <i data-lucide="smartphone" class="w-4 h-4 inline mr-1"></i>
+                                Mobile
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Sample Data Inputs -->
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <input type="text" placeholder="Client Name" value="John Smith" 
+                               class="px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                        <input type="text" placeholder="Project Name" value="Website Redesign" 
+                               class="px-3 py-2 text-sm border border-gray-300 rounded-lg">
+                    </div>
+                </div>
+
+                <!-- Email Preview -->
+                <div class="preview-pane">
+                    <div class="email-preview">
+                        <!-- Email Header -->
+                        <div class="email-header">
+                            <h2 class="text-xl font-bold">Professional Services</h2>
+                            <p class="text-blue-100 mt-1">Welcome to our collaboration, John Smith!</p>
+                        </div>
+                        
+                        <!-- Email Body -->
+                        <div class="email-body">
+                            <div class="text-gray-800 space-y-4">
+                                <p>Hi <strong>John Smith</strong>,</p>
+                                
+                                <p>Welcome to our collaboration! I'm excited to work with you on <strong>Website Redesign</strong>.</p>
+                                
+                                <p>Here's what you can expect from our partnership:</p>
+                                <ul class="list-disc list-inside space-y-1 text-gray-700">
+                                    <li>Regular project updates and transparent communication</li>
+                                    <li>High-quality deliverables on time</li>
+                                    <li>Professional support throughout the project</li>
+                                </ul>
+                                
+                                <p>I'll be in touch within 24 hours to discuss the next steps. If you have any questions in the meantime, don't hesitate to reach out.</p>
+                                
+                                <div class="mt-6 pt-4 border-t border-gray-200">
+                                    <p>Best regards,<br>
+                                    <strong>Alex Johnson</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Actions -->
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Preview Actions</h3>
+                    <div class="space-y-3">
+                        <button class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>Send Test Email</span>
+                        </button>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                                <span>Copy HTML</span>
+                            </button>
+                            <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2">
+                                <i data-lucide="download" class="w-4 h-4"></i>
+                                <span>Export</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Simple rich text editor functionality
+        const editorContent = document.querySelector('.editor-content');
+        const toolbar = document.querySelector('.editor-toolbar');
+
+        // Toolbar button handlers
+        toolbar.addEventListener('click', (e) => {
+            const button = e.target.closest('.editor-btn');
+            if (!button) return;
+
+            const icon = button.querySelector('[data-lucide]');
+            if (!icon) return;
+
+            const command = icon.getAttribute('data-lucide');
+            
+            switch(command) {
+                case 'bold':
+                    document.execCommand('bold');
+                    button.classList.toggle('active');
+                    break;
+                case 'italic':
+                    document.execCommand('italic');
+                    button.classList.toggle('active');
+                    break;
+                case 'underline':
+                    document.execCommand('underline');
+                    button.classList.toggle('active');
+                    break;
+                case 'list':
+                    document.execCommand('insertUnorderedList');
+                    break;
+                case 'list-ordered':
+                    document.execCommand('insertOrderedList');
+                    break;
+                case 'link':
+                    const url = prompt('Enter URL:');
+                    if (url) document.execCommand('createLink', false, url);
+                    break;
+                case 'undo':
+                    document.execCommand('undo');
+                    break;
+                case 'redo':
+                    document.execCommand('redo');
+                    break;
+            }
+            
+            editorContent.focus();
+        });
+
+        // Variable insertion
+        document.querySelectorAll('.variable-tag').forEach(tag => {
+            tag.addEventListener('click', () => {
+                if (tag.classList.contains('cursor-pointer')) {
+                    const variable = tag.textContent;
+                    const selection = window.getSelection();
+                    const range = selection.getRangeAt(0);
+                    
+                    const span = document.createElement('span');
+                    span.className = 'variable-tag';
+                    span.textContent = variable;
+                    
+                    range.insertNode(span);
+                    range.collapse(false);
+                    
+                    editorContent.focus();
+                }
+            });
+        });
+
+        // Real-time preview update (simplified)
+        editorContent.addEventListener('input', () => {
+            // Update preview would go here
+            console.log('Content updated');
+        });
+
+        // Add placeholder behavior
+        editorContent.addEventListener('focus', () => {
+            if (editorContent.textContent.trim() === '') {
+                editorContent.innerHTML = '';
+            }
+        });
+
+        editorContent.addEventListener('blur', () => {
+            if (editorContent.textContent.trim() === '') {
+                editorContent.innerHTML = '<p style="color: #9ca3af;">Start writing your email template...</p>';
+            }
+        });
+    </script>
+</body>
+</html>

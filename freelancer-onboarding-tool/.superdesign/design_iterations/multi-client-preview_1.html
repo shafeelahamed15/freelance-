@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperDesign Multi-Client Email Preview System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&family=Segoe+UI:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif !important;
+        }
+        
+        /* Gmail Preview Styles */
+        .gmail-preview {
+            font-family: 'Roboto', sans-serif !important;
+            background: #f6f8fc !important;
+        }
+        
+        .gmail-preview .email-container {
+            background: #ffffff !important;
+            border: 1px solid #dadce0 !important;
+            border-radius: 8px !important;
+            box-shadow: 0 1px 3px rgba(60,64,67,.3) !important;
+        }
+        
+        .gmail-preview .email-header {
+            background: #f8f9fa !important;
+            border-bottom: 1px solid #dadce0 !important;
+            padding: 12px 24px !important;
+            font-size: 14px !important;
+            color: #5f6368 !important;
+        }
+        
+        .gmail-preview .email-subject {
+            color: #202124 !important;
+            font-size: 22px !important;
+            font-weight: 400 !important;
+            margin: 16px 0 !important;
+        }
+        
+        .gmail-preview .email-content {
+            padding: 20px 24px !important;
+            font-size: 14px !important;
+            line-height: 1.5 !important;
+            color: #202124 !important;
+        }
+        
+        /* Outlook Preview Styles */
+        .outlook-preview {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            background: #f4f4f4 !important;
+        }
+        
+        .outlook-preview .email-container {
+            background: #ffffff !important;
+            border: 1px solid #c7c7c7 !important;
+            border-radius: 0 !important;
+        }
+        
+        .outlook-preview .email-header {
+            background: #f8f8f8 !important;
+            border-bottom: 1px solid #e1e1e1 !important;
+            padding: 11px 12px !important;
+            font-size: 11px !important;
+            color: #666666 !important;
+        }
+        
+        .outlook-preview .email-subject {
+            color: #323130 !important;
+            font-size: 21px !important;
+            font-weight: 600 !important;
+            margin: 14px 0 !important;
+        }
+        
+        .outlook-preview .email-content {
+            padding: 14px 12px !important;
+            font-size: 14px !important;
+            line-height: 1.4 !important;
+            color: #323130 !important;
+        }
+        
+        /* Apple Mail Preview Styles */
+        .apple-preview {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', Helvetica, Arial, sans-serif !important;
+            background: #ffffff !important;
+        }
+        
+        .apple-preview .email-container {
+            background: #ffffff !important;
+            border: none !important;
+            border-radius: 0 !important;
+        }
+        
+        .apple-preview .email-header {
+            background: #f7f7f7 !important;
+            border-bottom: 1px solid #e6e6e6 !important;
+            padding: 10px 16px !important;
+            font-size: 13px !important;
+            color: #8a8a8a !important;
+        }
+        
+        .apple-preview .email-subject {
+            color: #000000 !important;
+            font-size: 24px !important;
+            font-weight: 700 !important;
+            margin: 16px 0 !important;
+        }
+        
+        .apple-preview .email-content {
+            padding: 16px !important;
+            font-size: 16px !important;
+            line-height: 1.6 !important;
+            color: #000000 !important;
+        }
+        
+        /* Thunderbird Preview Styles */
+        .thunderbird-preview {
+            font-family: 'Liberation Sans', Arial, sans-serif !important;
+            background: #ffffff !important;
+        }
+        
+        .thunderbird-preview .email-container {
+            background: #ffffff !important;
+            border: 1px solid #cccccc !important;
+            border-radius: 0 !important;
+        }
+        
+        .thunderbird-preview .email-header {
+            background: #eeeeee !important;
+            border-bottom: 1px solid #cccccc !important;
+            padding: 8px 12px !important;
+            font-size: 12px !important;
+            color: #333333 !important;
+        }
+        
+        .thunderbird-preview .email-subject {
+            color: #000000 !important;
+            font-size: 18px !important;
+            font-weight: 600 !important;
+            margin: 12px 0 !important;
+        }
+        
+        .thunderbird-preview .email-content {
+            padding: 12px !important;
+            font-size: 14px !important;
+            line-height: 1.5 !important;
+            color: #000000 !important;
+        }
+        
+        /* Animation classes */
+        .slide-up {
+            animation: slideUp 0.3s ease-out !important;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-out !important;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Client tab styles */
+        .client-tab {
+            transition: all 0.2s ease !important;
+        }
+        
+        .client-tab.active {
+            background: linear-gradient(135deg, #4863eb 0%, #22c55e 100%) !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(72, 99, 235, 0.3) !important;
+        }
+        
+        .client-tab:not(.active):hover {
+            background: #f3f4f6 !important;
+            transform: translateY(-1px) !important;
+        }
+        
+        /* Device frame styles */
+        .device-frame {
+            background: #1f2937 !important;
+            border-radius: 12px !important;
+            padding: 16px !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+        }
+        
+        .device-header {
+            display: flex !important;
+            align-items: center !important;
+            margin-bottom: 12px !important;
+        }
+        
+        .device-dots {
+            display: flex !important;
+            gap: 6px !important;
+        }
+        
+        .device-dot {
+            width: 12px !important;
+            height: 12px !important;
+            border-radius: 50% !important;
+        }
+        
+        .device-dot.red { background: #ef4444 !important; }
+        .device-dot.yellow { background: #f59e0b !important; }
+        .device-dot.green { background: #10b981 !important; }
+        
+        .device-title {
+            flex: 1 !important;
+            text-center !important;
+            color: #9ca3af !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-green-400 rounded-lg flex items-center justify-center">
+                    <i data-lucide="monitor" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">Multi-Client Email Preview</h1>
+                    <p class="text-sm text-gray-600">See how your emails look across different email clients</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    <i data-lucide="settings" class="w-4 h-4 inline mr-2"></i>
+                    Settings
+                </button>
+                <button class="px-4 py-2 bg-gradient-to-r from-blue-600 to-green-500 text-white rounded-lg hover:shadow-lg transition-all">
+                    <i data-lucide="share" class="w-4 h-4 inline mr-2"></i>
+                    Share Preview
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Client Tabs -->
+    <div class="max-w-7xl mx-auto px-6 py-6">
+        <div class="flex items-center space-x-2 mb-8 bg-white rounded-xl p-2 border border-gray-200">
+            <button class="client-tab active px-4 py-3 rounded-lg font-medium flex items-center space-x-2" data-client="gmail">
+                <div class="w-5 h-5 bg-red-500 rounded flex items-center justify-center text-white text-xs font-bold">G</div>
+                <span>Gmail</span>
+            </button>
+            <button class="client-tab px-4 py-3 rounded-lg font-medium flex items-center space-x-2" data-client="outlook">
+                <div class="w-5 h-5 bg-blue-600 rounded flex items-center justify-center text-white text-xs font-bold">O</div>
+                <span>Outlook</span>
+            </button>
+            <button class="client-tab px-4 py-3 rounded-lg font-medium flex items-center space-x-2" data-client="apple">
+                <div class="w-5 h-5 bg-gray-800 rounded flex items-center justify-center text-white text-xs font-bold">A</div>
+                <span>Apple Mail</span>
+            </button>
+            <button class="client-tab px-4 py-3 rounded-lg font-medium flex items-center space-x-2" data-client="thunderbird">
+                <div class="w-5 h-5 bg-orange-500 rounded flex items-center justify-center text-white text-xs font-bold">T</div>
+                <span>Thunderbird</span>
+            </button>
+            <div class="flex-1"></div>
+            <div class="flex items-center space-x-2">
+                <button class="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors" id="desktop-view">
+                    <i data-lucide="monitor" class="w-4 h-4 inline mr-1"></i>
+                    Desktop
+                </button>
+                <button class="px-3 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-100 transition-colors" id="mobile-view">
+                    <i data-lucide="smartphone" class="w-4 h-4 inline mr-1"></i>
+                    Mobile
+                </button>
+            </div>
+        </div>
+
+        <!-- Preview Container -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Email Preview -->
+            <div class="space-y-6">
+                <!-- Gmail Preview -->
+                <div id="gmail-preview" class="client-preview slide-up">
+                    <div class="device-frame">
+                        <div class="device-header">
+                            <div class="device-dots">
+                                <div class="device-dot red"></div>
+                                <div class="device-dot yellow"></div>
+                                <div class="device-dot green"></div>
+                            </div>
+                            <div class="device-title">Gmail - inbox@gmail.com</div>
+                        </div>
+                        <div class="gmail-preview bg-white rounded-lg overflow-hidden">
+                            <div class="email-container">
+                                <div class="email-header">
+                                    <div class="flex items-center justify-between text-sm">
+                                        <div>
+                                            <strong>Alex Johnson</strong> &lt;alex@yourcompany.com&gt;
+                                        </div>
+                                        <div class="text-gray-500">10:30 AM</div>
+                                    </div>
+                                    <div class="flex items-center justify-between text-sm mt-1">
+                                        <div>to me</div>
+                                        <div class="flex items-center space-x-2">
+                                            <i data-lucide="star" class="w-4 h-4"></i>
+                                            <i data-lucide="archive" class="w-4 h-4"></i>
+                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="email-content">
+                                    <div class="email-subject">Welcome to our collaboration, John!</div>
+                                    <div style="margin-top: 20px;">
+                                        <p>Hi <strong>John Smith</strong>,</p>
+                                        <br>
+                                        <p>Welcome to our collaboration! I'm excited to work with you on <strong>Website Redesign</strong>.</p>
+                                        <br>
+                                        <p>Here's what you can expect from our partnership:</p>
+                                        <ul style="margin: 16px 0; padding-left: 20px;">
+                                            <li>Regular project updates and transparent communication</li>
+                                            <li>High-quality deliverables on time</li>
+                                            <li>Professional support throughout the project</li>
+                                        </ul>
+                                        <p>I'll be in touch within 24 hours to discuss the next steps. If you have any questions in the meantime, don't hesitate to reach out.</p>
+                                        <br>
+                                        <p style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e1e1e1;">
+                                            Best regards,<br>
+                                            <strong>Alex Johnson</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outlook Preview -->
+                <div id="outlook-preview" class="client-preview" style="display: none;">
+                    <div class="device-frame">
+                        <div class="device-header">
+                            <div class="device-dots">
+                                <div class="device-dot red"></div>
+                                <div class="device-dot yellow"></div>
+                                <div class="device-dot green"></div>
+                            </div>
+                            <div class="device-title">Outlook - Inbox</div>
+                        </div>
+                        <div class="outlook-preview bg-white">
+                            <div class="email-container">
+                                <div class="email-header">
+                                    <div class="flex items-center justify-between text-xs">
+                                        <div>
+                                            <strong>Alex Johnson</strong> (alex@yourcompany.com)
+                                        </div>
+                                        <div>Today 10:30 AM</div>
+                                    </div>
+                                    <div class="text-xs mt-1">To: John Smith</div>
+                                </div>
+                                <div class="email-content">
+                                    <div class="email-subject">Welcome to our collaboration, John!</div>
+                                    <div style="margin-top: 16px;">
+                                        <p>Hi <strong>John Smith</strong>,</p>
+                                        <br>
+                                        <p>Welcome to our collaboration! I'm excited to work with you on <strong>Website Redesign</strong>.</p>
+                                        <br>
+                                        <p>Here's what you can expect from our partnership:</p>
+                                        <ul style="margin: 14px 0; padding-left: 18px;">
+                                            <li>Regular project updates and transparent communication</li>
+                                            <li>High-quality deliverables on time</li>
+                                            <li>Professional support throughout the project</li>
+                                        </ul>
+                                        <p>I'll be in touch within 24 hours to discuss the next steps. If you have any questions in the meantime, don't hesitate to reach out.</p>
+                                        <br>
+                                        <p style="margin-top: 20px; padding-top: 14px; border-top: 1px solid #e1e1e1;">
+                                            Best regards,<br>
+                                            <strong>Alex Johnson</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Apple Mail Preview -->
+                <div id="apple-preview" class="client-preview" style="display: none;">
+                    <div class="device-frame">
+                        <div class="device-header">
+                            <div class="device-dots">
+                                <div class="device-dot red"></div>
+                                <div class="device-dot yellow"></div>
+                                <div class="device-dot green"></div>
+                            </div>
+                            <div class="device-title">Mail - Inbox</div>
+                        </div>
+                        <div class="apple-preview bg-white">
+                            <div class="email-container">
+                                <div class="email-header">
+                                    <div class="flex items-center justify-between text-sm">
+                                        <div>
+                                            <strong>Alex Johnson</strong> &lt;alex@yourcompany.com&gt;
+                                        </div>
+                                        <div>Today at 10:30 AM</div>
+                                    </div>
+                                    <div class="text-sm mt-1">To: John Smith &lt;john@client.com&gt;</div>
+                                </div>
+                                <div class="email-content">
+                                    <div class="email-subject">Welcome to our collaboration, John!</div>
+                                    <div style="margin-top: 20px;">
+                                        <p>Hi <strong>John Smith</strong>,</p>
+                                        <br>
+                                        <p>Welcome to our collaboration! I'm excited to work with you on <strong>Website Redesign</strong>.</p>
+                                        <br>
+                                        <p>Here's what you can expect from our partnership:</p>
+                                        <ul style="margin: 16px 0; padding-left: 20px;">
+                                            <li>Regular project updates and transparent communication</li>
+                                            <li>High-quality deliverables on time</li>
+                                            <li>Professional support throughout the project</li>
+                                        </ul>
+                                        <p>I'll be in touch within 24 hours to discuss the next steps. If you have any questions in the meantime, don't hesitate to reach out.</p>
+                                        <br>
+                                        <p style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e6e6e6;">
+                                            Best regards,<br>
+                                            <strong>Alex Johnson</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thunderbird Preview -->
+                <div id="thunderbird-preview" class="client-preview" style="display: none;">
+                    <div class="device-frame">
+                        <div class="device-header">
+                            <div class="device-dots">
+                                <div class="device-dot red"></div>
+                                <div class="device-dot yellow"></div>
+                                <div class="device-dot green"></div>
+                            </div>
+                            <div class="device-title">Thunderbird - Inbox</div>
+                        </div>
+                        <div class="thunderbird-preview bg-white">
+                            <div class="email-container">
+                                <div class="email-header">
+                                    <div class="flex items-center justify-between text-xs">
+                                        <div>
+                                            From: <strong>Alex Johnson</strong> &lt;alex@yourcompany.com&gt;
+                                        </div>
+                                        <div>01/15/2025 10:30 AM</div>
+                                    </div>
+                                    <div class="text-xs mt-1">To: John Smith &lt;john@client.com&gt;</div>
+                                </div>
+                                <div class="email-content">
+                                    <div class="email-subject">Welcome to our collaboration, John!</div>
+                                    <div style="margin-top: 16px;">
+                                        <p>Hi <strong>John Smith</strong>,</p>
+                                        <br>
+                                        <p>Welcome to our collaboration! I'm excited to work with you on <strong>Website Redesign</strong>.</p>
+                                        <br>
+                                        <p>Here's what you can expect from our partnership:</p>
+                                        <ul style="margin: 12px 0; padding-left: 18px;">
+                                            <li>Regular project updates and transparent communication</li>
+                                            <li>High-quality deliverables on time</li>
+                                            <li>Professional support throughout the project</li>
+                                        </ul>
+                                        <p>I'll be in touch within 24 hours to discuss the next steps. If you have any questions in the meantime, don't hesitate to reach out.</p>
+                                        <br>
+                                        <p style="margin-top: 20px; padding-top: 12px; border-top: 1px solid #cccccc;">
+                                            Best regards,<br>
+                                            <strong>Alex Johnson</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison & Analytics -->
+            <div class="space-y-6">
+                <!-- Compatibility Report -->
+                <div class="bg-white rounded-xl p-6 border border-gray-200 slide-up" style="animation-delay: 0.1s">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+                        <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
+                        <span>Compatibility Report</span>
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-5 h-5 bg-red-500 rounded flex items-center justify-center text-white text-xs font-bold">G</div>
+                                <span class="font-medium">Gmail</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-green-700 font-semibold">98%</span>
+                                <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-5 h-5 bg-blue-600 rounded flex items-center justify-center text-white text-xs font-bold">O</div>
+                                <span class="font-medium">Outlook</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-blue-700 font-semibold">94%</span>
+                                <i data-lucide="check" class="w-4 h-4 text-blue-600"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-5 h-5 bg-gray-800 rounded flex items-center justify-center text-white text-xs font-bold">A</div>
+                                <span class="font-medium">Apple Mail</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-gray-700 font-semibold">96%</span>
+                                <i data-lucide="check" class="w-4 h-4 text-gray-600"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-5 h-5 bg-orange-500 rounded flex items-center justify-center text-white text-xs font-bold">T</div>
+                                <span class="font-medium">Thunderbird</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-orange-700 font-semibold">92%</span>
+                                <i data-lucide="alert-triangle" class="w-4 h-4 text-orange-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rendering Issues -->
+                <div class="bg-white rounded-xl p-6 border border-gray-200 slide-up" style="animation-delay: 0.2s">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 text-orange-600"></i>
+                        <span>Potential Issues</span>
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+                            <div class="flex items-start space-x-2">
+                                <i data-lucide="info" class="w-4 h-4 text-yellow-600 mt-0.5"></i>
+                                <div>
+                                    <h4 class="font-medium text-yellow-800">Outlook 2016/2019</h4>
+                                    <p class="text-sm text-yellow-700">Gradient backgrounds may not render correctly</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                            <div class="flex items-start space-x-2">
+                                <i data-lucide="smartphone" class="w-4 h-4 text-blue-600 mt-0.5"></i>
+                                <div>
+                                    <h4 class="font-medium text-blue-800">Mobile Optimization</h4>
+                                    <p class="text-sm text-blue-700">Consider larger touch targets for mobile devices</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Best Practices -->
+                <div class="bg-white rounded-xl p-6 border border-gray-200 slide-up" style="animation-delay: 0.3s">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+                        <i data-lucide="lightbulb" class="w-5 h-5 text-blue-600"></i>
+                        <span>Optimization Tips</span>
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <i data-lucide="check" class="w-5 h-5 text-green-600 mt-0.5"></i>
+                            <div>
+                                <h4 class="font-medium text-gray-900">Font fallbacks</h4>
+                                <p class="text-sm text-gray-600">Using web-safe font fallbacks for maximum compatibility</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i data-lucide="check" class="w-5 h-5 text-green-600 mt-0.5"></i>
+                            <div>
+                                <h4 class="font-medium text-gray-900">Alt text</h4>
+                                <p class="text-sm text-gray-600">Images include descriptive alt text for accessibility</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i data-lucide="alert-triangle" class="w-5 h-5 text-orange-600 mt-0.5"></i>
+                            <div>
+                                <h4 class="font-medium text-gray-900">CSS support</h4>
+                                <p class="text-sm text-gray-600">Consider inline styles for better client support</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="bg-white rounded-xl p-6 border border-gray-200 slide-up" style="animation-delay: 0.4s">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Preview Actions</h3>
+                    <div class="space-y-3">
+                        <button class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>Send Test to All Clients</span>
+                        </button>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2">
+                                <i data-lucide="download" class="w-4 h-4"></i>
+                                <span>Export Report</span>
+                            </button>
+                            <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2">
+                                <i data-lucide="share" class="w-4 h-4"></i>
+                                <span>Share URL</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Client switching functionality
+        const clientTabs = document.querySelectorAll('.client-tab');
+        const clientPreviews = document.querySelectorAll('.client-preview');
+
+        clientTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const client = tab.getAttribute('data-client');
+                
+                // Update active tab
+                clientTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show corresponding preview
+                clientPreviews.forEach(preview => {
+                    preview.style.display = 'none';
+                });
+                
+                const targetPreview = document.getElementById(`${client}-preview`);
+                if (targetPreview) {
+                    targetPreview.style.display = 'block';
+                    targetPreview.classList.add('slide-up');
+                }
+            });
+        });
+
+        // Device view switching
+        const desktopView = document.getElementById('desktop-view');
+        const mobileView = document.getElementById('mobile-view');
+
+        desktopView.addEventListener('click', () => {
+            desktopView.classList.add('bg-gray-100', 'text-gray-700');
+            desktopView.classList.remove('text-gray-600');
+            mobileView.classList.remove('bg-gray-100', 'text-gray-700');
+            mobileView.classList.add('text-gray-600');
+            
+            // Apply desktop styles
+            document.querySelectorAll('.device-frame').forEach(frame => {
+                frame.style.maxWidth = '100%';
+            });
+        });
+
+        mobileView.addEventListener('click', () => {
+            mobileView.classList.add('bg-gray-100', 'text-gray-700');
+            mobileView.classList.remove('text-gray-600');
+            desktopView.classList.remove('bg-gray-100', 'text-gray-700');
+            desktopView.classList.add('text-gray-600');
+            
+            // Apply mobile styles
+            document.querySelectorAll('.device-frame').forEach(frame => {
+                frame.style.maxWidth = '380px';
+                frame.style.margin = '0 auto';
+            });
+        });
+
+        // Simulate real-time compatibility checking
+        setTimeout(() => {
+            console.log('Email template compatibility check completed');
+        }, 1000);
+    </script>
+</body>
+</html>

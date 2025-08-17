@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Templates - ClientHandle</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Theme CSS -->
+    <style>
+/* Email Templates Page Theme - SuperDesign System */
+:root {
+  /* Base Colors */
+  --background: oklch(1.0000 0 0);
+  --foreground: oklch(0.1448 0 0);
+  --card: oklch(1.0000 0 0);
+  --card-foreground: oklch(0.1448 0 0);
+  --popover: oklch(1.0000 0 0);
+  --popover-foreground: oklch(0.1448 0 0);
+  
+  /* Primary Theme */
+  --primary: oklch(0.5555 0.2240 259.1234);  /* Professional blue */
+  --primary-foreground: oklch(0.9851 0 0);
+  --secondary: oklch(0.9702 0 0);
+  --secondary-foreground: oklch(0.2046 0 0);
+  
+  /* Accent Colors */
+  --muted: oklch(0.9702 0 0);
+  --muted-foreground: oklch(0.5486 0 0);
+  --accent: oklch(0.6234 0.1967 142.4953);  /* Professional green for AI features */
+  --accent-foreground: oklch(0.9851 0 0);
+  
+  /* Status Colors */
+  --success: oklch(0.6234 0.1967 142.4953);  /* Green for successful actions */
+  --success-foreground: oklch(0.9851 0 0);
+  --warning: oklch(0.7234 0.1967 78.4953);   /* Orange for warnings */
+  --warning-foreground: oklch(0.9851 0 0);
+  --destructive: oklch(0.5830 0.2387 28.4765);  /* Red for delete actions */
+  --destructive-foreground: oklch(0.9851 0 0);
+  
+  /* UI Elements */
+  --border: oklch(0.9219 0 0);
+  --input: oklch(0.9219 0 0);
+  --ring: oklch(0.7090 0 0);
+  
+  /* Typography */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  
+  /* Layout */
+  --radius: 0.75rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  
+  /* Shadows - Professional depth */
+  --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+  --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.07), 0 1px 2px -1px hsl(0 0% 0% / 0.05);
+  --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.08);
+  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.12), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+  --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.10), 0 2px 4px -2px hsl(0 0% 0% / 0.08);
+  --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.10), 0 4px 6px -4px hsl(0 0% 0% / 0.08);
+  --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.10), 0 8px 10px -6px hsl(0 0% 0% / 0.08);
+  --shadow-2xl: 0 25px 50px -12px hsl(0 0% 0% / 0.25);
+  
+  /* Spacing */
+  --spacing: 0.25rem;
+}
+
+/* Dark Mode Variables */
+[data-theme="dark"] {
+  --background: oklch(0.0851 0 0);
+  --foreground: oklch(0.9851 0 0);
+  --card: oklch(0.1055 0 0);
+  --card-foreground: oklch(0.9851 0 0);
+  --popover: oklch(0.1055 0 0);
+  --popover-foreground: oklch(0.9851 0 0);
+  
+  --primary: oklch(0.6555 0.2240 259.1234);
+  --primary-foreground: oklch(0.0851 0 0);
+  --secondary: oklch(0.1555 0 0);
+  --secondary-foreground: oklch(0.9851 0 0);
+  
+  --muted: oklch(0.1555 0 0);
+  --muted-foreground: oklch(0.6486 0 0);
+  --accent: oklch(0.7234 0.1967 142.4953);
+  --accent-foreground: oklch(0.0851 0 0);
+  
+  --border: oklch(0.2219 0 0);
+  --input: oklch(0.2219 0 0);
+  --ring: oklch(0.6090 0 0);
+}
+
+/* FORCE TEXT VISIBILITY - OVERRIDE ALL TRANSPARENT TEXT */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans) !important;
+  background-color: oklch(var(--background)) !important;
+  color: oklch(var(--foreground)) !important;
+  line-height: 1.6;
+}
+
+/* Ensure all text elements are visible */
+h1, h2, h3, h4, h5, h6, p, span, div, button, input, select, label, a {
+  color: inherit !important;
+}
+
+/* Fix gradient text to be SOLID and VISIBLE */
+.gradient-text {
+  color: #4863eb !important;
+  font-weight: 800 !important;
+  text-shadow: 2px 2px 4px rgba(72, 99, 235, 0.2) !important;
+  /* Remove all transparent effects */
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: #4863eb !important;
+}
+
+/* Ensure hero title is always visible */
+.hero-title {
+  color: #111827 !important;
+  font-weight: 800 !important;
+}
+
+.hero-title .gradient-text {
+  color: #4863eb !important;
+}
+
+/* Dark mode text fixes */
+[data-theme="dark"] .hero-title {
+  color: #f9fafb !important;
+}
+
+[data-theme="dark"] .gradient-text {
+  color: #6b7ff7 !important;
+  -webkit-text-fill-color: #6b7ff7 !important;
+}
+
+/* Component Classes */
+.card {
+  background: oklch(var(--card)) !important;
+  border: 1px solid oklch(var(--border)) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow) !important;
+  transition: all 0.2s ease !important;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md) !important;
+}
+
+.metric-card {
+  background: oklch(var(--card)) !important;
+  border: 1px solid oklch(var(--border)) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.metric-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.template-card {
+  background: oklch(var(--card)) !important;
+  border: 1px solid oklch(var(--border)) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.template-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.template-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #4863eb 0%, #22c55e 50%, #f59e0b 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.template-card:hover::before {
+  opacity: 1;
+}
+
+.category-card {
+  background: oklch(var(--card)) !important;
+  border: 1px solid oklch(var(--border)) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-xs) !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+}
+
+.category-card:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.category-card.active {
+  border-color: oklch(var(--primary)) !important;
+  background: oklch(var(--primary) / 0.05) !important;
+  box-shadow: 0 0 0 2px oklch(var(--primary) / 0.2) !important;
+}
+
+/* Button Styles with visible text */
+.btn-primary {
+  background: oklch(var(--primary)) !important;
+  color: oklch(var(--primary-foreground)) !important;
+  border: none !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: var(--radius) !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+}
+
+.btn-primary:hover {
+  background: oklch(var(--primary) / 0.9) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.btn-secondary {
+  background: oklch(var(--card)) !important;
+  color: oklch(var(--foreground)) !important;
+  border: 1px solid oklch(var(--border)) !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: var(--radius) !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+}
+
+.btn-secondary:hover {
+  background: oklch(var(--muted)) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+.action-btn {
+  background: transparent !important;
+  border: none !important;
+  padding: 0.5rem !important;
+  border-radius: var(--radius-sm) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  color: oklch(var(--muted-foreground)) !important;
+}
+
+.action-btn:hover {
+  background: oklch(var(--muted)) !important;
+  color: oklch(var(--foreground)) !important;
+  transform: scale(1.05) !important;
+}
+
+/* Input Styles */
+.input {
+  background: oklch(var(--card)) !important;
+  border: 1px solid oklch(var(--border)) !important;
+  border-radius: var(--radius) !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 0.875rem !important;
+  transition: all 0.2s ease !important;
+  color: oklch(var(--foreground)) !important;
+}
+
+.input:focus {
+  outline: none !important;
+  border-color: oklch(var(--primary)) !important;
+  box-shadow: 0 0 0 2px oklch(var(--primary) / 0.2) !important;
+}
+
+/* Animation Classes */
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards !important;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.4s ease-out forwards !important;
+}
+
+.animate-hover-lift:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Status Indicators */
+.status-dot {
+  width: 0.5rem !important;
+  height: 0.5rem !important;
+  border-radius: 50% !important;
+  display: inline-block !important;
+}
+
+.status-active {
+  background: oklch(var(--success)) !important;
+}
+
+.status-pending {
+  background: oklch(var(--warning)) !important;
+}
+
+.status-draft {
+  background: oklch(var(--muted-foreground)) !important;
+}
+
+/* Loading States */
+.loading-skeleton {
+  background: linear-gradient(90deg, 
+    oklch(var(--muted)) 0%, 
+    oklch(var(--muted) / 0.6) 50%, 
+    oklch(var(--muted)) 100%) !important;
+  background-size: 200% 100% !important;
+  animation: shimmer 2s infinite !important;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Modal Styles */
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+.modal-content {
+  background: oklch(var(--card)) !important;
+  border: 1px solid oklch(var(--border)) !important;
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--shadow-2xl) !important;
+}
+
+/* Responsive Grid */
+.template-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+  gap: 1.5rem !important;
+}
+
+@media (max-width: 768px) {
+  .template-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+}
+
+/* Ensure navigation text is visible */
+nav a, nav span, nav button {
+  color: inherit !important;
+}
+
+/* Fix any remaining invisible text */
+.text-gray-900 { color: #111827 !important; }
+.text-gray-800 { color: #1f2937 !important; }
+.text-gray-700 { color: #374151 !important; }
+.text-gray-600 { color: #4b5563 !important; }
+.text-gray-500 { color: #6b7280 !important; }
+.text-gray-400 { color: #9ca3af !important; }
+.text-gray-300 { color: #d1d5db !important; }
+.text-gray-200 { color: #e5e7eb !important; }
+.text-gray-100 { color: #f3f4f6 !important; }
+
+/* Dark mode text overrides */
+.dark .text-gray-900 { color: #f9fafb !important; }
+.dark .text-gray-800 { color: #f3f4f6 !important; }
+.dark .text-gray-700 { color: #e5e7eb !important; }
+.dark .text-gray-600 { color: #d1d5db !important; }
+.dark .text-gray-500 { color: #9ca3af !important; }
+.dark .text-gray-400 { color: #6b7280 !important; }
+.dark .text-gray-300 { color: #4b5563 !important; }
+.dark .text-gray-200 { color: #374151 !important; }
+.dark .text-gray-100 { color: #1f2937 !important; }
+
+/* Text color utilities that actually work */
+.text-blue-600 { color: #2563eb !important; }
+.text-blue-400 { color: #60a5fa !important; }
+.text-green-600 { color: #16a34a !important; }
+.text-green-400 { color: #4ade80 !important; }
+.text-orange-600 { color: #ea580c !important; }
+.text-orange-400 { color: #fb923c !important; }
+.text-purple-600 { color: #9333ea !important; }
+.text-purple-400 { color: #c084fc !important; }
+.text-yellow-600 { color: #ca8a04 !important; }
+.text-yellow-400 { color: #facc15 !important; }
+.text-red-600 { color: #dc2626 !important; }
+.text-red-500 { color: #ef4444 !important; }
+.text-white { color: #ffffff !important; }
+</style>
+    
+    <!-- Dark Mode Init Script -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const shouldUseDark = savedTheme === 'dark' || (savedTheme === null && systemPrefersDark);
+
+            if (shouldUseDark) {
+                document.documentElement.classList.add('dark');
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-8">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-green-400 rounded-lg flex items-center justify-center">
+                            <i data-lucide="briefcase" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <span class="font-semibold text-lg text-blue-600 dark:text-blue-400">ClientHandle</span>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-6">
+                        <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">Dashboard</a>
+                        <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">Clients</a>
+                        <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">Invoices</a>
+                        <a href="#" class="text-blue-600 dark:text-blue-400 font-medium">Templates</a>
+                    </div>
+                </div>
+                
+                <!-- Right side -->
+                <div class="flex items-center space-x-4">
+                    <button id="theme-toggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                        <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                    </button>
+                    <button class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                    </button>
+                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="min-h-screen bg-gray-50 dark:bg-gray-900">
+        
+        <!-- Hero Section -->
+        <section class="py-20 px-6 bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-blue-900/20 dark:via-gray-900 dark:to-green-900/20 animate-fadeIn">
+            <div class="max-w-6xl mx-auto text-center">
+                <div class="flex items-center justify-center space-x-3 mb-6 animate-slideUp" style="animation-delay: 0.1s">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-green-400 rounded-xl flex items-center justify-center">
+                        <i data-lucide="sparkles" class="w-8 h-8 text-white"></i>
+                    </div>
+                </div>
+                <h1 class="hero-title text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6 animate-slideUp" style="animation-delay: 0.2s">
+                    AI-Powered <span class="gradient-text">Email Templates</span>
+                </h1>
+                <p class="text-xl text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto animate-slideUp" style="animation-delay: 0.3s">
+                    Generate professional email templates instantly with AI. Perfect for client communication, 
+                    project updates, invoices, and more.
+                </p>
+                
+                <!-- Quick Generate Buttons -->
+                <div class="flex flex-wrap justify-center gap-4 mb-8 animate-slideUp" style="animation-delay: 0.4s">
+                    <button class="btn-secondary quick-generate-btn" data-type="welcome_email">
+                        <i data-lucide="mail" class="w-5 h-5"></i>
+                        <span>Welcome Email</span>
+                    </button>
+                    <button class="btn-secondary quick-generate-btn" data-type="follow_up">
+                        <i data-lucide="clock" class="w-5 h-5"></i>
+                        <span>Follow-up</span>
+                    </button>
+                    <button class="btn-secondary quick-generate-btn" data-type="proposal">
+                        <i data-lucide="tag" class="w-5 h-5"></i>
+                        <span>Proposal</span>
+                    </button>
+                    <button class="btn-secondary quick-generate-btn" data-type="invoice_reminder">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                        <span>Invoice</span>
+                    </button>
+                </div>
+                
+                <button id="generate-template-btn" class="btn-primary px-8 py-4 text-lg font-semibold animate-slideUp" style="animation-delay: 0.5s">
+                    <i data-lucide="zap" class="w-5 h-5"></i>
+                    <span>Generate Smart Template</span>
+                    <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- Stats Dashboard -->
+        <section class="py-12 px-6">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    
+                    <!-- Total Templates -->
+                    <div class="metric-card p-6 animate-slideUp" style="animation-delay: 0.1s">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                <i data-lucide="file-text" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-full">
+                                Total
+                            </span>
+                        </div>
+                        <div>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100" id="total-templates">15</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Email Templates</p>
+                        </div>
+                    </div>
+
+                    <!-- AI Generated -->
+                    <div class="metric-card p-6 animate-slideUp" style="animation-delay: 0.2s">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                                <i data-lucide="sparkles" class="w-6 h-6 text-green-600 dark:text-green-400"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full">
+                                AI
+                            </span>
+                        </div>
+                        <div>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">12</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">AI Generated</p>
+                        </div>
+                    </div>
+
+                    <!-- Most Used Type -->
+                    <div class="metric-card p-6 animate-slideUp" style="animation-delay: 0.3s">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                                <i data-lucide="trending-up" class="w-6 h-6 text-purple-600 dark:text-purple-400"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 bg-purple-50 dark:bg-purple-900/20 px-2 py-1 rounded-full">
+                                Popular
+                            </span>
+                        </div>
+                        <div>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">5</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Welcome Emails</p>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="metric-card p-6 animate-slideUp" style="animation-delay: 0.4s">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                                <i data-lucide="clock" class="w-6 h-6 text-orange-600 dark:text-orange-400"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded-full">
+                                Recent
+                            </span>
+                        </div>
+                        <div>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">3</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">This Week</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Template Categories -->
+                <div class="mb-12">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Template Categories</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" id="category-grid">
+                        <!-- Categories will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Search and Filter -->
+                <div class="card p-6 mb-8">
+                    <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+                        <div class="flex flex-col sm:flex-row gap-4 flex-1">
+                            <div class="relative flex-1">
+                                <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                <input
+                                    type="text"
+                                    placeholder="Search templates by name or content..."
+                                    id="search-input"
+                                    class="input pl-12 w-full"
+                                />
+                            </div>
+                            <div class="relative">
+                                <select id="filter-select" class="input pr-10 min-w-[200px] appearance-none cursor-pointer">
+                                    <option value="all">All Categories</option>
+                                    <option value="welcome_email">Welcome Emails</option>
+                                    <option value="follow_up">Follow-up</option>
+                                    <option value="invoice_reminder">Invoice Reminders</option>
+                                    <option value="project_completion">Project Completion</option>
+                                    <option value="proposal">Proposals</option>
+                                    <option value="thank_you">Thank You Notes</option>
+                                </select>
+                                <i data-lucide="filter" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">View:</span>
+                            <div class="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                                <button id="grid-view-btn" class="px-3 py-1 rounded text-sm font-medium transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm">
+                                    Grid
+                                </button>
+                                <button id="list-view-btn" class="px-3 py-1 rounded text-sm font-medium transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
+                                    List
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="filter-results" class="mt-4 flex items-center justify-between hidden">
+                        <p class="text-sm text-gray-600 dark:text-gray-400">
+                            <span id="results-count">0</span> template(s) found
+                        </p>
+                        <button id="clear-filters" class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center space-x-1">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                            <span>Clear filters</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Templates Display -->
+                <div id="templates-container">
+                    <!-- Empty state -->
+                    <div id="empty-state" class="text-center py-16">
+                        <div class="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i data-lucide="mail" class="w-12 h-12 text-gray-400"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                            No templates yet
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
+                            Generate your first AI-powered template to get started with professional client communication
+                        </p>
+                        <button class="btn-primary flex items-center space-x-2 mx-auto" id="empty-generate-btn">
+                            <i data-lucide="zap" class="w-5 h-5"></i>
+                            <span>Generate Your First Template</span>
+                        </button>
+                    </div>
+
+                    <!-- Templates Grid -->
+                    <div id="templates-grid" class="template-grid hidden">
+                        <!-- Templates will be populated by JavaScript -->
+                    </div>
+
+                    <!-- Templates List -->
+                    <div id="templates-list" class="space-y-4 hidden">
+                        <!-- Templates will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl">
+            <div class="flex items-center space-x-4">
+                <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-600"></div>
+                <p class="text-lg font-semibold text-gray-900 dark:text-gray-100">Generating template...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-4 right-4 z-50 transform translate-x-full transition-transform duration-300">
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 flex items-center space-x-3">
+            <div id="toast-icon" class="flex-shrink-0">
+                <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i>
+            </div>
+            <div>
+                <p id="toast-message" class="text-sm font-medium text-gray-900 dark:text-gray-100">Template generated successfully!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Sample template data
+        const sampleTemplates = [
+            {
+                id: '1',
+                name: 'Welcome Email',
+                type: 'welcome_email',
+                subject: 'Welcome to our collaboration!',
+                content: 'Dear {{client_name}},\n\nThank you for choosing to work with us!',
+                variables: ['client_name', 'your_name'],
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            {
+                id: '2',
+                name: 'Project Update',
+                type: 'follow_up',
+                subject: 'Project Update - {{project_name}}',
+                content: 'Hi {{client_name}},\n\nI wanted to give you a quick update.',
+                variables: ['client_name', 'project_name'],
+                createdAt: new Date(Date.now() - 86400000),
+                updatedAt: new Date(Date.now() - 86400000)
+            },
+            {
+                id: '3',
+                name: 'Invoice Reminder',
+                type: 'invoice_reminder',
+                subject: 'Friendly Reminder: Invoice {{invoice_number}}',
+                content: 'Hello {{client_name}},\n\nThis is a friendly reminder.',
+                variables: ['client_name', 'invoice_number'],
+                createdAt: new Date(Date.now() - 172800000),
+                updatedAt: new Date(Date.now() - 172800000)
+            }
+        ];
+
+        // Template categories
+        const templateCategories = [
+            { type: 'welcome_email', name: 'Welcome', icon: 'mail', color: 'blue' },
+            { type: 'follow_up', name: 'Follow-up', icon: 'clock', color: 'green' },
+            { type: 'invoice_reminder', name: 'Invoice', icon: 'file-text', color: 'orange' },
+            { type: 'proposal', name: 'Proposals', icon: 'tag', color: 'purple' },
+            { type: 'project_completion', name: 'Completion', icon: 'check-circle-2', color: 'green' },
+            { type: 'thank_you', name: 'Thank You', icon: 'star', color: 'yellow' }
+        ];
+
+        // State
+        let templates = [...sampleTemplates];
+        let currentFilter = 'all';
+        let currentSearch = '';
+        let currentView = 'grid';
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.addEventListener('click', toggleTheme);
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            if (isDark) {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            lucide.createIcons();
+        }
+
+        // Initialize page
+        function initializePage() {
+            renderCategories();
+            renderTemplates();
+            updateStats();
+            setupEventListeners();
+        }
+
+        // Render template categories
+        function renderCategories() {
+            const categoryGrid = document.getElementById('category-grid');
+            if (!categoryGrid) return;
+            
+            categoryGrid.innerHTML = '';
+
+            templateCategories.forEach((category, index) => {
+                const count = templates.filter(t => t.type === category.type).length;
+                const isActive = currentFilter === category.type;
+                
+                const categoryElement = document.createElement('button');
+                categoryElement.className = `category-card p-4 text-center transition-all duration-200 animate-slideUp ${isActive ? 'active' : ''}`;
+                categoryElement.style.animationDelay = `${index * 0.1}s`;
+                categoryElement.onclick = () => toggleFilter(category.type);
+                
+                const colorClass = {
+                    blue: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+                    green: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
+                    orange: 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400',
+                    purple: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
+                    yellow: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400'
+                }[category.color] || 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400';
+                
+                categoryElement.innerHTML = `
+                    <div class="w-12 h-12 mx-auto mb-3 rounded-lg flex items-center justify-center ${colorClass}">
+                        <i data-lucide="${category.icon}" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-1">${category.name}</h4>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">${count} templates</p>
+                `;
+                
+                categoryGrid.appendChild(categoryElement);
+            });
+            
+            lucide.createIcons();
+        }
+
+        // Toggle filter
+        function toggleFilter(type) {
+            currentFilter = currentFilter === type ? 'all' : type;
+            const filterSelect = document.getElementById('filter-select');
+            if (filterSelect) filterSelect.value = currentFilter;
+            renderCategories();
+            renderTemplates();
+        }
+
+        // Render templates
+        function renderTemplates() {
+            const filteredTemplates = getFilteredTemplates();
+            
+            if (filteredTemplates.length === 0) {
+                showEmptyState();
+            } else {
+                hideEmptyState();
+                if (currentView === 'grid') {
+                    renderTemplateGrid(filteredTemplates);
+                } else {
+                    renderTemplateList(filteredTemplates);
+                }
+            }
+        }
+
+        // Get filtered templates
+        function getFilteredTemplates() {
+            return templates.filter(template => {
+                const matchesSearch = template.name.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                                   template.subject.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                                   template.content.toLowerCase().includes(currentSearch.toLowerCase());
+                const matchesFilter = currentFilter === 'all' || template.type === currentFilter;
+                return matchesSearch && matchesFilter;
+            });
+        }
+
+        // Show empty state
+        function showEmptyState() {
+            const emptyState = document.getElementById('empty-state');
+            const templatesGrid = document.getElementById('templates-grid');
+            const templatesList = document.getElementById('templates-list');
+            
+            if (emptyState) emptyState.classList.remove('hidden');
+            if (templatesGrid) templatesGrid.classList.add('hidden');
+            if (templatesList) templatesList.classList.add('hidden');
+        }
+
+        // Hide empty state
+        function hideEmptyState() {
+            const emptyState = document.getElementById('empty-state');
+            const templatesGrid = document.getElementById('templates-grid');
+            const templatesList = document.getElementById('templates-list');
+            
+            if (emptyState) emptyState.classList.add('hidden');
+            if (currentView === 'grid') {
+                if (templatesGrid) templatesGrid.classList.remove('hidden');
+                if (templatesList) templatesList.classList.add('hidden');
+            } else {
+                if (templatesGrid) templatesGrid.classList.add('hidden');
+                if (templatesList) templatesList.classList.remove('hidden');
+            }
+        }
+
+        // Render template grid
+        function renderTemplateGrid(templates) {
+            const templatesGrid = document.getElementById('templates-grid');
+            if (!templatesGrid) return;
+            
+            templatesGrid.innerHTML = '';
+            
+            templates.forEach((template, index) => {
+                const templateElement = document.createElement('div');
+                templateElement.className = 'template-card p-6 cursor-pointer transition-all duration-300 animate-slideUp group';
+                templateElement.style.animationDelay = `${index * 0.1}s`;
+                
+                const icon = getIconForType(template.type);
+                const typeColor = getColorForType(template.type);
+                
+                templateElement.innerHTML = `
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-12 h-12 ${typeColor} rounded-lg flex items-center justify-center">
+                            <i data-lucide="${icon}" class="w-6 h-6"></i>
+                        </div>
+                        <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button class="action-btn" title="Copy template">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                            </button>
+                            <button class="action-btn text-red-600 hover:text-red-700" title="Delete template">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">${template.name}</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">${template.subject}</p>
+                    
+                    <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                        <span class="capitalize">${template.type.replace('_', ' ')}</span>
+                        <span>${template.createdAt.toLocaleDateString()}</span>
+                    </div>
+                `;
+                
+                templatesGrid.appendChild(templateElement);
+            });
+            
+            lucide.createIcons();
+        }
+
+        // Render template list
+        function renderTemplateList(templates) {
+            const templatesList = document.getElementById('templates-list');
+            if (!templatesList) return;
+            
+            templatesList.innerHTML = '';
+            
+            templates.forEach((template, index) => {
+                const templateElement = document.createElement('div');
+                templateElement.className = 'card p-6 hover:shadow-md transition-all duration-200 animate-slideUp cursor-pointer';
+                templateElement.style.animationDelay = `${index * 0.05}s`;
+                
+                const icon = getIconForType(template.type);
+                const typeColor = getColorForType(template.type);
+                
+                templateElement.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4 flex-1">
+                            <div class="w-12 h-12 ${typeColor} rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="${icon}" class="w-6 h-6"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-1">${template.name}</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 truncate mb-2">${template.subject}</p>
+                                <div class="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+                                    <span class="capitalize">${template.type.replace('_', ' ')}</span>
+                                    <span>${template.createdAt.toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-2">
+                            <button class="action-btn" title="Copy template">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                            </button>
+                            <button class="action-btn text-red-600 hover:text-red-700" title="Delete template">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                templatesList.appendChild(templateElement);
+            });
+            
+            lucide.createIcons();
+        }
+
+        // Get icon for template type
+        function getIconForType(type) {
+            const icons = {
+                'welcome_email': 'mail',
+                'follow_up': 'clock',
+                'invoice_reminder': 'file-text',
+                'project_completion': 'check-circle-2',
+                'proposal': 'tag',
+                'thank_you': 'star'
+            };
+            return icons[type] || 'mail';
+        }
+
+        // Get color for template type
+        function getColorForType(type) {
+            const colors = {
+                'welcome_email': 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+                'follow_up': 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
+                'invoice_reminder': 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400',
+                'project_completion': 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
+                'proposal': 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
+                'thank_you': 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400'
+            };
+            return colors[type] || 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400';
+        }
+
+        // Update stats
+        function updateStats() {
+            const totalElement = document.getElementById('total-templates');
+            if (totalElement) totalElement.textContent = templates.length;
+            renderCategories();
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Search input
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    currentSearch = e.target.value;
+                    renderTemplates();
+                });
+            }
+
+            // Filter select
+            const filterSelect = document.getElementById('filter-select');
+            if (filterSelect) {
+                filterSelect.addEventListener('change', (e) => {
+                    currentFilter = e.target.value;
+                    renderCategories();
+                    renderTemplates();
+                });
+            }
+
+            // View toggle buttons
+            const gridViewBtn = document.getElementById('grid-view-btn');
+            const listViewBtn = document.getElementById('list-view-btn');
+            
+            if (gridViewBtn) {
+                gridViewBtn.addEventListener('click', () => {
+                    currentView = 'grid';
+                    gridViewBtn.classList.add('bg-white', 'dark:bg-gray-700', 'text-gray-900', 'dark:text-gray-100', 'shadow-sm');
+                    gridViewBtn.classList.remove('text-gray-600', 'dark:text-gray-400');
+                    if (listViewBtn) {
+                        listViewBtn.classList.remove('bg-white', 'dark:bg-gray-700', 'text-gray-900', 'dark:text-gray-100', 'shadow-sm');
+                        listViewBtn.classList.add('text-gray-600', 'dark:text-gray-400');
+                    }
+                    renderTemplates();
+                });
+            }
+
+            if (listViewBtn) {
+                listViewBtn.addEventListener('click', () => {
+                    currentView = 'list';
+                    listViewBtn.classList.add('bg-white', 'dark:bg-gray-700', 'text-gray-900', 'dark:text-gray-100', 'shadow-sm');
+                    listViewBtn.classList.remove('text-gray-600', 'dark:text-gray-400');
+                    if (gridViewBtn) {
+                        gridViewBtn.classList.remove('bg-white', 'dark:bg-gray-700', 'text-gray-900', 'dark:text-gray-100', 'shadow-sm');
+                        gridViewBtn.classList.add('text-gray-600', 'dark:text-gray-400');
+                    }
+                    renderTemplates();
+                });
+            }
+
+            // Generate template buttons
+            const generateBtn = document.getElementById('generate-template-btn');
+            if (generateBtn) {
+                generateBtn.addEventListener('click', () => generateTemplate());
+            }
+
+            const emptyGenerateBtn = document.getElementById('empty-generate-btn');
+            if (emptyGenerateBtn) {
+                emptyGenerateBtn.addEventListener('click', () => generateTemplate());
+            }
+            
+            document.querySelectorAll('.quick-generate-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const type = btn.getAttribute('data-type');
+                    generateTemplate(type);
+                });
+            });
+        }
+
+        // Generate template
+        function generateTemplate(type = 'welcome_email') {
+            showLoading();
+            
+            // Simulate API call
+            setTimeout(() => {
+                const newTemplate = {
+                    id: Date.now().toString(),
+                    name: getNameForType(type),
+                    type: type,
+                    subject: getSubjectForType(type),
+                    content: getContentForType(type),
+                    variables: getVariablesForType(type),
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                };
+                
+                templates.unshift(newTemplate);
+                updateStats();
+                renderTemplates();
+                hideLoading();
+                showToast('Template generated successfully!', 'success');
+            }, 2000);
+        }
+
+        // Helper functions for template generation
+        function getNameForType(type) {
+            const names = {
+                'welcome_email': 'Welcome Email',
+                'follow_up': 'Follow-up Email',
+                'invoice_reminder': 'Invoice Reminder',
+                'project_completion': 'Project Completion',
+                'proposal': 'Project Proposal',
+                'thank_you': 'Thank You Note'
+            };
+            return names[type] || 'Custom Template';
+        }
+
+        function getSubjectForType(type) {
+            const subjects = {
+                'welcome_email': 'Welcome to our collaboration!',
+                'follow_up': 'Project Update - {{project_name}}',
+                'invoice_reminder': 'Friendly Reminder: Invoice {{invoice_number}}',
+                'project_completion': 'Project Completed - {{project_name}}',
+                'proposal': 'Proposal for {{project_name}}',
+                'thank_you': 'Thank you for your business!'
+            };
+            return subjects[type] || 'Professional Communication';
+        }
+
+        function getContentForType(type) {
+            const contents = {
+                'welcome_email': 'Dear {{client_name}},\n\nThank you for choosing to work with us!',
+                'follow_up': 'Hi {{client_name}},\n\nI wanted to give you a quick update.',
+                'invoice_reminder': 'Hello {{client_name}},\n\nThis is a friendly reminder.'
+            };
+            return contents[type] || 'Professional email content here...';
+        }
+
+        function getVariablesForType(type) {
+            const variables = {
+                'welcome_email': ['client_name', 'your_name'],
+                'follow_up': ['client_name', 'project_name'],
+                'invoice_reminder': ['client_name', 'invoice_number']
+            };
+            return variables[type] || [];
+        }
+
+        // Show loading
+        function showLoading() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+        }
+
+        // Hide loading
+        function hideLoading() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            if (loadingOverlay) loadingOverlay.classList.add('hidden');
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            if (toastMessage) toastMessage.textContent = message;
+            
+            if (toast) {
+                toast.classList.remove('translate-x-full');
+                setTimeout(() => {
+                    toast.classList.add('translate-x-full');
+                }, 3000);
+            }
+        }
+
+        // Initialize page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+</body>
+</html>

@@ -1,0 +1,959 @@
+@import "tailwindcss";
+
+/* SuperDesign Professional Theme System */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Background Colors */
+  --background: oklch(0.9900 0.0020 264.5200);
+  --foreground: oklch(0.1400 0.0080 264.5200);
+  --card: oklch(1.0000 0 0);
+  --card-foreground: oklch(0.1400 0.0080 264.5200);
+  --popover: oklch(1.0000 0 0);
+  --popover-foreground: oklch(0.1400 0.0080 264.5200);
+
+  /* Brand Colors - Professional Business Theme */
+  --primary: oklch(0.4863 0.1592 264.5200);
+  --primary-foreground: oklch(0.9900 0.0020 264.5200);
+  --secondary: oklch(0.9500 0.0200 264.5200);
+  --secondary-foreground: oklch(0.2400 0.0100 264.5200);
+  --muted: oklch(0.9600 0.0150 264.5200);
+  --muted-foreground: oklch(0.4500 0.0200 264.5200);
+  --accent: oklch(0.6400 0.1800 142.4953);
+  --accent-foreground: oklch(0.9900 0.0020 264.5200);
+
+  /* Status Colors */
+  --success: oklch(0.6200 0.1700 142.4953);
+  --success-foreground: oklch(0.9900 0.0020 264.5200);
+  --warning: oklch(0.7500 0.1900 85.8729);
+  --warning-foreground: oklch(0.1400 0.0080 264.5200);
+  --destructive: oklch(0.6000 0.2200 27.3250);
+  --destructive-foreground: oklch(0.9900 0.0020 264.5200);
+
+  /* UI Element Colors */
+  --border: oklch(0.8900 0.0100 264.5200);
+  --input: oklch(0.9600 0.0150 264.5200);
+  --ring: oklch(0.4863 0.1592 264.5200);
+
+  /* Chart Colors for Analytics */
+  --chart-1: oklch(0.4863 0.1592 264.5200);
+  --chart-2: oklch(0.6400 0.1800 142.4953);
+  --chart-3: oklch(0.7500 0.1900 85.8729);
+  --chart-4: oklch(0.6000 0.1500 300.8178);
+  --chart-5: oklch(0.5500 0.1800 200.4765);
+
+  /* Sidebar Colors */
+  --sidebar: oklch(0.9800 0.0100 264.5200);
+  --sidebar-foreground: oklch(0.1400 0.0080 264.5200);
+  --sidebar-primary: oklch(0.4863 0.1592 264.5200);
+  --sidebar-primary-foreground: oklch(0.9900 0.0020 264.5200);
+  --sidebar-accent: oklch(0.9500 0.0200 264.5200);
+  --sidebar-accent-foreground: oklch(0.2400 0.0100 264.5200);
+  --sidebar-border: oklch(0.8900 0.0100 264.5200);
+  --sidebar-ring: oklch(0.4863 0.1592 264.5200);
+
+  /* Typography */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* Design System Values */
+  --radius: 0.5rem;
+  --shadow-2xs: 0 1px 2px 0px hsl(264 20% 0% / 0.05);
+  --shadow-xs: 0 1px 3px 0px hsl(264 20% 0% / 0.08), 0 1px 2px -1px hsl(264 20% 0% / 0.08);
+  --shadow-sm: 0 1px 3px 0px hsl(264 20% 0% / 0.10), 0 1px 2px -1px hsl(264 20% 0% / 0.10);
+  --shadow: 0 1px 3px 0px hsl(264 20% 0% / 0.12), 0 1px 2px -1px hsl(264 20% 0% / 0.12);
+  --shadow-md: 0 4px 6px -1px hsl(264 20% 0% / 0.12), 0 2px 4px -2px hsl(264 20% 0% / 0.12);
+  --shadow-lg: 0 10px 15px -3px hsl(264 20% 0% / 0.12), 0 4px 6px -4px hsl(264 20% 0% / 0.12);
+  --shadow-xl: 0 20px 25px -5px hsl(264 20% 0% / 0.12), 0 8px 10px -6px hsl(264 20% 0% / 0.12);
+  --shadow-2xl: 0 25px 50px -12px hsl(264 20% 0% / 0.25);
+
+  /* Spacing Scale */
+  --spacing: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-12: 3rem;
+  --spacing-16: 4rem;
+
+  /* Radius Variations */
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-full: 9999px;
+
+  /* Business-specific Colors */
+  --invoice-paid: oklch(0.6200 0.1700 142.4953);
+  --invoice-pending: oklch(0.7500 0.1900 85.8729);
+  --invoice-overdue: oklch(0.6000 0.2200 27.3250);
+  --client-active: oklch(0.6200 0.1700 142.4953);
+  --client-inactive: oklch(0.5000 0.0500 264.5200);
+  --revenue-positive: oklch(0.6200 0.1700 142.4953);
+  --revenue-negative: oklch(0.6000 0.2200 27.3250);
+}
+
+/* Enhanced Template Tools */
+.enhanced-tool-btn {
+  transition: all 0.3s ease !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+.enhanced-tool-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.enhanced-tool-btn:active {
+  transform: translateY(0) !important;
+}
+
+/* Dark mode class-based support for manual theme switching */
+.dark {
+  --background: oklch(0.0900 0.0050 264.5200);
+  --foreground: oklch(0.9500 0.0100 264.5200);
+  --card: oklch(0.1200 0.0080 264.5200);
+  --card-foreground: oklch(0.9500 0.0100 264.5200);
+  --popover: oklch(0.1200 0.0080 264.5200);
+  --popover-foreground: oklch(0.9500 0.0100 264.5200);
+
+  --primary: oklch(0.6000 0.1800 264.5200);
+  --primary-foreground: oklch(0.0900 0.0050 264.5200);
+  --secondary: oklch(0.1800 0.0100 264.5200);
+  --secondary-foreground: oklch(0.9000 0.0100 264.5200);
+  --muted: oklch(0.1600 0.0100 264.5200);
+  --muted-foreground: oklch(0.6500 0.0150 264.5200);
+
+  --border: oklch(0.2500 0.0100 264.5200);
+  --input: oklch(0.1600 0.0100 264.5200);
+  --ring: oklch(0.6000 0.1800 264.5200);
+
+  --sidebar: oklch(0.1100 0.0080 264.5200);
+  --sidebar-foreground: oklch(0.9500 0.0100 264.5200);
+  --sidebar-border: oklch(0.2500 0.0100 264.5200);
+}
+
+/* Auto dark mode based on system preference */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: oklch(0.0900 0.0050 264.5200);
+    --foreground: oklch(0.9500 0.0100 264.5200);
+    --card: oklch(0.1200 0.0080 264.5200);
+    --card-foreground: oklch(0.9500 0.0100 264.5200);
+    --popover: oklch(0.1200 0.0080 264.5200);
+    --popover-foreground: oklch(0.9500 0.0100 264.5200);
+
+    --primary: oklch(0.6000 0.1800 264.5200);
+    --primary-foreground: oklch(0.0900 0.0050 264.5200);
+    --secondary: oklch(0.1800 0.0100 264.5200);
+    --secondary-foreground: oklch(0.9000 0.0100 264.5200);
+    --muted: oklch(0.1600 0.0100 264.5200);
+    --muted-foreground: oklch(0.6500 0.0150 264.5200);
+
+    --border: oklch(0.2500 0.0100 264.5200);
+    --input: oklch(0.1600 0.0100 264.5200);
+    --ring: oklch(0.6000 0.1800 264.5200);
+
+    --sidebar: oklch(0.1100 0.0080 264.5200);
+    --sidebar-foreground: oklch(0.9500 0.0100 264.5200);
+    --sidebar-border: oklch(0.2500 0.0100 264.5200);
+  }
+}
+
+body { 
+    font-family: var(--font-sans) !important;
+    background-color: oklch(var(--background)) !important;
+    color: oklch(var(--foreground)) !important;
+}
+
+/* SuperDesign Enhanced Component System */
+
+/* Button components with enhanced styles */
+.btn-primary {
+  background-color: oklch(var(--primary));
+  color: oklch(var(--primary-foreground));
+  border: 1px solid oklch(var(--primary));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-primary:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  background-color: oklch(calc(var(--primary) - 0.05) var(--primary-saturation) var(--primary-hue));
+}
+
+.btn-primary:focus {
+  outline: none;
+  ring: 2px solid oklch(var(--ring));
+  ring-offset: 2px;
+}
+
+.btn-secondary {
+  background-color: oklch(var(--secondary));
+  color: oklch(var(--secondary-foreground));
+  border: 1px solid oklch(var(--border));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-secondary:hover {
+  background-color: oklch(var(--muted));
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: oklch(var(--primary));
+}
+
+.btn-secondary:focus {
+  outline: none;
+  ring: 2px solid oklch(var(--ring));
+  ring-offset: 2px;
+}
+
+/* SuperDesign Dark Mode Button Styles */
+.btn-primary-dark {
+  background-color: oklch(var(--primary));
+  color: oklch(var(--primary-foreground));
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-primary-dark:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary-dark {
+  background-color: oklch(var(--card));
+  color: oklch(var(--foreground));
+  border: 1px solid oklch(var(--border));
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-secondary-dark:hover {
+  background-color: oklch(var(--muted));
+  border-color: oklch(var(--primary));
+  transform: translateY(-1px);
+}
+
+/* SuperDesign Card Components */
+.card {
+  background-color: oklch(var(--card));
+  color: oklch(var(--card-foreground));
+  border: 1px solid oklch(var(--border));
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.card-dark {
+  background-color: oklch(var(--card));
+  border: 1px solid oklch(var(--border));
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+  border-radius: var(--radius);
+}
+
+.card-dark:hover {
+  background-color: oklch(var(--muted));
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* SuperDesign Feature Card */
+.feature-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: oklch(var(--card));
+  border: 1px solid oklch(var(--border));
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+  border-color: oklch(var(--primary) / 0.3);
+}
+
+/* SuperDesign Input Components */
+.input {
+  background-color: oklch(var(--input));
+  border: 1px solid oklch(var(--border));
+  color: oklch(var(--foreground));
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  ring: 2px solid oklch(var(--ring));
+  border-color: oklch(var(--ring));
+  box-shadow: 0 0 0 3px oklch(var(--ring) / 0.1);
+}
+
+.input::placeholder {
+  color: oklch(var(--muted-foreground));
+}
+
+.input-dark {
+  background-color: oklch(var(--input));
+  border: 1px solid oklch(var(--border));
+  color: oklch(var(--foreground));
+  transition: all 0.2s ease;
+}
+
+.input-dark::placeholder {
+  color: oklch(var(--muted-foreground));
+}
+
+.input-dark:focus {
+  ring: 2px solid oklch(var(--ring));
+  border-color: oklch(var(--ring));
+}
+
+.status-active {
+  color: oklch(var(--client-active));
+}
+
+.status-pending {
+  color: oklch(var(--invoice-pending));
+}
+
+.status-overdue {
+  color: oklch(var(--invoice-overdue));
+}
+
+.status-paid {
+  color: oklch(var(--invoice-paid));
+}
+
+/* Table styles */
+.table-row {
+  border-bottom: 1px solid oklch(var(--border));
+  transition: background-color 0.15s ease;
+}
+
+.table-row:hover {
+  background-color: oklch(var(--muted));
+}
+
+/* Quick action buttons */
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: var(--radius);
+  border: 1px solid oklch(var(--border));
+  background-color: oklch(var(--background));
+  color: oklch(var(--foreground));
+  transition: all 0.15s ease;
+}
+
+.action-btn:hover {
+  background-color: oklch(var(--primary));
+  color: oklch(var(--primary-foreground));
+  border-color: oklch(var(--primary));
+}
+
+/* Metric cards */
+.metric-card {
+  background: oklch(var(--card));
+  border: 1px solid oklch(var(--border));
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: var(--spacing-6);
+  transition: all 0.2s ease;
+}
+
+.metric-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Sidebar styles */
+.sidebar {
+  background-color: oklch(var(--sidebar));
+  border-right: 1px solid oklch(var(--sidebar-border));
+}
+
+.sidebar-link {
+  color: oklch(var(--sidebar-foreground));
+  border-radius: var(--radius);
+  transition: all 0.15s ease;
+}
+
+.sidebar-link:hover {
+  background-color: oklch(var(--sidebar-accent));
+  color: oklch(var(--sidebar-accent-foreground));
+}
+
+.sidebar-link.active {
+  background-color: oklch(var(--sidebar-primary));
+  color: oklch(var(--sidebar-primary-foreground));
+}
+
+/* SuperDesign Enhanced Animations */
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out;
+}
+
+.animate-hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  transition: all 0.2s ease;
+}
+
+.animate-quick-action:hover {
+  transform: scale(1.05);
+  transition: all 0.15s ease;
+}
+
+/* SuperDesign Fade Up Animation */
+.animate-fade-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-delayed-1 { 
+  animation-delay: 0.2s; 
+  opacity: 0;
+}
+
+.animate-delayed-2 { 
+  animation-delay: 0.4s; 
+  opacity: 0;
+}
+
+.animate-delayed-3 { 
+  animation-delay: 0.6s; 
+  opacity: 0;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes tableRowLoad {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* SuperDesign Intersection Observer Support */
+.observe-fade {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease-out;
+}
+
+.observe-fade.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.client-row {
+  animation: tableRowLoad 0.3s ease-out;
+  transition: all 0.15s ease;
+}
+
+.client-row:hover {
+  background-color: oklch(var(--muted));
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-pill {
+  transition: all 0.2s ease;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius-full);
+  border: 1px solid oklch(var(--border));
+  background-color: oklch(var(--background));
+  color: oklch(var(--foreground));
+  font-size: 0.875rem;
+}
+
+.filter-pill.active {
+  background-color: oklch(var(--primary));
+  color: oklch(var(--primary-foreground));
+  border-color: oklch(var(--primary));
+}
+
+.filter-pill:hover {
+  background-color: oklch(var(--muted));
+}
+
+/* Modal styles */
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.modal-enter {
+  animation: modalEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalEnter {
+  from { 
+    opacity: 0; 
+    transform: scale(0.95) translateY(-20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1) translateY(0); 
+  }
+}
+
+/* Theme Toggle Button Styles */
+.theme-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  background-color: oklch(var(--background));
+  border: 1px solid oklch(var(--border));
+  transition: all 0.2s ease-in-out;
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle:hover {
+  background-color: oklch(var(--muted));
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+
+.theme-toggle:focus {
+  outline: none;
+  ring: 2px solid oklch(var(--ring));
+  ring-offset: 2px;
+}
+
+.theme-toggle-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  transition: all 0.2s;
+  color: oklch(var(--foreground));
+}
+
+.theme-toggle:hover .theme-toggle-icon {
+  transform: rotate(15deg);
+}
+
+/* Icon visibility based on theme */
+html:not(.dark) .sun-icon {
+  display: none;
+}
+
+html:not(.dark) .moon-icon {
+  display: block;
+}
+
+html.dark .sun-icon {
+  display: block;
+}
+
+html.dark .moon-icon {
+  display: none;
+}
+
+/* Input styles */
+.input {
+  background-color: oklch(var(--input));
+  border: 1px solid oklch(var(--border));
+  color: oklch(var(--foreground));
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  ring: 2px solid oklch(var(--ring));
+  border-color: oklch(var(--ring));
+}
+
+.input::placeholder {
+  color: oklch(var(--muted-foreground));
+}
+
+/* SuperDesign Navigation System */
+.nav {
+  background-color: oklch(var(--background) / 0.8);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid oklch(var(--border));
+}
+
+.nav-dark {
+  background-color: oklch(var(--background) / 0.8);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid oklch(var(--border));
+}
+
+.nav-link {
+  color: oklch(var(--muted-foreground));
+  transition: all 0.2s ease;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-link:hover {
+  color: oklch(var(--foreground));
+  background-color: oklch(var(--muted));
+}
+
+.nav-link.active {
+  color: oklch(var(--primary));
+  background-color: oklch(var(--primary) / 0.1);
+}
+
+.nav-link-dark {
+  color: oklch(var(--muted-foreground));
+  transition: all 0.2s ease;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+}
+
+.nav-link-dark:hover {
+  color: oklch(var(--foreground));
+  background-color: oklch(var(--muted));
+}
+
+.nav-link-dark.active {
+  color: oklch(var(--primary));
+  background-color: oklch(var(--primary) / 0.1);
+}
+
+/* SuperDesign Hero Background */
+.hero-bg {
+  background: linear-gradient(135deg, 
+    oklch(var(--primary) / 0.1) 0%, 
+    oklch(var(--accent) / 0.1) 100%);
+}
+
+/* SuperDesign Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, oklch(var(--primary)), oklch(var(--accent)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Status indicators */
+.status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-full);
+  display: inline-block;
+}
+
+.status-dot-active { 
+  background-color: oklch(var(--client-active)); 
+}
+
+.status-dot-pending { 
+  background-color: oklch(var(--invoice-pending)); 
+}
+
+.status-dot-overdue { 
+  background-color: oklch(var(--invoice-overdue)); 
+}
+
+.status-dot-paid {
+  background-color: oklch(var(--invoice-paid));
+}
+
+/* Badge styles */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: var(--radius);
+  line-height: 1;
+}
+
+.badge-success {
+  background-color: oklch(var(--success) / 0.1);
+  color: oklch(var(--success));
+  border: 1px solid oklch(var(--success) / 0.2);
+}
+
+.badge-warning {
+  background-color: oklch(var(--warning) / 0.1);
+  color: oklch(var(--warning));
+  border: 1px solid oklch(var(--warning) / 0.2);
+}
+
+.badge-destructive {
+  background-color: oklch(var(--destructive) / 0.1);
+  color: oklch(var(--destructive));
+  border: 1px solid oklch(var(--destructive) / 0.2);
+}
+
+.badge-secondary {
+  background-color: oklch(var(--secondary));
+  color: oklch(var(--secondary-foreground));
+  border: 1px solid oklch(var(--border));
+}
+
+/* Email Templates Page Enhanced Styling */
+.template-card {
+  background: oklch(var(--card));
+  border: 1px solid oklch(var(--border));
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.template-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.template-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    oklch(var(--primary)) 0%, 
+    oklch(var(--accent)) 50%, 
+    oklch(var(--warning)) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.template-card:hover::before {
+  opacity: 1;
+}
+
+.category-card {
+  background: oklch(var(--card));
+  border: 1px solid oklch(var(--border));
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.category-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.category-card.active {
+  border-color: oklch(var(--primary));
+  background: oklch(var(--primary) / 0.05);
+  box-shadow: 0 0 0 2px oklch(var(--primary) / 0.2);
+}
+
+/* Template Type Colors */
+.template-welcome { color: oklch(var(--primary)); }
+.template-followup { color: oklch(var(--accent)); }
+.template-invoice { color: oklch(var(--warning)); }
+.template-proposal { color: oklch(0.6234 0.1967 300.4953); }
+.template-completion { color: oklch(var(--success)); }
+.template-thankyou { color: oklch(0.7234 0.1967 60.4953); }
+
+.bg-template-welcome { background: oklch(var(--primary) / 0.1); }
+.bg-template-followup { background: oklch(var(--accent) / 0.1); }
+.bg-template-invoice { background: oklch(var(--warning) / 0.1); }
+.bg-template-proposal { background: oklch(0.6234 0.1967 300.4953 / 0.1); }
+.bg-template-completion { background: oklch(var(--success) / 0.1); }
+.bg-template-thankyou { background: oklch(0.7234 0.1967 60.4953 / 0.1); }
+
+/* Quick Generate Buttons */
+.quick-generate-btn {
+  transition: all 0.2s ease;
+  background: oklch(var(--card));
+  border: 1px solid oklch(var(--border));
+  border-radius: var(--radius);
+  padding: 0.75rem 1.5rem;
+  box-shadow: var(--shadow-xs);
+}
+
+.quick-generate-btn:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: var(--shadow-md);
+  border-color: oklch(var(--primary));
+}
+
+/* Loading States */
+.loading-skeleton {
+  background: linear-gradient(90deg, 
+    oklch(var(--muted)) 0%, 
+    oklch(var(--muted) / 0.6) 50%, 
+    oklch(var(--muted)) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Toast Notification */
+.toast-enter {
+  animation: toastSlide 0.4s ease-out;
+}
+
+@keyframes toastSlide {
+  from { 
+    opacity: 0; 
+    transform: translateX(100%); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+/* Template Grid */
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .template-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Modal Content */
+.modal-content {
+  background: oklch(var(--card));
+  border: 1px solid oklch(var(--border));
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-2xl);
+}
+
+/* Enhanced Button States */
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Action Button Variants */
+.action-btn-primary {
+  background: oklch(var(--primary));
+  color: oklch(var(--primary-foreground));
+  border: none;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn-primary:hover {
+  background: oklch(var(--primary) / 0.9);
+  transform: scale(1.05);
+}
+
+.action-btn-danger {
+  background: transparent;
+  color: oklch(var(--destructive));
+  border: none;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn-danger:hover {
+  background: oklch(var(--destructive) / 0.1);
+  color: oklch(var(--destructive));
+  transform: scale(1.05);
+}
